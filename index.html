@@ -1130,6 +1130,21 @@ body.day .moon .phase{opacity:0}
 .etap{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 18px);text-align:center;font:600 10px/1 var(--ui);letter-spacing:.08em;color:rgba(255,246,236,.4);transition:opacity .6s}
 .etap.off,.epi.ecr .etap{opacity:0}
 @media (prefers-reduced-motion:reduce){.emoon,.ecat .etail,.esky i{animation:none}}
+/* iPhone: фон страницы в цвет низа игры. iOS красит им полосу, если окно приложения короче экрана */
+html,body{background:#0f0a17}
+.app{background:#0f0a17}
+@media (min-width:500px){html,body{background:#000}}
+/* iOS 26, приложение с экрана «Домой»: окно короче экрана на высоту статус-бара, пока страница ниже экрана (WebKit 301108) */
+@media (display-mode:standalone){html{min-height:min(100lvh,calc(100% + env(safe-area-inset-top)))}}
+/* заголовок заставки: градиент по тексту обрезал завитки «Д» и «в» по краю строки */
+.splash .t{padding:.22em .14em .16em;margin:-.22em -.14em -.16em}
+/* плашка достижения: появляется на месте HUD, под системной строкой, и не наезжает на часы и батарею */
+.island,.app:not(.pwa) .island{top:calc(env(safe-area-inset-top) + 8px);background:linear-gradient(180deg,#2e1f40,#1b1228);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 .5px rgba(255,255,255,.1),0 14px 36px rgba(0,0,0,.5)}
+.island.open{width:calc(100% - 32px);margin-left:calc(-50% + 16px);height:62px;border-radius:31px;padding:0 10px}
+.island .ic{width:42px;height:42px;font-size:22px}
+.hud{transition:opacity .3s ease,transform .5s var(--spring-soft)}
+.app.toasting .hud{opacity:0;transform:translateY(-6px);pointer-events:none}
 </style>
 </head>
 <body>
@@ -1899,9 +1914,9 @@ function toast(a){
     const it = toastQ.shift(); if (!it){ toastBusy = false; return; }
     toastBusy = true; $("#toastI").textContent = it.e; $("#toastT").textContent = it.t; $("#toastS").textContent = it.s;
     $("#toastK").textContent = it.k || (it.secret ? "секрет" : "достижение");
-    const el = $("#toast"); el.classList.add("on"); setTimeout(() => el.classList.add("open"), 160); snd.achievement(); haptic(14);
+    const el = $("#toast"); el.classList.add("on"); app.classList.add("toasting"); setTimeout(() => el.classList.add("open"), 160); snd.achievement(); haptic(14);
     setTimeout(() => { const [x,y] = centerOf($("#toastI")); FX.burst(x, y, {emojis:["✨","⭐"], n:10, size:[12,20], grav:300}); }, 620);
-    setTimeout(() => { el.classList.remove("open"); setTimeout(() => { el.classList.remove("on"); setTimeout(next, 380); }, 560); }, 3000);
+    setTimeout(() => { el.classList.remove("open"); setTimeout(() => { el.classList.remove("on"); if (!toastQ.length) app.classList.remove("toasting"); setTimeout(next, 380); }, 560); }, 3000);
   };
   next();
 }
