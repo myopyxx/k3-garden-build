@@ -778,8 +778,10 @@ svg.sti{width:1em;height:1em;display:block}
 }
 /* награды: список, как раньше */
 .achs .group{margin-bottom:22px}
-@keyframes rise{from{opacity:0;transform:translateY(16px)}}
-.achs>*{animation:rise .7s var(--spring-soft) backwards}
+@keyframes achRise{from{opacity:0;transform:translateY(16px)}}
+.achs>*,.achs.again>*{animation:achRise .7s var(--spring-soft) backwards}
+.achs.again>*{animation-name:achRise2}
+@keyframes achRise2{from{opacity:0;transform:translateY(16px)}}
 .achs>:nth-child(2){animation-delay:.04s}.achs>:nth-child(3){animation-delay:.08s}.achs>:nth-child(4){animation-delay:.12s}
 .achs .li .ic{font-size:21px}
 .achs .li.q .ic{filter:none;font:600 17px/1 var(--ui);color:var(--faint)}
@@ -1092,8 +1094,8 @@ body.day .moon .phase{opacity:0}
 /* эпилог */
 .epi{position:absolute;inset:0;z-index:95;overflow:hidden;background:linear-gradient(180deg,#05040e 0%,#140c2a 48%,#2c173c 78%,#1a0f26 100%);animation:fadeIn 1.4s ease;cursor:pointer}
 .epi.out{transition:opacity .9s ease;opacity:0}
-.esky i{position:absolute;width:2px;height:2px;border-radius:1px;background:#fff6e4;animation:tw 3.6s ease-in-out infinite}
-@keyframes tw{50%{opacity:.15}}
+.esky i{position:absolute;width:2px;height:2px;border-radius:1px;background:#fff6e4;animation:etw 3.6s ease-in-out infinite}
+@keyframes etw{50%{opacity:.15}}
 .emoon{position:absolute;left:50%;top:13%;width:132px;height:132px;margin-left:-66px;border-radius:50%;
   background:radial-gradient(circle at 38% 34%,#fffaf0,#f3e3b0 46%,#d9c48c 80%,#c9b079);
   box-shadow:0 0 44px 10px rgba(243,227,176,.28);animation:emoon 7s cubic-bezier(.2,.8,.2,1) both}
@@ -1141,10 +1143,13 @@ html,body{background:#0f0a17}
 /* плашка достижения: появляется на месте HUD, под системной строкой, и не наезжает на часы и батарею */
 .island,.app:not(.pwa) .island{top:calc(env(safe-area-inset-top) + 8px);background:linear-gradient(180deg,#2e1f40,#1b1228);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 .5px rgba(255,255,255,.1),0 14px 36px rgba(0,0,0,.5)}
-.island.open{width:calc(100% - 32px);margin-left:calc(-50% + 16px);height:62px;border-radius:31px;padding:0 10px}
+.island.open{width:calc(100% - 32px);margin-left:calc(-50% + 16px);height:62px;border-radius:31px;padding:0 10px;pointer-events:auto;touch-action:none;cursor:pointer}
 .island .ic{width:42px;height:42px;font-size:22px}
 .hud{transition:opacity .3s ease,transform .5s var(--spring-soft)}
 .app.toasting .hud{opacity:0;transform:translateY(-6px);pointer-events:none}
+/* вспышка за каплю */
+.dropflash{position:absolute;inset:0;z-index:88;pointer-events:none;opacity:0;mix-blend-mode:screen;
+  background:radial-gradient(ellipse 80% 60% at 50% 52%,rgba(255,120,140,.75),rgba(225,40,70,.55) 45%,rgba(150,10,40,.7) 100%)}
 </style>
 </head>
 <body>
@@ -1514,6 +1519,23 @@ const snd = {
     const notes = rare ? [1567.98,1760,2093] : [1046.5,1318.51,1567.98];
     notes.forEach((f,i) => fmBell({f:f*k,t:t+i*.035,ratio:3.5,index:1.5,dur:rare?.4:.25,peak:.13,send:.15}));
     noise({t,type:"highpass",freq:7000,Q:.7,envOpts:{a:.005,d:.12,peak:.02}}); },
+  /* мяу: пилообразный голос через три форманты, высота «ми-а-у»: вверх, держит, вниз; у Лапули голос ниже */
+  meow(who){ if (!canPlay("meow", 500)) return; const t = ctx.currentTime, k = (who === "lapula" ? .84 : 1.05) * rnd(.05), D = .64;
+    const o = ctx.createOscillator(); o.type = "sawtooth";
+    o.frequency.setValueAtTime(470*k, t); o.frequency.exponentialRampToValueAtTime(760*k, t + .17);
+    o.frequency.exponentialRampToValueAtTime(650*k, t + .36); o.frequency.exponentialRampToValueAtTime(390*k, t + D);
+    const vib = ctx.createOscillator(), vg = ctx.createGain(); vib.frequency.value = 6.2; vg.gain.value = 8*k; vib.connect(vg).connect(o.frequency);
+    const env = ctx.createGain(); env.gain.setValueAtTime(.0001, t); env.gain.exponentialRampToValueAtTime(.4, t + .06);
+    env.gain.setTargetAtTime(.3, t + .12, .12); env.gain.setTargetAtTime(.0001, t + D - .12, .07);
+    const fm = (a0, a1, a2, q, g) => { const b = ctx.createBiquadFilter(); b.type = "bandpass"; b.Q.value = q;
+      b.frequency.setValueAtTime(a0*k, t); b.frequency.linearRampToValueAtTime(a1*k, t + .2); b.frequency.linearRampToValueAtTime(a2*k, t + D);
+      const gg = ctx.createGain(); gg.gain.value = g; o.connect(b).connect(gg).connect(env); };
+    fm(720, 1150, 560, 5, 1); fm(1900, 1550, 980, 7, .6); fm(3000, 2700, 2400, 9, .2);
+    const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 3600;
+    env.connect(lp).connect(sfxBus); const s = ctx.createGain(); s.gain.value = .14; lp.connect(s).connect(revSend);
+    o.start(t); vib.start(t); o.stop(t + D + .4); vib.stop(t + D + .4);
+    o.onended = () => { env.disconnect(); lp.disconnect(); s.disconnect(); };
+    noise({t, type: "bandpass", freq: 2400, Q: 1.2, envOpts: {a: .03, d: .2, peak: .012}}); },
   yawn(){ if (!canPlay("yawn", 600)) return; const t = ctx.currentTime;
     voice({type:"sine", f:620*rnd(.05), f2:300, glide:.9, t, lp:1800, envOpts:{a:.18, d:.75, peak:.045}}); },
   chatter(){ if (!canPlay("chatter", 400)) return; const t = ctx.currentTime;
@@ -1907,19 +1929,53 @@ const ACH = [
   {id:"nap",   e:"😴", t:"Уснула на руках",   s:"держать палец на котике, пока не уснёт", secret:true, h:"если долго не отпускать…", ok:()=>!!(S.egg && S.egg.nap)},
   {id:"hug",   e:"🤗", t:"Обнимашки",         s:"погладить обеих сразу двумя пальцами", secret:true, h:"одной руки иногда мало", ok:()=>!!S.egg.hug}
 ];
-let toastQ = [], toastBusy = false;
-function toast(a){
-  toastQ.push(a); if (toastBusy) return;
-  const next = () => {
-    const it = toastQ.shift(); if (!it){ toastBusy = false; return; }
-    toastBusy = true; $("#toastI").textContent = it.e; $("#toastT").textContent = it.t; $("#toastS").textContent = it.s;
-    $("#toastK").textContent = it.k || (it.secret ? "секрет" : "достижение");
-    const el = $("#toast"); el.classList.add("on"); app.classList.add("toasting"); setTimeout(() => el.classList.add("open"), 160); snd.achievement(); haptic(14);
-    setTimeout(() => { const [x,y] = centerOf($("#toastI")); FX.burst(x, y, {emojis:["✨","⭐"], n:10, size:[12,20], grav:300}); }, 620);
-    setTimeout(() => { el.classList.remove("open"); setTimeout(() => { el.classList.remove("on"); if (!toastQ.length) app.classList.remove("toasting"); setTimeout(next, 380); }, 560); }, 3000);
-  };
-  next();
+let toastQ = [], toastBusy = false, toastTimer = 0;
+function toast(a){ toastQ.push(a); if (!toastBusy) toastNext(); }
+function toastNext(){
+  const it = toastQ.shift(), el = $("#toast");
+  if (!it){ toastBusy = false; app.classList.remove("toasting"); return; }
+  toastBusy = true; $("#toastI").textContent = it.e; $("#toastT").textContent = it.t; $("#toastS").textContent = it.s;
+  $("#toastK").textContent = it.k || (it.secret ? "секрет" : "достижение");
+  el.classList.add("on"); app.classList.add("toasting"); setTimeout(() => el.classList.add("open"), 160); snd.achievement(); haptic(14);
+  setTimeout(() => { if (!el.classList.contains("open")) return; const [x,y] = centerOf($("#toastI")); FX.burst(x, y, {emojis:["✨","⭐"], n:10, size:[12,20], grav:300}); }, 620);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => toastClose(false), 3200);
 }
+/* закрыть: само по таймеру сворачивается обратно в капсулу, а по тапу или смахиванию улетает вверх за экран */
+function toastClose(fling){
+  const el = $("#toast"); clearTimeout(toastTimer);
+  if (!el.classList.contains("on") || el._closing) return; el._closing = true;
+  const done = () => { el._closing = false; el._drag = null; setTimeout(toastNext, fling ? 180 : 380); };
+  if (fling && !reduced()){
+    el.style.transition = "transform .42s cubic-bezier(.32,0,.2,1), opacity .32s ease .06s";
+    el.style.transform = "translateY(calc(-100% - 90px))"; el.style.opacity = "0";
+    setTimeout(() => { el.classList.remove("open", "on"); el.style.transition = "none"; el.style.transform = ""; el.style.opacity = ""; void el.offsetWidth; el.style.transition = ""; done(); }, 440);
+  } else {
+    el.style.transition = ""; el.classList.remove("open");
+    setTimeout(() => { el.classList.remove("on"); el.style.transform = ""; el.style.opacity = ""; done(); }, fling ? 200 : 560);
+  }
+}
+(function toastGestures(){
+  const el = $("#toast");
+  el.addEventListener("pointerdown", e => {
+    if (!el.classList.contains("open") || el._closing) return;
+    clearTimeout(toastTimer); el._drag = {y: e.clientY, t: performance.now(), dy: 0, v: 0};
+    el.style.transition = "none"; try { el.setPointerCapture(e.pointerId); } catch(_){}
+  });
+  el.addEventListener("pointermove", e => {
+    const d = el._drag; if (!d) return;
+    const dy = e.clientY - d.y, now = performance.now();
+    d.v = .7*d.v + .3*((dy - d.dy)/Math.max(1, now - d.t)); d.t = now; d.dy = dy;
+    el.style.transform = `translateY(${(dy < 0 ? dy : Math.pow(dy, .7)).toFixed(1)}px)`; /* вниз тянется туго */
+  });
+  const up = () => {
+    const d = el._drag; if (!d) return; el._drag = null;
+    if (d.dy < -24 || d.v < -.35 || Math.abs(d.dy) < 6){ snd.back(); haptic(8); toastClose(true); return; }
+    el.style.transition = "transform .55s var(--spring-soft)"; el.style.transform = "";
+    setTimeout(() => { if (!el._drag && !el._closing) el.style.transition = ""; }, 600);
+    toastTimer = setTimeout(() => toastClose(false), 1800);
+  };
+  el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
+})();
 function checkAch(){ ACH.forEach(a => { if (!S.ach[a.id] && a.ok()){ S.ach[a.id] = 1; toast(a); noteList("ach", a.id); } }); save(); }
 
 /* ---------- главная ---------- */
@@ -1954,8 +2010,9 @@ function placeBubble(){
   const tx = Math.max(26, Math.min(w - 26, target - left)), d = Math.max(-9, Math.min(9, target - left - tx));
   b.style.left = left.toFixed(1) + "px"; b.style.setProperty("--tx", tx.toFixed(1) + "px"); b.style.setProperty("--sk", (Math.atan(d/10)*180/Math.PI).toFixed(1) + "deg");
 }
+let bubbleAt = 0;
 function setBubble(txt, side){
-  bubState = {txt, side: side || "both"};
+  bubState = {txt, side: side || "both"}; bubbleAt = Date.now();
   const b = $("#bubble"); clearTimeout(bubT); clearTimeout(bubHide);
   const show = () => {
     const t = $("#bubbleT"); t.innerHTML = "";
@@ -2137,8 +2194,8 @@ function pet(el, e, soft){
     sinceLine = 0; phraseIn = 5 + Math.floor(Math.random()*5);
     const list = PHRASES[who]; let txt; do { txt = list[Math.floor(Math.random()*list.length)]; } while (list.length > 1 && txt === lastPhrase);
     if (S.day && who === "lapula" && Math.random() < .3) txt = "это кожа убийцы, Белла";
-    const sp = who === "lapula" && Math.random() < .25 ? pickSpecial() : null;
-    if (sp){ specialUsed[sp.id] = 1; specialAt = Date.now(); noteList("sp", sp.id); lastPhrase = sp.text; setBubble(sp.text, "lapula"); setTimeout(sp.run, 380); }
+    const sp = who === "lapula" && Math.random() < .12 ? pickSpecial() : null;
+    if (sp){ lastPhrase = sp.text; runSpecial(sp); }
     else { lastPhrase = txt; setBubble(txt, who); }
   }
   if (S.purr >= perDrop()){
@@ -2146,18 +2203,42 @@ function pet(el, e, soft){
     bar.style.width = "100%"; $("#purrN").textContent = D + "/" + D; m.style.setProperty("--dt", "11%"); m.classList.remove("near");
     m.classList.remove("full"); void m.offsetWidth; m.classList.add("full");
     setTimeout(() => { flyDrops(m.querySelector(".dropl"), 1); setTimeout(() => hud(true), 800); }, 380);
+    setTimeout(() => { dropFlash(); snd.meow(who); }, 300);
     setTimeout(() => { bar.style.transition = "none"; renderPurr(); void bar.offsetWidth; bar.style.transition = ""; }, 900);
   } else renderPurr();
   checkAch(); save();
 }
 
+/* капля за полную мурр-шкалу: мягкая красная вспышка, как ослепление, только тёплое и без белого удара */
+function dropFlash(){
+  const f = document.createElement("div"); f.className = "dropflash"; f.setAttribute("aria-hidden", "true"); app.appendChild(f);
+  const soft = reduced();
+  f.animate(soft ? [{opacity: 0}, {opacity: .35}, {opacity: 0}] : [{opacity: 0}, {opacity: .78, offset: .07}, {opacity: .5, offset: .3}, {opacity: 0}],
+    {duration: soft ? 500 : 1300, easing: "ease-out"}).onfinish = () => f.remove();
+}
+
 /* ---------- особые реплики Лапули: на экране что-то происходит ---------- */
 let specialAt = 0, specialBusy = false; const specialUsed = {};
 function pickSpecial(){
-  if (specialBusy || Date.now() - specialAt < 60000 || idle.sleeping || S.event === "quarrel" || reduced()) return null;
+  if (specialBusy || Date.now() - specialAt < 30000 || idle.sleeping || S.event === "quarrel" || reduced()) return null;
   let pool = SPECIALS.filter(x => !specialUsed[x.id]);
-  if (!pool.length && Date.now() - specialAt > 300000){ SPECIALS.forEach(x => delete specialUsed[x.id]); pool = SPECIALS.slice(); }
+  if (!pool.length){ SPECIALS.forEach(x => delete specialUsed[x.id]); pool = SPECIALS.filter(x => x.id !== lastSpecial); }
   return pool.length ? pool[Math.floor(Math.random()*pool.length)] : null;
+}
+let lastSpecial = "", specialTimer = 0;
+function runSpecial(sp){ specialUsed[sp.id] = 1; specialAt = Date.now(); lastSpecial = sp.id; noteList("sp", sp.id); setBubble(sp.text, "lapula"); setTimeout(sp.run, 380); }
+/* особые события запускаются через паузу после того, как открыли «Котиков», если на главной сейчас ничего другого не происходит */
+function queueSpecial(){
+  clearTimeout(specialTimer);
+  if (Math.random() > .7) return;
+  specialTimer = setTimeout(trySpecial, 6000 + Math.random()*8000);
+}
+function trySpecial(tries = 0){
+  if (!homeLive() || specialBusy || idle.sleeping || idle.lapNap || S.event === "quarrel" || reduced()) return;
+  const busy = document.querySelector(".celebrate, #epi, .dropflash") || app.classList.contains("toasting") || app.classList.contains("lovefx")
+    || Date.now() - bubbleAt < 3500 || Date.now() - preyAt < 15000 || (knead && knead.cat);
+  if (busy){ if (tries < 4) specialTimer = setTimeout(() => trySpecial(tries + 1), 4500); return; }
+  const sp = pickSpecial(); if (sp) runSpecial(sp);
 }
 function duoRect(){ const d = $("#duo"); return d.getBoundingClientRect(); }
 function loveFx(){
@@ -2753,8 +2834,15 @@ function countUp(el, to, ms=900){
   const t0 = performance.now(); const step = t => { const k = Math.min(1, (t - t0)/ms); el.textContent = Math.round(to*(1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
+let awKey = "";
 function renderAwards(){
   countUp($("#stPets"), S.pets); countUp($("#stStars"), totalStars());
+  /* список пересобирается только если что-то изменилось, иначе просто заново проигрывается появление */
+  const key = JSON.stringify([S.ach, ACH.map(a => a.p && !S.ach[a.id] ? a.p()[0] : 0)]);
+  if (key === awKey && $("#achList").children.length){
+    const g = $("#achList"); g.classList.remove("again"); void g.offsetWidth; g.classList.add("again"); return;
+  }
+  awKey = key;
   $("#stOf").textContent = "звёзд из " + LEVELS.length*3;
   const main = ACH.filter(a => !a.secret), sec = ACH.filter(a => a.secret);
   const got = main.filter(a => S.ach[a.id]).length, sgot = sec.filter(a => S.ach[a.id]).length;
@@ -2832,7 +2920,7 @@ function showView(id){
   if (id === "v-home"){ setTimeout(eventFx, 350); queueGift(3500); requestAnimationFrame(placeBubble); if ((S.stars[10]||0) > 0 && Date.now() - preyAt > 180000 && Math.random() < .14) setTimeout(() => prey("laser"), 1400); }
   onScroll(v);
 }
-document.querySelectorAll(".tab").forEach(t => t.onclick = () => showView(t.dataset.v));
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => { showView(t.dataset.v); if (t.dataset.v === "v-home") queueSpecial(); });
 (function tabDrag(){
   const bar = $("#tabs"), ind = $("#tabInd"); let d = null;
   const tabs = () => [...document.querySelectorAll(".tab")].filter(t => !t.hidden);
@@ -2845,7 +2933,7 @@ document.querySelectorAll(".tab").forEach(t => t.onclick = () => showView(t.data
     ind.style.transform = `translateX(${x - 6}px)`;
     const t = nearest(e.clientX); if (t !== d.over){ d.over = t; tabs().forEach(o => o.setAttribute("aria-selected", o === t)); haptic(4); }
   });
-  const end = e => { if (!d) return; const was = d; d = null; if (!was.moved) return; ind.classList.remove("drag"); const t = nearest(e.clientX); indX = null; showView(t.dataset.v); snd.tap(); };
+  const end = e => { if (!d) return; const was = d; d = null; if (!was.moved) return; ind.classList.remove("drag"); const t = nearest(e.clientX); indX = null; showView(t.dataset.v); snd.tap(); if (t.dataset.v === "v-home") queueSpecial(); };
   bar.addEventListener("pointerup", end); bar.addEventListener("pointercancel", end);
 })();
 
@@ -3061,39 +3149,47 @@ function note(f){ const e = dayNote(); e[f] = (e[f] || 0) + 1; }
 function noteList(f, v){ const e = dayNote(); e[f] = e[f] || []; if (!e[f].includes(v)) e[f].push(v); }
 function diaryLines(e, first){
   const L = [], P = (k, t) => t && L.push({k, t}), d = new Date(e.t), h = d.getHours(), hm = h + ":" + String(d.getMinutes()).padStart(2, "0");
-  if (first) P("first", "завела дневник. пишу лапой, не придирайся");
-  if (h >= 23 || h < 5) P("late", `ты пришла в ${hm}. ночью. уважаю`);
-  else if (h < 9) P("early", `ты пришла в ${hm}. рано. я спала одним глазом`);
-  if (e.season) P("s_" + e.season, {hw: "хэллоуин. я в образе круглый год", ny: "новый год. загадала, чтобы ты приходила чаще", val: "день влюблённых. гладили вдвойне. ну, должны были"}[e.season]);
-  const a = e.pa || 0, l = e.pl || 0, all = a + l;
-  if (all){ const head = `гладили ${all} ${plural(all, "раз", "раза", "раз")}. `;
-    if (a > l*1.3) P("pa", head + `меня ${a}, Лапулю ${l}. я веду`); else if (l > a*1.3) P("pl", head + "Лапулю больше. записываю как ошибку"); else P("eq", head + "поровну. подозрительно честно"); }
-  if (e.mile) P("mile", `${e.mile}-е поглаживание. был салют`);
+  const raz = n => n + " " + plural(n, "раз", "раза", "раз");
+  if (first) P("first", "Завела дневник. Пишу лапой, поэтому коротко.");
+  if (h >= 23 || h < 5) P("late", `Ты пришла в ${hm}. Я как раз проснулась.`);
+  else if (h < 9) P("early", `Ты пришла в ${hm}, я ещё спала.`);
+  if (e.season) P("s_" + e.season, {hw: "Хэллоуин, мой праздник.", ny: "Новый год. Я загадала, чтобы ты приходила почаще.",
+    val: "День всех влюблённых. Кошки тоже считаются."}[e.season]);
+  const a = e.pa || 0, l = e.pl || 0, all = a + l, mile = e.mile ? ` На ${e.mile}-м был салют.` : "";
+  if (all){
+    if (a > l*1.3) P("pa", (l ? `Меня гладили ${raz(a)}, Лапулю ${l}.` : `Гладили только меня, ${raz(a)}.`) + mile);
+    else if (l > a*1.3) P("pl", (a ? `Лапулю гладили ${raz(l)}, а меня ${a}.` : "Гладили только Лапулю.") + " Завтра сяду поближе." + mile);
+    else P("eq", (a === l ? `Нас гладили поровну, по ${raz(a)}.` : `Нас гладили почти поровну: меня ${raz(a)}, Лапулю ${l}.`) + mile);
+  }
   if (e.lv){ const ns = Object.keys(e.lv);
-    if (ns.length > 3) P("lvN", `сыграли ${ns.length} ${plural(ns.length, "эпизод", "эпизода", "эпизодов")}. я болела за тебя`);
+    if (ns.length > 3){ const top = ns.filter(n => e.lv[n] === 3).length;
+      P("lvN", `Сыграли ${ns.length} ${plural(ns.length, "эпизод", "эпизода", "эпизодов")}` + (top ? `, в ${top} из них три звезды.` : ".")); }
     else ns.forEach(n => { const st = e.lv[n], t = (LEVELS[n - 1] || {}).t || "эпизод";
-      if (st === 3) P("lv3", `«${t}»: три звезды. так и знала`); else if (st) P("lv1", `«${t}»: пройдено. звёзды доберём`); else P("lv0", `«${t}»: не вышло. уровень виноват`); }); }
-  if (e.ach && e.ach.length){ if (e.ach.length === 1){ const A = ACH.find(x => x.id === e.ach[0]); P("ach", A ? `новая награда: «${A.t}»` : "новая награда"); }
-    else P("ach", `${e.ach.length} ${plural(e.ach.length, "новая награда", "новые награды", "новых наград")}. горжусь. немножко`); }
-  if (e.egg) P("egg", "нашла секрет. какой, не скажу");
-  if (e.q) P("q", "поссорились с Лапулей. начала она");
-  if (e.mk) P("mk", "помирились. я разрешила");
-  if (e.gift) P(e.gift.who === "alisa" ? "giftA" : "giftL", e.gift.who === "alisa" ? `подарила тебе ${e.gift.e}. не потеряй` : `Лапуля подарила тебе ${e.gift.e}. моё было бы лучше`);
-  if (e.moon) P("moon", "полнолуние. клыки чесались весь вечер");
-  if (e.snap) P("snap", e.snap > 1 ? `нас фотографировали ${e.snap} ${plural(e.snap, "раз", "раза", "раз")}. я каждый раз лучше` : "нас сфотографировали. я вышла лучше");
-  (e.sp || []).forEach(id => P("sp_" + id, {love: "Лапуля сказала, что Никита любит тебя сильнее, чем она рыбку. проверила: правда",
-    msk: "Лапуля подняла флаг над домом. ветер был против", si: "Лапуля опять про Stone Island. плащ потом весь в шерсти"}[id]));
-  if (e.nap) P("nap", "уснула у тебя на пальце. это не считается");
-  if (e.epi) P("epi", "смотрели эпилог. я там красивая");
-  if (!L.length) P("empty", "ты заходила проверить, как мы. мы нормально");
+      if (st === 3) P("lv3", `Прошли эпизод «${t}» на три звезды.`);
+      else if (st) P("lv1", `Прошли эпизод «${t}», пока на ${st === 1 ? "одну звезду" : "две звезды"}.`);
+      else P("lv0", `Эпизод «${t}» пока не получился.`); }); }
+  if (e.ach && e.ach.length){ if (e.ach.length === 1){ const A = ACH.find(x => x.id === e.ach[0]); P("ach", A ? `Получили награду «${A.t}».` : "Получили новую награду."); }
+    else P("ach", `За день получили ${e.ach.length} ${plural(e.ach.length, "награду", "награды", "наград")}.`); }
+  if (e.egg) P("egg", "Нашла секрет. Какой, не пишу: Лапуля читает дневник.");
+  if (e.q) P("q", "Поссорились с Лапулей из-за лазерной точки.");
+  if (e.mk) P("mk", "Помирились в грозу, под одним пледом.");
+  if (e.gift) P(e.gift.who === "alisa" ? "giftA" : "giftL", e.gift.who === "alisa" ? `Подарила тебе ${e.gift.e}.` : `Лапуля подарила тебе ${e.gift.e}, а я не успела.`);
+  if (e.moon) P("moon", "Было полнолуние, весь вечер хотелось кусаться.");
+  if (e.snap) P("snap", e.snap > 1 ? `Нас фотографировали ${raz(e.snap)}, снимки в альбоме.` : "Нас сфотографировали в гардеробе, снимок теперь в альбоме.");
+  (e.sp || []).forEach(id => P("sp_" + id, {love: "Лапуля сказала, что Никита любит тебя сильнее, чем она рыбку. Рыбку она любит очень сильно.",
+    msk: "Над домом подняли флаг, а потом его унесло ветром. Это Лапуля опять про Москву.",
+    si: "Лапуля опять скучала по Stone Island, и наши плащи стали флагами НАТО."}[id]));
+  if (e.nap) P("nap", "Уснула у тебя на пальце, а проснулась, когда ты его убрала.");
+  if (e.epi) P("epi", "Смотрели эпилог про нас на крыше. Луна там огромная.");
+  if (!L.length) P("empty", "Ты заходила ненадолго. Мы были дома.");
   return L;
 }
 /* пометки Лапули на полях: на одну запись не больше двух, выбор стабильный, чтобы не прыгал при каждом открытии */
-const LNOTES = {first: "почерк у неё так себе", late: "я спала", early: "а я караулила", s_hw: "я тоже в образе. просто не видно", s_ny: "я загадала рыбку",
-  s_val: "мне тоже вдвойне", pa: "временно", pl: "это не ошибка", eq: "я пересчитала. мне на один больше", mile: "салют пугал. мне понравилось",
-  lv3: "это я болела", lv1: "я помогу. наверное", lv0: "уровень правда виноват", lvN: "я болела громче", ach: "моя заслуга тоже", egg: "я знаю какой",
-  q: "неправда", mk: "первая подошла я", giftA: "я бы подарила лучше", giftL: "не было бы", moon: "у меня клыков нет. обидно",
-  snap: "я моргнула специально", sp_love: "я же говорила", sp_msk: "флаг был мой", sp_si: "шерсть моя. плащ общий", nap: "считается", epi: "я красивее", empty: "я скучала"};
+const LNOTES = {first: "и с ошибками", late: "а я спала", early: "я тоже", s_hw: "и мой", s_ny: "а я рыбку", s_val: "особенно я",
+  pa: "пересчитаю", pl: "сиди где сидишь", eq: "я считала по-другому", lv3: "я болела", lv1: "в следующий раз три", lv0: "завтра получится",
+  lvN: "я смотрела все", ach: "это и моя награда", egg: "уже прочитала", q: "точку первой увидела я", mk: "я первая подвинулась",
+  giftA: "я бы подарила рыбку", giftL: "надо быстрее", moon: "мне нечем", snap: "я моргнула", sp_love: "это правда",
+  sp_msk: "флаг было жалко", sp_si: "на 15 секунд", nap: "я тоже так умею", empty: "я скучала"};
 function hashStr(s){ let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function openDiary(){
   const ks = Object.keys(S.diary || {}).sort().reverse(), firstK = ks[ks.length - 1];
