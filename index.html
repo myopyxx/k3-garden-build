@@ -882,6 +882,14 @@ svg.sti{width:1em;height:1em;display:block}
 .cat.happy .tail{animation-duration:1.15s}
 .app.listening #duo .cat{animation:vibe 1.8s ease-in-out infinite alternate;transform-origin:50% 100%}
 @keyframes vibe{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
+.bubble .qchips{display:flex;gap:8px;justify-content:center;margin:7px 0 6px;flex-wrap:wrap}
+.bubble .qchip{pointer-events:auto;font:600 13px/1 var(--ui);color:#fff;background:rgba(255,255,255,.13);border:0;border-radius:999px;padding:0 16px;min-height:40px;min-width:64px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 0 0 .5px rgba(255,255,255,.14);-webkit-tap-highlight-color:transparent;animation:wordRise .46s var(--spring-soft) both}
+.bubble .qchip:active{background:rgba(255,255,255,.22)}
+.bubble .qchip.on{background:linear-gradient(180deg,#c43a55,#8f1f38);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.home .bubble.hush .qchip{pointer-events:none}
+/* на коротких экранах вопрос с кнопками выше обычного пузыря: счётчик капель на это время уходит */
+@media (max-height:720px){.bubble .qchip{min-height:36px}.bubble .qchips{margin:5px 0 3px}.app.asking .hud{opacity:0;transform:translateY(-6px);pointer-events:none}}
 .bubble .dots{display:inline-flex;gap:5px;padding:9px 4px 7px}
 .bubble .dots i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.75);animation:dot 1s ease-in-out infinite}
 .bubble .dots i:nth-child(2){animation-delay:.15s}.bubble .dots i:nth-child(3){animation-delay:.3s}
@@ -1059,6 +1067,50 @@ body.day .moon .phase{opacity:0}
 .snapview .row-btns{margin-top:14px}
 .snapview .btn{flex:1;gap:8px}
 .snapview .btn.sure{background:linear-gradient(180deg,#d8445e,#a3243c)}
+/* загадка дня */
+.wcard{margin:14px 0 2px}
+.wcard .group{margin:0}
+.wmini{display:flex;gap:3px;margin-left:auto;flex:none}
+.wmini i{width:17px;height:17px;border-radius:5px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);font:700 9px/17px var(--ui);text-align:center;color:#fff;font-style:normal}
+.wmini i.s0{background:#3a2d47;box-shadow:none}
+.wintro{text-align:center;margin-bottom:6px}
+.wleg{display:flex;justify-content:center;gap:12px;font:500 11px/1 var(--ui);color:var(--muted);margin-bottom:12px;white-space:nowrap}
+.wleg span{display:inline-flex;align-items:center;gap:5px}
+.wleg i{width:12px;height:12px;border-radius:3.5px}
+.wleg .s2,.wt.s2,.wk.s2,.wmini i.s2{background:linear-gradient(180deg,#5cb488,#367f5c);box-shadow:none}
+.wleg .s1,.wt.s1,.wk.s1,.wmini i.s1{background:linear-gradient(180deg,#e6bb55,#b88625);box-shadow:none}
+.wleg .s0,.wt.s0{background:#3a2d47}
+.wgrid{--ts:min(52px,calc((100dvh - 468px)/6.2));display:grid;gap:6px;justify-content:center;margin:0 auto;perspective:600px}
+.wrow{display:grid;grid-template-columns:repeat(5,var(--ts));gap:6px}
+.wt{width:var(--ts);height:var(--ts);display:grid;place-items:center;border-radius:calc(var(--ts)*.22);font:600 calc(var(--ts)*.44)/1 var(--ui);color:#fff;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1)}
+.wt.f:not(.s0):not(.s1):not(.s2){box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.32);background:rgba(255,255,255,.09)}
+.wt.s0,.wt.s1,.wt.s2{box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.wt.s0{color:rgba(255,255,255,.72)}
+.wt.flip{animation:wtFlip .46s ease-in-out}
+@keyframes wtFlip{50%{transform:rotateX(90deg)}}
+.wbar{min-height:44px;margin:6px 0 0;display:flex;align-items:center;justify-content:center}
+.wmsg{text-align:center;font:500 13px/1.3 var(--ui);color:rgba(255,244,236,.86)}
+.wmsg[hidden]{display:none}
+.wmsg.on{animation:wordRise .35s var(--spring-soft) both}
+.whint{display:block;min-height:36px;padding:0 16px;border:0;border-radius:999px;font:600 12px/1 var(--ui);color:#ffd6a0;background:rgba(224,160,58,.16);box-shadow:inset 0 0 0 .5px rgba(224,160,58,.4)}
+.whint[hidden]{display:none}
+.wkb{display:flex;flex-direction:column;gap:6px;margin-top:4px;-webkit-user-select:none;user-select:none}
+.wkr{display:flex;justify-content:center;gap:4px}
+.wk{flex:1 1 0;min-width:0;max-width:34px;height:46px;padding:0;border:0;border-radius:8px;font:600 15px/1 var(--ui);color:#fff;background:rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.wk:active{background:rgba(255,255,255,.28)}
+.wk.wide{flex:1.7 1 0;max-width:62px;font-size:11px;letter-spacing:.02em}
+.wk.wide svg{width:22px;height:22px;display:block;margin:auto}
+.wk.s0{background:rgba(0,0,0,.32);color:rgba(255,255,255,.38);box-shadow:none}
+@media (prefers-reduced-motion:reduce){.wt.flip,.wmsg.on{animation:none}}
+@media (max-height:720px){.wleg{display:none}.wk{height:42px}.wbar{min-height:40px;margin-top:4px}}
+/* копия прогресса */
+.codebox{margin-top:12px;padding:12px 14px;border-radius:16px;background:rgba(0,0,0,.26);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.12);
+  font:500 11px/1.45 var(--ui);color:rgba(255,244,236,.7);word-break:break-all;-webkit-user-select:all;user-select:all}
+.codein{display:block;width:100%;margin-top:12px;padding:12px 14px;border:0;border-radius:16px;resize:none;background:rgba(0,0,0,.26);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.14);
+  font:500 16px/1.35 var(--ui);color:#fff;outline:none;word-break:break-all}
+.codein:focus{box-shadow:inset 0 0 0 1.5px rgba(255,138,160,.6)}
+.codest{min-height:20px;margin-top:10px;text-align:center;color:var(--muted)}
+.row-btns .btn.sure{background:linear-gradient(180deg,#d8445e,#a3243c)}
 .fsky{position:absolute;inset:0;pointer-events:none}
 .fpar{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .fsky i{position:absolute;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 36% 34%,#f4f6ee,#c9d3cc 90%)}
@@ -1066,6 +1118,31 @@ body.day .moon .phase{opacity:0}
 /* удержание пальца */
 .cat.melt .eye{transform:scaleY(.1);transition:transform 1.6s ease}
 .cat.melt .breathe{animation-duration:4.2s}
+/* чем заняты: умывается лапой, сидит в коробке, гоняет клубок, смотрит на луну */
+.cat .wpaw{opacity:0;transform:translate(124px,222px)}
+.cat .tongue{opacity:0}
+.cat.washing .pr,.cat.washend .pr{opacity:0}
+.cat.washing .wpaw,.cat.washend .wpaw{opacity:1}
+.cat.washing .wpaw{animation:washIn .45s ease-out,wash 2.6s .45s ease-in-out infinite}
+.cat.washing .tongue{animation:lick 2.6s .45s infinite}
+.cat.washing .eye{transform:scaleY(.38);transition:transform .35s ease}
+@keyframes washIn{from{transform:translate(124px,222px)}to{transform:translate(114px,142px) rotate(-25deg)}}
+@keyframes wash{0%,34%,100%{transform:translate(114px,142px) rotate(-25deg)}20%{transform:translate(111px,137px) rotate(-19deg)}52%{transform:translate(128px,112px) rotate(-40deg)}66%{transform:translate(138px,86px) rotate(-55deg)}80%{transform:translate(127px,112px) rotate(-38deg)}}
+@keyframes lick{0%,6%,30%,100%{opacity:0}10%,26%{opacity:1}}
+.cat .cbox{position:absolute;left:12%;width:76%;bottom:0;z-index:2;overflow:visible;pointer-events:none}
+.cat.inbox .turn{transform:translateY(5%)}
+.cat.inbox .paw{opacity:0;transition:opacity .2s}
+.cat .cbox text{font:700 12px/1 var(--ui);letter-spacing:.12em}
+#duo .yarn{position:absolute;left:0;top:0;z-index:3;pointer-events:none}
+#duo .yarn svg{display:block;width:100%;height:100%;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}
+.app.moongaze #duo .cat .pup{transform:translate(var(--gx,0px),var(--gy,0px)) scale(1.3,1.04)}
+.app.moongaze #duo .cat .tail{animation-duration:5.5s}
+.cat.hunt .pup{transform:translate(var(--gx,0px),var(--gy,0px)) scale(1.45,1.06)}
+.cat.tailplay .tail{animation:tailPlay .62s ease-in-out infinite alternate}
+@keyframes tailPlay{from{transform:rotate(-16deg)}to{transform:rotate(20deg)}}
+.app.cuddle #duo .pet[data-cat=alisa] .turn{transform:translateX(14px) rotate(5deg)}
+.app.cuddle #duo .pet[data-cat=lapula] .turn{transform:translateX(-14px) rotate(-5deg)}
+@media (prefers-reduced-motion:reduce){.cat.washing .wpaw,.cat.washing .tongue,.cat.tailplay .tail{animation:none!important}}
 .cat.pout .eye{transform:scaleY(.5);transition:transform .18s ease}
 .cat.pout .el{transform:rotate(-16deg);transform-origin:80% 90%;transition:transform .2s}
 .cat.pout .er{transform:rotate(16deg);transform-origin:20% 90%;transition:transform .2s}
@@ -1150,6 +1227,76 @@ html,body{background:#0f0a17}
 /* вспышка за каплю */
 .dropflash{position:absolute;inset:0;z-index:88;pointer-events:none;opacity:0;mix-blend-mode:screen;
   background:radial-gradient(ellipse 80% 60% at 50% 52%,rgba(255,120,140,.75),rgba(225,40,70,.55) 45%,rgba(150,10,40,.7) 100%)}
+/* награды: карточки-медальоны */
+.agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.acard{position:relative;display:block;width:100%;aspect-ratio:1/1.22;min-height:0;padding:0;border-radius:20px;perspective:800px;background:none;color:var(--ink)}
+.acard .in{position:absolute;inset:0;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .75s var(--spring-soft)}
+.acard.flip .in{transform:rotateY(180deg)}
+.acard .fa{position:absolute;inset:0;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 7px;text-align:center;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;background:linear-gradient(180deg,rgba(64,44,88,.92),rgba(36,24,52,.94));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 .5px rgba(255,255,255,.08),0 8px 18px rgba(0,0,0,.22)}
+.acard.got .front{background:linear-gradient(180deg,rgba(82,56,104,.95),rgba(42,28,58,.96))}
+.acard .back{transform:rotateY(180deg);justify-content:center;gap:5px;padding:10px 9px}
+.acard .med{position:relative;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:26px;line-height:1;flex:none;overflow:visible}
+.acard.got .med{background:radial-gradient(circle at 35% 28%,#fff1c2,#f5c84c 56%,#a8771a);box-shadow:0 0 18px rgba(245,200,76,.32),inset 0 -3px 6px rgba(120,70,0,.35),inset 0 2px 3px rgba(255,255,255,.6)}
+.acard.lock .med,.acard.hid .med{background:radial-gradient(circle at 35% 28%,#3d2f4f,#1f1730);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 6px rgba(0,0,0,.35)}
+.acard.lock .med .e{filter:brightness(0) opacity(.34)}
+.acard.hid .med .e{font:600 21px/1 var(--ui);color:rgba(255,255,255,.34)}
+.acard.got .med::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:linear-gradient(115deg,rgba(255,255,255,0) 38%,rgba(255,255,255,.5) 50%,rgba(255,255,255,0) 62%) 150% 0/260% 100% no-repeat;animation:medShine 7s ease-in-out infinite;animation-delay:var(--sd,0s)}
+@keyframes medShine{0%,82%{background-position:150% 0}100%{background-position:-60% 0}}
+.acard .pr{position:absolute;inset:-5px;width:64px;height:64px;transform:rotate(-90deg)}
+.acard .pr circle{fill:none;stroke:rgba(255,255,255,.1);stroke-width:3}
+.acard .pr circle.v{stroke:#e8486a;stroke-linecap:round}
+.acard b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:600 10.5px/1.22 var(--ui);color:var(--ink)}
+.acard.lock b,.acard.hid .front b{color:var(--muted)}
+.acard small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:500 9.5px/1.3 var(--ui);color:var(--muted)}
+.acard .back small.s{-webkit-line-clamp:4;color:rgba(251,241,226,.82)}
+.acard .back small.d{white-space:pre-line}
+.acard .back small.d{color:var(--gold);-webkit-line-clamp:2}
+.acard.lock .back small.d,.acard.hid .back small.d{color:var(--faint)}
+.acard:active .in{scale:.97}
+.acard.fresh .med{animation:medReveal 1.2s var(--spring-pop) both;animation-delay:var(--fd,0s)}
+@keyframes medReveal{0%{transform:scale(.7) rotateY(180deg);filter:brightness(.25) saturate(0)}55%{filter:brightness(1.45) saturate(1.2)}100%{transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){.acard .in{transition:none}.acard.got .med::after{animation:none}}
+/* погода */
+.wx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.wx i{position:absolute;top:-8%;display:block;will-change:transform}
+.wx.rain i{width:1.2px;height:calc(18px*var(--s));border-radius:1px;background:linear-gradient(rgba(200,215,240,0),rgba(205,220,245,.5));animation:rainFall linear infinite}
+@keyframes rainFall{from{transform:translate(0,0) rotate(12deg)}to{transform:translate(-26vh,118vh) rotate(12deg)}}
+.wx.snow i{width:calc(5px*var(--s));height:calc(5px*var(--s));border-radius:50%;background:rgba(255,255,255,.88);box-shadow:0 0 6px rgba(255,255,255,.35);animation:snowFall linear infinite}
+@keyframes snowFall{0%{transform:translate(0,0)}25%{transform:translate(16px,29vh)}50%{transform:translate(-8px,58vh)}75%{transform:translate(14px,87vh)}100%{transform:translate(0,116vh)}}
+.snowcap{opacity:0;transition:opacity 4s ease}
+.app.snowy .snowcap{opacity:.85}
+/* гость в полнолуние: силуэт на крыше в цвет дома, светятся только глаза */
+.ridge.near{overflow:visible}
+.gst{opacity:0;transition:opacity 1.8s ease}
+.gst.on{opacity:1}
+.gst .gh{opacity:.26}
+.gst .ge{transform-box:fill-box;transform-origin:center;animation:gblink 6.5s infinite}
+@keyframes gblink{0%,93%,100%{transform:none}95.5%{transform:scaleY(.12)}}
+.g-bat .gfly{animation:batFly 5.6s ease-in-out infinite}
+@keyframes batFly{0%,100%{transform:translate(0,0)}25%{transform:translate(8px,-3px)}50%{transform:translate(1px,1.5px)}75%{transform:translate(-8px,-2.5px)}}
+.g-bat .wl,.g-bat .wr{transform-box:fill-box;animation:batFlapL .17s ease-in-out infinite alternate}
+.g-bat .wl{transform-origin:100% 35%}
+.g-bat .wr{transform-origin:0 35%;animation-name:batFlapR}
+@keyframes batFlapL{from{transform:rotate(-16deg)}to{transform:rotate(24deg) scaleY(.8)}}
+@keyframes batFlapR{from{transform:rotate(16deg)}to{transform:rotate(-24deg) scaleY(.8)}}
+.g-bcat .gtl{transform-box:fill-box;transform-origin:0 0;animation:tailSw 3.6s ease-in-out infinite alternate}
+@keyframes tailSw{from{transform:rotate(-6deg)}to{transform:rotate(7deg)}}
+.app.windy .g-bat{opacity:0}
+.stage:not(.home-on) .gst *{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.gst *{animation:none!important}}
+.gbox.guests{grid-template-columns:repeat(3,1fr);margin-top:2px}
+.gbox.guests .gslot{aspect-ratio:1.15;gap:6px}
+.gslot.gg svg{width:50%;height:auto;display:block;filter:drop-shadow(0 0 7px rgba(243,227,176,.32))}
+.gslot.gg .gh{opacity:.3}
+.gslot.gg .gm{fill:#efdcaa}
+.gslot.gg.empty svg{filter:none}
+.gslot.gg.empty .gm{fill:rgba(243,227,176,.12)}
+.gnext{text-align:center;margin:-4px 0 6px;color:var(--muted)}
+.app.rainy .moon{opacity:.6;transition:opacity 3s}
+.app.rainy .stars{opacity:.45;transition:opacity 3s}
 </style>
 </head>
 <body>
@@ -1184,6 +1331,7 @@ html,body{background:#0f0a17}
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.6 7h14.8M9.6 7V5h4.8v2M6.6 7l.9 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l.9-12"/></symbol>
   <symbol id="i-dropm" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 2.6c-.3 0-.6.2-.8.5C9.4 5.7 5.4 10.6 5.4 14.6a6.6 6.6 0 0 0 13.2 0c0-4-4-8.9-5.8-11.5-.2-.3-.5-.5-.8-.5z"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.4" y="3.4" width="7.4" height="7.4" rx="1.8"/><rect x="13.2" y="3.4" width="7.4" height="7.4" rx="1.8"/><rect x="3.4" y="13.2" width="7.4" height="7.4" rx="1.8"/><rect x="13.2" y="13.2" width="7.4" height="7.4" rx="1.8"/><path d="M5.8 8.6l1.3-3 1.3 3M6.2 7.6h1.8"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.4s-8.2-4.8-8.2-10.6A4.5 4.5 0 0 1 12 7.1a4.5 4.5 0 0 1 8.2 2.7c0 5.8-8.2 10.6-8.2 10.6z"/></symbol>
   <symbol id="i-drop" viewBox="0 0 24 24"><path fill="url(#gDrop)" d="M12 2.6c-.3 0-.6.2-.8.5C9.4 5.7 5.4 10.6 5.4 14.6a6.6 6.6 0 0 0 13.2 0c0-4-4-8.9-5.8-11.5-.2-.3-.5-.5-.8-.5z"/><path fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round" d="M8.8 13.6c-.2 1.7.6 3.2 2 3.8"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path fill="url(#gStar)" stroke="url(#gStar)" stroke-width="1.8" stroke-linejoin="round" d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.5l-5.3 2.8 1.1-5.8-4.3-4.1 5.9-.8z"/><path fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.1" stroke-linecap="round" d="M8.9 10.2l2.2-.3"/></symbol>
@@ -1211,7 +1359,9 @@ html,body{background:#0f0a17}
           <path d="M282 104 Q302 94 352 94 T424 99 V130 H282Z"/>
           <rect x="384" y="16" width="8" height="18"/>
           <filter id="smk" x="-2" y="-2" width="5" height="5"><feGaussianBlur stdDeviation="1.3"/></filter>
+          <g class="snowcap" fill="none" stroke="#eef2fb" stroke-linecap="round" stroke-linejoin="round"><path d="M0 95.5 Q110 77.5 220 89.5 T440 83.5" stroke-width="2.4"/><path d="M300 44 L322 30 M330 26 L352 12 L404 40" stroke-width="2.2"/><path d="M282 103.5 Q302 93.5 352 93.5 T424 98.5" stroke-width="2"/><path d="M384 16 h8" stroke-width="2"/></g>
           <g id="smoke" class="smoke" fill="#cbbfd6" filter="url(#smk)"><circle cx="388" cy="13" r="2.6"/><circle cx="388" cy="13" r="2.6"/><circle cx="388" cy="13" r="2.6"/></g>
+          <g id="guests"></g>
           <path d="M40 92 v-16 a8 8 0 0 1 16 0 v16Z M66 94 v-12 a6 6 0 0 1 12 0 v12Z M118 90 v-20 h4 v-6 h4 v6 h4 v20Z M232 92 v-14 a7 7 0 0 1 14 0 v14Z"/>
           <path d="M150 92 V60 h3 V92 Z M146 66 h11 v3 h-11Z"/>
         </g>
@@ -1264,6 +1414,7 @@ html,body{background:#0f0a17}
       <section class="view" id="v-map" aria-label="Уровни" data-title="Уровни">
         <div class="title">Уровни</div>
         <div class="sub">каждый следующий открывается после предыдущего</div>
+        <div class="wcard" id="wordCard"></div>
         <div class="trail" id="map"></div>
       </section>
 
@@ -1520,7 +1671,7 @@ const snd = {
     notes.forEach((f,i) => fmBell({f:f*k,t:t+i*.035,ratio:3.5,index:1.5,dur:rare?.4:.25,peak:.13,send:.15}));
     noise({t,type:"highpass",freq:7000,Q:.7,envOpts:{a:.005,d:.12,peak:.02}}); },
   /* мяу: пилообразный голос через три форманты, высота «ми-а-у»: вверх, держит, вниз; у Лапули голос ниже */
-  meow(who){ if (!canPlay("meow", 500)) return; const t = ctx.currentTime, k = (who === "lapula" ? .84 : 1.05) * rnd(.05), D = .64;
+  meow(who){ if (!canPlay("meow", 500)) return; const t = ctx.currentTime, k = (who === "lapula" ? .84 : who === "guest" ? .7 : 1.05) * rnd(.05), D = .64;
     const o = ctx.createOscillator(); o.type = "sawtooth";
     o.frequency.setValueAtTime(470*k, t); o.frequency.exponentialRampToValueAtTime(760*k, t + .17);
     o.frequency.exponentialRampToValueAtTime(650*k, t + .36); o.frequency.exponentialRampToValueAtTime(390*k, t + D);
@@ -1536,6 +1687,21 @@ const snd = {
     o.start(t); vib.start(t); o.stop(t + D + .4); vib.stop(t + D + .4);
     o.onended = () => { env.disconnect(); lp.disconnect(); s.disconnect(); };
     noise({t, type: "bandpass", freq: 2400, Q: 1.2, envOpts: {a: .03, d: .2, peak: .012}}); },
+  /* филин: «у-ху», два мягких низких тона с придыханием */
+  hoot(){ if (!canPlay("hoot", 900)) return; const t = ctx.currentTime, k = rnd(.03);
+    [[0, .16, 410, 385], [.36, .42, 400, 338]].forEach(([dt, h, f1, f2]) => {
+      voice({type:"sine", f:f1*k, f2:f2*k, glide:h + .1, t:t + dt, lp:1300, send:.45, envOpts:{a:.06, d:.06, sus:.85, hold:h, r:.14, peak:.2}});
+      voice({type:"triangle", f:f1*2*k, f2:f2*2*k, glide:h + .1, t:t + dt, lp:1500, envOpts:{a:.06, d:.06, sus:.8, hold:h, r:.12, peak:.018}});
+      noise({t:t + dt, type:"bandpass", freq:650, Q:1.4, envOpts:{a:.04, d:.12, peak:.018}}); }); },
+  /* язычок по лапе: два коротких влажных щелчка */
+  lick(){ if (!canPlay("lick", 300)) return; const t = ctx.currentTime;
+    [0, .13].forEach(dt => noise({t:t + dt, type:"bandpass", freq:1900*rnd(.1), Q:2.2, envOpts:{a:.003, d:.035, peak:.03}})); },
+  /* лапой по клубку */
+  pat(){ if (!canPlay("pat", 120)) return; const t = ctx.currentTime;
+    noise({t, type:"lowpass", freq:900, Q:.8, envOpts:{a:.002, d:.05, peak:.07}}); voice({type:"sine", f:240*rnd(.08), f2:170, glide:.06, t, envOpts:{a:.002, d:.07, peak:.06}}); },
+  /* летучая мышь: короткие высокие писки */
+  chirp(){ if (!canPlay("chirp", 500)) return; const t = ctx.currentTime;
+    for (let i = 0; i < 4; i++) voice({type:"sine", f:3500*rnd(.08), f2:5000*rnd(.05), glide:.02, t:t + i*.075 + Math.random()*.02, send:.12, envOpts:{a:.002, d:.03, peak:.04}}); },
   yawn(){ if (!canPlay("yawn", 600)) return; const t = ctx.currentTime;
     voice({type:"sine", f:620*rnd(.05), f2:300, glide:.9, t, lp:1800, envOpts:{a:.18, d:.75, peak:.045}}); },
   chatter(){ if (!canPlay("chatter", 400)) return; const t = ctx.currentTime;
@@ -1856,6 +2022,8 @@ function catSVG(c, opts={}){
   <g stroke="#ecebef" stroke-width="1.6" stroke-linecap="round" opacity=".75"><path d="M64 122 L36 116 M64 127 L36 130 M136 122 L164 116 M136 127 L164 130"/></g>
   <g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
   <g class="acc acc-mask"><path fill-rule="evenodd" d="M56 98 Q60 82 80 86 Q92 88 100 96 Q108 88 120 86 Q140 82 144 98 Q142 114 122 116 Q108 116 100 108 Q92 116 78 116 Q58 114 56 98 Z M70 101 Q74 93 82 93 Q90 94 91 101 Q88 108 80 108 Q72 108 70 101 Z M109 101 Q110 94 118 93 Q126 93 130 101 Q128 108 120 108 Q112 108 109 101 Z" fill="#17101a" stroke="#d9b45a" stroke-width="1.8"/><path d="M144 96 Q158 74 150 58 M146 92 Q160 80 162 66" fill="none" stroke="#b01e33" stroke-width="3" stroke-linecap="round"/></g>
+  <path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/>
+  <g class="wpaw"><ellipse cx="0" cy="0" rx="17" ry="11.5" fill="${c.fur}"/><ellipse cx="0" cy="4" rx="13" ry="6" fill="${c.shade}" opacity=".22"/><path d="M-7 -10 q2 5 0 10 M1 -11 q2 5 0 11 M9 -9 q2 4 0 9" stroke="${c.shade}" stroke-width="1.6" fill="none" opacity=".4" stroke-linecap="round"/></g>
 </svg>`;
 }
 const catBox = (k, cls="") => `<div class="cat ${k === "l" ? "lap " : ""}${cls}" data-k="${k}"><div class="turn"><div class="breathe">${k === "a" ? catSVG(CONFIG.alisa) : catSVG(CONFIG.lapula, {fangs:false})}</div></div></div>`;
@@ -1927,7 +2095,8 @@ const ACH = [
   {id:"wish",  e:"🌠", t:"Желание",           s:"поймать падающую звезду",         secret:true, h:"иногда по небу что-то пролетает", ok:()=>!!S.egg.wish},
   {id:"owl",   e:"🪟", t:"Кто не спит",       s:"погасить все окна в доме Сальваторе", secret:true, h:"в доме вдалеке кто-то не спит", ok:()=>!!S.egg.owl},
   {id:"nap",   e:"😴", t:"Уснула на руках",   s:"держать палец на котике, пока не уснёт", secret:true, h:"если долго не отпускать…", ok:()=>!!(S.egg && S.egg.nap)},
-  {id:"hug",   e:"🤗", t:"Обнимашки",         s:"погладить обеих сразу двумя пальцами", secret:true, h:"одной руки иногда мало", ok:()=>!!S.egg.hug}
+  {id:"hug",   e:"🤗", t:"Обнимашки",         s:"погладить обеих сразу двумя пальцами", secret:true, h:"одной руки иногда мало", ok:()=>!!S.egg.hug},
+  {id:"guest", e:"🦉", t:"Ночной гость",      s:"встретить гостя в полнолуние",    secret:true, h:"в полнолуние на крыше кто-то сидит", ok:()=>!!S.egg.guest}
 ];
 let toastQ = [], toastBusy = false, toastTimer = 0;
 function toast(a){ toastQ.push(a); if (!toastBusy) toastNext(); }
@@ -1976,7 +2145,7 @@ function toastClose(fling){
   };
   el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
 })();
-function checkAch(){ ACH.forEach(a => { if (!S.ach[a.id] && a.ok()){ S.ach[a.id] = 1; toast(a); noteList("ach", a.id); } }); save(); }
+function checkAch(){ ACH.forEach(a => { if (!S.ach[a.id] && a.ok()){ S.ach[a.id] = Date.now(); toast(a); noteList("ach", a.id); } }); save(); }
 
 /* ---------- главная ---------- */
 const PHRASES = {
@@ -2011,17 +2180,19 @@ function placeBubble(){
   b.style.left = left.toFixed(1) + "px"; b.style.setProperty("--tx", tx.toFixed(1) + "px"); b.style.setProperty("--sk", (Math.atan(d/10)*180/Math.PI).toFixed(1) + "deg");
 }
 let bubbleAt = 0;
-function setBubble(txt, side){
+function setBubble(txt, side, extra){
   bubState = {txt, side: side || "both"}; bubbleAt = Date.now();
   const b = $("#bubble"); clearTimeout(bubT); clearTimeout(bubHide);
   const show = () => {
     const t = $("#bubbleT"); t.innerHTML = "";
     if (txt === "…") t.innerHTML = '<span class="dots" aria-label="думает"><i></i><i></i><i></i></span>';
     else txt.split(" ").forEach((w, i) => { const sp = document.createElement("span"); sp.className = "w"; sp.style.animationDelay = (90 + i*38) + "ms"; sp.textContent = w; t.append(sp, " "); });
+    if (extra) extra(t);
+    app.classList.toggle("asking", !!extra);
     placeBubble();
     b.classList.remove("hush", "pop"); void b.offsetWidth; b.classList.add("pop");
     speakFx(bubState.side);
-    bubHide = setTimeout(() => b.classList.add("hush"), 9000);
+    bubHide = setTimeout(() => { b.classList.add("hush"); app.classList.remove("asking"); }, extra ? 16000 : 9000);
   };
   if (b.classList.contains("hush") || reduced() || !$("#v-home").classList.contains("on")) show();
   else { b.classList.add("hush", "quick"); bubT = setTimeout(() => { b.classList.remove("quick"); show(); }, 150); }
@@ -2083,7 +2254,7 @@ function wakeCats(who){
   return true;
 }
 app.addEventListener("pointerdown", e => {
-  idle.last = performance.now(); idle.lines = 0; idle.moth = 0;
+  idle.last = performance.now(); idle.lines = 0; idle.moth = 0; idle.duo = 0; idle.asked = 0;
   if (idle.lapNap && !idle.sleeping){ const p = e.target.closest && e.target.closest("#duo .pet"); unNap(!!p && p.dataset.cat === "lapula"); }
   if (!homeLive()) return;
   lookAt(e.clientX, e.clientY);
@@ -2102,6 +2273,8 @@ setInterval(() => {
     setBubble("…", who); setTimeout(() => { if (!idle.sleeping) setBubble(line, who); }, 1100);
     if (idle.lines === 2){ yawn("lapula", 1500); yawn("alisa", 2900); }
   }
+  else if (t > 7 && t < 22 && !idle.asked && askDue()) { idle.asked = 1; if (!askNow()) idle.asked = 0; }
+  else if (t > 8 && t < 24 && !idle.duo && Date.now() - duoAt > 40000 && Math.random() < .06) { idle.duo = 1; duoPlay(); }
   else if (t > 11 && t < 24 && !idle.moth && Date.now() - preyAt > 120000 && Math.random() < .07) { idle.moth = 1; prey("moth"); }
   else if (Math.random() < .07 && !reduced()){ const a = catOf("alisa"), l = catOf("lapula"); if (Math.random() < .5) glance(a, 1, 1300); else glance(l, -1, 1300); }
   else if (Math.random() < .05 && !reduced()){ const c = Math.random() < .5 ? catOf("alisa") : catOf("lapula"), k = Math.random() < .5 ? "flickL" : "flickR"; c.classList.add(k); setTimeout(() => c.classList.remove(k), 460); }
@@ -2472,7 +2645,7 @@ function openSettings(){
       const c = document.createElement("button"); c.className = "crest"; c.setAttribute("role","radio"); c.style.setProperty("--c", t.c);
       c.innerHTML = '<svg class="hrt" aria-hidden="true"><use href="#i-heart"/></svg><b></b><span></span>'; c.style.setProperty("--h", t.h); c.querySelector("b").textContent = t.t; c.querySelector("span:last-child").textContent = t.s;
       c.setAttribute("aria-checked", S.team === t.id);
-      c.onclick = () => { S.team = t.id; save(); applyLook(); crests.querySelectorAll(".crest").forEach(x => x.setAttribute("aria-checked", x === c)); snd.toggle(true); haptic(10);
+      c.onclick = () => { S.team = t.id; S.teamPicked = 1; save(); applyLook(); crests.querySelectorAll(".crest").forEach(x => x.setAttribute("aria-checked", x === c)); snd.toggle(true); haptic(10);
         if (!reduced()) c.animate([{transform:"scale(.92)"},{transform:"scale(1)"}], {duration:700, easing:springPop()}); };
       crests.appendChild(c);
     });
@@ -2508,10 +2681,82 @@ function openSettings(){
       }, null, {medium:true}), 380);
     });
     g3.appendChild(reset);
+    const g2 = group();
+    const bSave = li("#i-share:#9fd8c6", "Сохранить копию", "код со всем прогрессом, если Safari сотрёт данные");
+    asButton(bSave, () => { closeSheet(); setTimeout(openBackup, 380); });
+    const bLoad = li("#i-replay:#c9a7ff", "Восстановить из копии", "вставить код и вернуть прогресс");
+    asButton(bLoad, () => { closeSheet(); setTimeout(openRestore, 380); });
+    g2.append(bSave, bLoad);
     const cr = document.createElement("div"); cr.className = "credits";
     cr.innerHTML = "developed by : your bf<br>© all rights to alisa are yours; to lapulya, mine<br>with &lt;3";
-    body.append(g1, label("Команда"), crests, g3, cr);
+    body.append(g1, label("Команда"), crests, label("Копия прогресса"), g2, g3, cr);
   });
+}
+
+/* ---------- копия прогресса ---------- */
+/* весь S одной строкой: AD2 — gzip + base64, AD1 — просто base64, если браузер не умеет сжимать. Снимки не входят: они хранятся отдельно и весят мегабайты */
+async function backupCode(){
+  const bytes = new TextEncoder().encode(JSON.stringify(S)); let out = bytes, pre = "AD1:";
+  if (typeof CompressionStream === "function"){ try { out = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer()); pre = "AD2:"; } catch(e){ out = bytes; pre = "AD1:"; } }
+  let bin = ""; for (let i = 0; i < out.length; i += 0x8000) bin += String.fromCharCode.apply(null, out.subarray(i, i + 0x8000));
+  return pre + btoa(bin);
+}
+async function readCode(code){
+  const m = String(code || "").replace(/\s+/g, "").match(/^AD([12]):([A-Za-z0-9+/]+=*)$/); if (!m) throw new Error("format");
+  let raw; try { raw = Uint8Array.from(atob(m[2]), c => c.charCodeAt(0)); } catch(e){ throw new Error("format"); }
+  if (m[1] === "2"){ if (typeof DecompressionStream !== "function") throw new Error("old");
+    try { raw = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer()); } catch(e){ throw new Error("format"); } }
+  let o; try { o = JSON.parse(new TextDecoder().decode(raw)); } catch(e){ throw new Error("format"); }
+  if (!o || typeof o !== "object" || Array.isArray(o) || typeof o.stars !== "object" || typeof o.drops !== "number") throw new Error("data");
+  return o;
+}
+function codeSummary(o){
+  let st = 0; for (let n = 1; n <= 11; n++) st += Math.max((o.stars || {})[n] || 0, (o.legacy || {})[n] || 0);
+  const d = Object.keys(o.diary || {}).length;
+  return `${st} ${plural(st, "звезда", "звезды", "звёзд")}, ${o.drops} ${plural(o.drops, "капля", "капли", "капель")}, ${d} ${plural(d, "запись", "записи", "записей")} в дневнике`;
+}
+function openBackup(){
+  let code = "";
+  openSheet("Копия прогресса", body => {
+    body.appendChild(para("В коде звёзды, капли, наряды, награды и дневник. Снимков из гардероба в нём нет, они слишком тяжёлые. Сохрани код в Заметки или отправь себе."));
+    const pv = document.createElement("div"); pv.className = "codebox"; pv.textContent = "готовлю код…"; body.appendChild(pv);
+    const row = document.createElement("div"); row.className = "row-btns"; row.style.margin = "12px 0 0";
+    const cp = document.createElement("button"); cp.className = "btn ghost"; cp.textContent = "Скопировать"; cp.disabled = true;
+    const sh = document.createElement("button"); sh.className = "btn"; sh.textContent = "Отправить"; sh.disabled = true;
+    row.append(cp); if (navigator.share) row.append(sh); body.appendChild(row);
+    const st = para(""); st.classList.add("codest"); st.setAttribute("aria-live", "polite"); body.appendChild(st);
+    backupCode().then(c => { code = c; pv.textContent = c.length > 150 ? c.slice(0, 150) + "…" : c; cp.disabled = sh.disabled = false; st.textContent = codeSummary(S); S.backupAt = Date.now(); save(); })
+      .catch(() => { pv.textContent = "не получилось собрать код"; });
+    cp.onclick = () => {
+      const done = () => { st.textContent = "скопировано. Теперь вставь в Заметки"; snd.toggle(true); haptic(8); };
+      const legacy = () => { const t = document.createElement("textarea"); t.value = code; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;opacity:0;top:0;left:0"; document.body.appendChild(t); t.select();
+        let ok = false; try { ok = document.execCommand("copy"); } catch(e){} t.remove(); ok ? done() : (st.textContent = "не скопировалось. Нажми «Отправить»"); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, legacy); else legacy();
+    };
+    sh.onclick = () => { navigator.share({title: "Дневники Алисы: копия", text: code}).then(() => { st.textContent = "отправлено"; haptic(8); }).catch(() => {}); };
+  }, null, {medium: true});
+}
+function openRestore(){
+  openSheet("Восстановить", body => {
+    body.appendChild(para("Вставь код копии целиком. Прогресс на этом телефоне заменится тем, что в коде."));
+    const ta = document.createElement("textarea"); ta.className = "codein"; ta.rows = 3; ta.placeholder = "AD2:…";
+    ta.setAttribute("autocapitalize", "off"); ta.setAttribute("autocorrect", "off"); ta.spellcheck = false; ta.setAttribute("aria-label", "Код копии"); body.appendChild(ta);
+    const row = document.createElement("div"); row.className = "row-btns"; row.style.margin = "12px 0 0";
+    const ps = document.createElement("button"); ps.className = "btn ghost"; ps.textContent = "Вставить";
+    const go = document.createElement("button"); go.className = "btn"; go.textContent = "Проверить"; go.disabled = true;
+    if (navigator.clipboard && navigator.clipboard.readText) row.append(ps); row.append(go); body.appendChild(row);
+    const st = para(""); st.classList.add("codest"); st.setAttribute("aria-live", "polite"); body.appendChild(st);
+    let ready = null;
+    const reset = () => { ready = null; go.textContent = "Проверить"; go.classList.remove("sure"); go.disabled = !ta.value.trim(); st.textContent = ""; };
+    ta.addEventListener("input", reset);
+    ps.onclick = () => navigator.clipboard.readText().then(t => { ta.value = t; reset(); go.click(); }, () => { st.textContent = "буфер недоступен. Вставь долгим нажатием в поле"; });
+    go.onclick = async () => {
+      if (ready){ S = Object.assign(fresh(), ready); save(); snd.purchase(); haptic([10, 40, 10]); go.disabled = true; st.textContent = "готово, перезапускаю";
+        setTimeout(() => location.reload(), 700); return; }
+      try { ready = await readCode(ta.value); go.textContent = "Заменить"; go.classList.add("sure"); st.textContent = "в копии: " + codeSummary(ready); haptic(8); }
+      catch(e){ st.textContent = e.message === "old" ? "этот код сжат, а браузер не умеет его распаковать. Обнови iOS" : "код не подошёл. Проверь, что он вставлен целиком"; shake(ta, 4); snd.wrong(); }
+    };
+  }, null, {medium: true});
 }
 
 /* ---------- гардероб ---------- */
@@ -2680,6 +2925,7 @@ const SIL = '<svg class="sil" viewBox="0 0 440 60" preserveAspectRatio="none" ar
 const posterBg = n => { const P = POSTER[n]; return `linear-gradient(150deg,${P[0]} 0%,${P[1]} 55%,${P[2]} 100%)`; };
 function secEl(small, big, evt){ const d = document.createElement("div"); d.className = "sec" + (evt ? " ev" : ""); d.textContent = small; const b = document.createElement("b"); b.textContent = big; d.appendChild(b); return d; }
 function renderMap(){
+  renderWordCard();
   const m = $("#map"); m.innerHTML = '<svg class="path" aria-hidden="true"></svg>';
   const cur = LEVELS.find(L => unlocked(L.n) && !(S.stars[L.n] > 0));
   const maxOpen = LEVELS.filter(L => unlocked(L.n)).reduce((a, L) => Math.max(a, L.n), 1);
@@ -2835,33 +3081,66 @@ function countUp(el, to, ms=900){
   requestAnimationFrame(step);
 }
 let awKey = "";
+/* дата получения: новые награды хранят время, у старых ищем день в дневнике */
+function achDate(id){
+  const v = S.ach[id]; if (typeof v === "number" && v > 1e12) return v;
+  const d = S.diary || {}; for (const k of Object.keys(d).sort()){ const e = d[k]; if (e && e.ach && e.ach.includes(id)) return e.t || Date.parse(k); }
+  return 0;
+}
+const fmtDay = (t, long) => new Date(t).toLocaleDateString("ru-RU", long ? {day: "numeric", month: "long"} : {day: "numeric", month: "short"}).replace(".", "");
+function awardCard(a, i){
+  const done = !!S.ach[a.id], hid = a.secret && !done, t = done ? achDate(a.id) : 0, pr = !done && a.p ? a.p() : null;
+  const c = document.createElement("button"); c.type = "button";
+  c.className = "acard " + (done ? "got" : hid ? "hid" : "lock"); c.dataset.id = a.id;
+  c.style.setProperty("--sd", (-(i * 1.7) % 7).toFixed(1) + "s");
+  const front = document.createElement("span"), back = document.createElement("span"), inner = document.createElement("span");
+  inner.className = "in"; front.className = "fa front"; back.className = "fa back";
+  const med = document.createElement("span"); med.className = "med";
+  const e = document.createElement("span"); e.className = "e"; e.textContent = hid ? "?" : a.e; e.setAttribute("aria-hidden", "true"); med.appendChild(e);
+  if (pr){ const k = Math.max(0, Math.min(1, pr[0]/pr[1])), L = 2*Math.PI*29;
+    med.insertAdjacentHTML("beforeend", `<svg class="pr" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29"/><circle class="v" cx="32" cy="32" r="29" stroke-dasharray="${(L*k).toFixed(1)} ${L.toFixed(1)}"/></svg>`); }
+  const b1 = document.createElement("b"); b1.textContent = hid ? "Секрет" : a.t;
+  const s1 = document.createElement("small"); s1.textContent = done ? (t ? fmtDay(t) : "получено") : hid ? a.h : pr ? Math.min(pr[0], pr[1]) + " из " + pr[1] : "закрыто";
+  front.append(med, b1, s1);
+  const b2 = document.createElement("b"); b2.textContent = hid ? "Секрет" : a.t;
+  const s2 = document.createElement("small"); s2.className = "s"; s2.textContent = hid ? a.h : a.s;
+  const s3 = document.createElement("small"); s3.className = "d"; s3.textContent = done ? (t ? "получено\n" + fmtDay(t, true) : "получено") : pr ? Math.min(pr[0], pr[1]) + " из " + pr[1] : "ещё впереди";
+  back.append(b2, s2, s3);
+  inner.append(front, back); c.appendChild(inner);
+  c.setAttribute("aria-label", (hid ? "Секрет: " + a.h : a.t + ": " + a.s) + (done ? ". Получено" + (t ? " " + fmtDay(t, true) : "") : pr ? ". " + Math.min(pr[0], pr[1]) + " из " + pr[1] : ". Не получено"));
+  c.onclick = () => { c.classList.toggle("flip"); snd.tap(); haptic(6); };
+  return c;
+}
 function renderAwards(){
   countUp($("#stPets"), S.pets); countUp($("#stStars"), totalStars());
-  /* список пересобирается только если что-то изменилось, иначе просто заново проигрывается появление */
+  /* сетка пересобирается только если что-то изменилось, иначе просто заново проигрывается появление */
   const key = JSON.stringify([S.ach, ACH.map(a => a.p && !S.ach[a.id] ? a.p()[0] : 0)]);
   if (key === awKey && $("#achList").children.length){
-    const g = $("#achList"); g.classList.remove("again"); void g.offsetWidth; g.classList.add("again"); return;
+    const g = $("#achList"); g.querySelectorAll(".acard.flip").forEach(c => c.classList.remove("flip"));
+    g.classList.remove("again"); void g.offsetWidth; g.classList.add("again"); return;
   }
   awKey = key;
   $("#stOf").textContent = "звёзд из " + LEVELS.length*3;
   const main = ACH.filter(a => !a.secret), sec = ACH.filter(a => a.secret);
-  const got = main.filter(a => S.ach[a.id]).length, sgot = sec.filter(a => S.ach[a.id]).length;
-  $("#awCap").textContent = "открыто " + got + " из " + main.length;
-  const row = (a, i) => {
-    const done = !!S.ach[a.id], hid = a.secret && !done;
-    const ok = document.createElement("span"); ok.className = "ok" + (done ? " on" : "");
-    ok.innerHTML = `<svg class="ico"><use href="#i-${done ? "check" : "lock"}"/></svg>`;
-    const r = li(hid ? "?" : a.e, hid ? "Секрет" : a.t, hid ? a.h : a.s, ok);
-    r.setAttribute("aria-label", (hid ? "Секрет: " + a.h : a.t + ": " + a.s) + (done ? ". Получено" : ". Не получено"));
-    if (!done) r.classList.add("dim"); if (hid) r.classList.add("q");
-    const pr = !done && a.p ? a.p() : null;
-    if (pr){ const k = Math.min(1, pr[0]/pr[1]); const t = r.querySelector(".tx"); const pb = document.createElement("div"); pb.className = "pb"; pb.innerHTML = `<i><b style="width:${(k*100).toFixed(1)}%"></b></i><span class="num">${Math.min(pr[0], pr[1])}/${pr[1]}</span>`; t.appendChild(pb); }
-    return r;
-  };
+  const gotMain = main.filter(a => S.ach[a.id]), lockMain = main.filter(a => !S.ach[a.id]), sgot = sec.filter(a => S.ach[a.id]).length;
+  $("#awCap").textContent = "открыто " + gotMain.length + " из " + main.length + " · секретов " + sgot + " из " + sec.length;
+  gotMain.sort((x, y) => achDate(y.id) - achDate(x.id));
+  lockMain.sort((x, y) => (y.p ? y.p()[0]/y.p()[1] : 0) - (x.p ? x.p()[0]/x.p()[1] : 0));
+  const grid = (list, from) => { const g = document.createElement("div"); g.className = "agrid"; list.forEach((a, i) => g.appendChild(awardCard(a, from + i))); return g; };
   const g = $("#achList"); g.innerHTML = "";
-  const g1 = group(); g1.classList.add("mat"); main.forEach((a, i) => g1.appendChild(row(a, i)));
-  const g2 = group(); g2.classList.add("mat"); sec.forEach((a, i) => g2.appendChild(row(a, i + main.length)));
-  g.append(label("Достижения"), g1, label("Секреты · найдено " + sgot + " из " + sec.length), g2);
+  if (gotMain.length) g.append(label("Получено · " + gotMain.length), grid(gotMain, 0));
+  if (lockMain.length) g.append(label("Впереди · " + lockMain.length), grid(lockMain, gotMain.length));
+  g.append(label("Секреты · найдено " + sgot + " из " + sec.length), grid(sec, main.length));
+  /* новые награды проявляются: медальон переворачивается из тёмного в золотой */
+  S.achSeen = S.achSeen || {};
+  const fresh = ACH.filter(a => S.ach[a.id] && !S.achSeen[a.id]);
+  const show = fresh.sort((x, y) => achDate(y.id) - achDate(x.id)).slice(0, 3);
+  fresh.forEach(a => S.achSeen[a.id] = 1); save();
+  if (!reduced()) show.forEach((a, k) => {
+    const c = g.querySelector(`.acard[data-id="${a.id}"]`); if (!c) return;
+    c.style.setProperty("--fd", (.45 + k*.35).toFixed(2) + "s"); c.classList.add("fresh");
+    setTimeout(() => { if (!c.isConnected) return; snd.collect(true); const [x, y] = centerOf(c.querySelector(".med")); FX.burst(x, y, {emojis: ["✨"], n: 8, size: [10, 16], grav: 120}); }, (1.15 + k*.35)*1000);
+  });
 }
 
 /* ---------- песня: мини-плеер, плеер не пересоздаётся ---------- */
@@ -2917,7 +3196,9 @@ function showView(id){
   if (id === "v-album") renderAlbum();
   if (id === "v-awards") renderAwards();
   if (id === "v-wardrobe") renderWardrobe();
-  if (id === "v-home"){ setTimeout(eventFx, 350); queueGift(3500); requestAnimationFrame(placeBubble); if ((S.stars[10]||0) > 0 && Date.now() - preyAt > 180000 && Math.random() < .14) setTimeout(() => prey("laser"), 1400); }
+  rainSound(id === "v-home" && app.classList.contains("rainy"));
+  if (id !== "v-home") app.classList.remove("asking");
+  if (id === "v-home"){ setTimeout(eventFx, 350); queueGift(3500); guestSoon(); requestAnimationFrame(placeBubble); if ((S.stars[10]||0) > 0 && Date.now() - preyAt > 180000 && Math.random() < .14) setTimeout(() => prey("laser"), 1400); }
   onScroll(v);
 }
 document.querySelectorAll(".tab").forEach(t => t.onclick = () => { showView(t.dataset.v); if (t.dataset.v === "v-home") queueSpecial(); });
@@ -3051,6 +3332,7 @@ function egg(id){ S.egg = S.egg || {}; if (!S.egg[id]){ S.egg[id] = 1; note("egg
     if (liveStar && inRect(e, liveStar.getBoundingClientRect(), 34) && !e.target.closest(".btn,.hbtn,.round")) return wishCatch(liveStar);
     if (!isEmpty(e.target)) return;
     if (inRect(e, moon.getBoundingClientRect(), 16)) return moonTap();
+    const gs = document.querySelector("#guests .gst.on"); if (gs && inRect(e, gs.getBoundingClientRect(), 20)) return guestTap(gs);
     const hs = document.querySelector(".ridge.near .house"); if (hs && inRect(e, hs.getBoundingClientRect(), 12)) return houseTap();
     const m = [...document.querySelectorAll(".motes i")].find(el => inRect(e, el.getBoundingClientRect(), 20)); if (m) return moteTap(m);
     cancelAnimationFrame(spring); drag = {x:e.clientX, y:e.clientY, t:performance.now(), bx:dx, by:dy};
@@ -3095,16 +3377,19 @@ function timeLines(){
   if (h === 11 && m === 11 || h === 23 && m === 11) return setBubble("одиннадцать одиннадцать. загадывай", "lapula");
   if (h < 5) return sleepCats(true);
   if (away >= 3) return setBubble("ты где была? мы считали дни", "lapula");
-  if (!first) return;
+  /* не первый заход за день: если долго не было, котиков можно застать за делами */
+  if (!first){ if (away*24 >= 1.5 && Math.random() < .5) startBusy(null); return; }
   const sk = seasonNow(); if (sk) return setBubble(SEASON[sk][0], SEASON[sk][1]);
   if (fullMoon()) return setBubble("полнолуние. мы сегодня сильнее", "alisa");
+  if (Math.random() < .65 && startBusy(line => { setBubble(line[0], line[1]); remember(5200); })) return;
   const who = Math.random() < .5 ? "alisa" : "lapula";
   setBubble(GREET[h < 11 ? 0 : h < 17 ? 1 : 2][who], who);
   remember(5200);
 }
 const seen = () => { try { S.lastSeen = Date.now(); save(); } catch(e){} };
-addEventListener("pagehide", seen); document.addEventListener("visibilitychange", () => { if (document.hidden) seen(); else { applyMoon(); applyHouseTime(); dayNote(); queueGift(3000); } });
-setInterval(() => { applyMoon(); applyHouseTime(); }, 300000);
+addEventListener("pagehide", seen); document.addEventListener("visibilitychange", () => { if (document.hidden) seen(); else { applyMoon(); applyHouseTime(); applyWeather(); applyGuest(); dayNote(); queueGift(3000);
+  if (S.lastSeen && Date.now() - S.lastSeen > 54e5 && Math.random() < .5) setTimeout(() => startBusy(null), 500); } if (document.hidden) rainSound(false); });
+setInterval(() => { applyMoon(); applyHouseTime(); applyWeather(); applyGuest(); }, 300000);
 
 /* =================== НАСТОЯЩАЯ ЛУНА =================== */
 const SYNODIC = 29.530588853, NEW0 = Date.UTC(2000, 0, 6, 18, 14);
@@ -3175,6 +3460,15 @@ function diaryLines(e, first){
   if (e.mk) P("mk", "Помирились в грозу, под одним пледом.");
   if (e.gift) P(e.gift.who === "alisa" ? "giftA" : "giftL", e.gift.who === "alisa" ? `Подарила тебе ${e.gift.e}.` : `Лапуля подарила тебе ${e.gift.e}, а я не успела.`);
   if (e.moon) P("moon", "Было полнолуние, весь вечер хотелось кусаться.");
+  if (e.firstSnow) P("snow1", "Выпал первый снег. Лапуля ловила его через стекло.");
+  else if (e.wx === "snow") P("snow", "Шёл снег. Лапуля просилась гулять и передумала у двери.");
+  else if (e.wx === "rain") P("rain", "Шёл дождь, сидели с Лапулей на подоконнике.");
+  if (e.guest){ const G = GUESTS.find(g => g.id === e.guest); if (G) P("g_" + G.id, G.diary); }
+  if (e.wd) P(e.wd.ok ? (e.wd.h ? "wdh" : "wdw") : "wdl", e.wd.ok ? `Ты отгадала слово дня «${e.wd.w}» с ${e.wd.n}-й попытки.` : `Слово дня «${e.wd.w}» сегодня не далось.`);
+  if (e.ans && e.ans.length){ const [id, v] = e.ans[0].split(":"), Q = ASK.find(x => x.id === id);
+    if (Q) P("ans", `Спрашивали тебя: ${Q.q} Ты сказала «${v === "a" ? (Q.da || Q.a) : (Q.db || Q.b)}».`); }
+  if (e.duo && e.duo.length) P("d_" + e.duo[0], {blink: "Мы с Лапулей медленно поморгали друг другу. Это по-нашему «люблю».",
+    tail: "Лапуля охотилась на мой хвост. Хвост победил.", cuddle: "Посидели с Лапулей бок о бок."}[e.duo[0]]);
   if (e.snap) P("snap", e.snap > 1 ? `Нас фотографировали ${raz(e.snap)}, снимки в альбоме.` : "Нас сфотографировали в гардеробе, снимок теперь в альбоме.");
   (e.sp || []).forEach(id => P("sp_" + id, {love: "Лапуля сказала, что Никита любит тебя сильнее, чем она рыбку. Рыбку она любит очень сильно.",
     msk: "Над домом подняли флаг, а потом его унесло ветром. Это Лапуля опять про Москву.",
@@ -3189,7 +3483,11 @@ const LNOTES = {first: "и с ошибками", late: "а я спала", early
   pa: "пересчитаю", pl: "сиди где сидишь", eq: "я считала по-другому", lv3: "я болела", lv1: "в следующий раз три", lv0: "завтра получится",
   lvN: "я смотрела все", ach: "это и моя награда", egg: "уже прочитала", q: "точку первой увидела я", mk: "я первая подвинулась",
   giftA: "я бы подарила рыбку", giftL: "надо быстрее", moon: "мне нечем", snap: "я моргнула", sp_love: "это правда",
-  sp_msk: "флаг было жалко", sp_si: "на 15 секунд", nap: "я тоже так умею", empty: "я скучала"};
+  sp_msk: "флаг было жалко", sp_si: "на 15 секунд", nap: "я тоже так умею", empty: "я скучала",
+  snow1: "почти поймала", snow: "там холодно", rain: "я считала капли",
+  g_filin: "не получилось", g_bat: "там высоко", g_bcat: "он красивый",
+  d_blink: "я первая моргнула", d_tail: "я поддалась", d_cuddle: "тепло было", ans: "я записала",
+  wdw: "я знала это слово", wdh: "это я подсказала", wdl: "оно было трудное"};
 function hashStr(s){ let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function openDiary(){
   const ks = Object.keys(S.diary || {}).sort().reverse(), firstK = ks[ks.length - 1];
@@ -3221,7 +3519,8 @@ function renderDiaryCard(){
   r.setAttribute("role", "button"); r.tabIndex = 0; r.onclick = () => { snd.tap(); haptic(6); openDiary(); };
   r.onkeydown = ev => { if (ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); r.onclick(); } };
   g.appendChild(r);
-  const k = giftKinds(), bx = li("#i-gift", "Шкатулка", k ? `${k} из ${GIFTS.length} подарков` : "котики пока ничего не принесли");
+  const k = giftKinds(), gn = Object.keys(S.guests || {}).length;
+  const bx = li("#i-gift", "Шкатулка", (k ? `${k} из ${GIFTS.length} подарков` : "котики пока ничего не принесли") + (gn ? ` · ${gn} ${plural(gn, "гость", "гостя", "гостей")}` : ""));
   asButton(bx, () => { snd.tap(); haptic(6); openGiftBox(); }); g.appendChild(bx);
   if (S.epi){ const ep = li("#i-moon", "Эпилог", "Алиса и Лапуля на крыше"); asButton(ep, () => { snd.tap(); haptic(6); playEpilogue(); }); g.appendChild(ep); }
 }
@@ -3276,8 +3575,8 @@ function snapCatSVG(k){
   const c = k === "a" ? CONFIG.alisa : CONFIG.lapula, w = wearOf(k);
   const svg = new DOMParser().parseFromString(catSVG(c, {fangs: k === "a"}), "image/svg+xml").documentElement;
   svg.querySelectorAll(".acc").forEach(el => { const id = [...el.classList].find(x => x.indexOf("acc-") === 0); if (!id || !w[id.slice(4)]) el.remove(); });
-  /* то, что без стилей страницы было бы видно: зевок, веки (кроме ссоры), свечение глаз (кроме полнолуния) */
-  svg.querySelectorAll(".yawn" + (S.event === "quarrel" ? "" : ",.lid") + (fullMoon() ? "" : ",.eglow")).forEach(el => el.remove());
+  /* то, что без стилей страницы было бы видно: зевок, язычок, лапка для умывания, веки (кроме ссоры), свечение глаз (кроме полнолуния) */
+  svg.querySelectorAll(".yawn,.tongue,.wpaw" + (S.event === "quarrel" ? "" : ",.lid") + (fullMoon() ? "" : ",.eglow")).forEach(el => el.remove());
   svg.setAttribute("width", "400"); svg.setAttribute("height", "480");
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(new XMLSerializer().serializeToString(svg));
 }
@@ -3382,8 +3681,21 @@ function memoryLine(){
       if (e.lv[n] === 3) C.push(["lv3", `вчера три звезды в эпизоде «${L.t}». я рассказала Лапуле. дважды`, "alisa"]);
       else if (e.lv[n] === 0) C.push(["lv0", `вчерашний эпизод «${L.t}» не вышел. сегодня выйдет`, "lapula"]); });
   }
-  const pool = C.filter(c => !used.includes(c[0])); if (!pool.length) return null;
-  const c = pool[Math.floor(Math.random()*pool.length)]; today.mem = used.concat(c[0]); save(); return c;
+  /* ответы на вопросы котиков: вспоминают не в тот же день, а позже и к месту */
+  const A = S.answers || {}, old = id => A[id] && A[id].d !== dayKey() ? A[id].v : null, hh = new Date().getHours();
+  if (old("rainsnow") === "b" && app.classList.contains("snowy")) C.push(["a_snow", "ты хотела снег. вот, держи", "lapula"]);
+  if (old("rainsnow") === "a" && app.classList.contains("rainy")) C.push(["a_rain", "ты любишь дождь. сегодня твоя погода", "lapula"]);
+  if (old("moon") && fullMoon()) C.push(["a_moon", old("moon") === "a" ? "луна сегодня полная, но ты сказала, что я красивее" : "твоя любимая луна сегодня полная. я не ревную", "lapula"]);
+  if (old("pet") === "b") C.push(["a_pet", "ты говорила, за ушком лучше. мы помним", "alisa"]);
+  if (old("who")) C.push(["a_who", old("who") === "a" ? "ты сказала гладить сначала меня. я напоминаю" : "ты сказала гладить сначала Лапулю. я всё помню", "alisa"]);
+  if (old("blood")) C.push(["a_blood", old("blood") === "a" ? "кровь, а не сок. я рассказала Лапуле" : "томатный сок, значит. мы никому не скажем", old("blood") === "a" ? "alisa" : "lapula"]);
+  if (old("owl") === "a" && (hh >= 23 || hh < 4)) C.push(["a_owl", "ты же сова. ночь наше время", "alisa"]);
+  if (old("owl") === "b" && hh >= 5 && hh < 10) C.push(["a_owl", "жаворонок пришёл. доброе утро", "lapula"]);
+  if (old("fish") === "a") C.push(["a_fish", "ты за рыбку. я про рыбку всегда помню", "lapula"]);
+  /* про ответы не чаще раза в неделю на каждый, иначе надоест */
+  const memAt = S.memAt || {}, pool = C.filter(c => !used.includes(c[0]) && !(c[0].startsWith("a_") && Date.now() - (memAt[c[0]] || 0) < 6*864e5)); if (!pool.length) return null;
+  const c = pool[Math.floor(Math.random()*pool.length)]; today.mem = used.concat(c[0]);
+  if (c[0].startsWith("a_")){ memAt[c[0]] = Date.now(); S.memAt = memAt; } save(); return c;
 }
 /* «…» перед репликой: кошка вспоминает */
 function remember(delay = 0){
@@ -3419,6 +3731,25 @@ function openGiftBox(){
     });
     body.append(grid, cap);
     if (giftKinds() >= GIFTS.length) cap.textContent = "все семь. котики довольны собой";
+    /* гости в полнолуние: силуэт на фоне луны, пока не встретили — пустая луна */
+    const met = S.guests || {}, gg = document.createElement("div"); gg.className = "gbox guests";
+    const gc = document.createElement("div"); gc.className = "gcap"; gc.setAttribute("aria-live", "polite");
+    GUESTS.forEach(G => {
+      const got = met[G.id], b = document.createElement("button"); b.className = "gslot gg" + (got ? "" : " empty");
+      b.setAttribute("aria-label", got ? G.n : "Гость ещё не приходил");
+      b.innerHTML = `<svg viewBox="-11 -22 22 22" aria-hidden="true"><clipPath id="gclip-${G.id}"><circle cx="0" cy="-11" r="10"/></clipPath><circle class="gm" cx="0" cy="-11" r="10"/>`
+        + (got ? `<g clip-path="url(#gclip-${G.id})"><g fill="#1a1024" transform="${G.id === "bat" ? "translate(0 -11.5) scale(.82)" : G.id === "bcat" ? "translate(0 -.5)" : "translate(0 .4)"}">${GART[G.id]}</g></g>` : "") + "</svg><small></small>";
+      b.querySelector("small").textContent = got ? fmtDay(got.t) : "?";
+      b.onclick = () => {
+        if (!got){ shake(b, 4); snd.tap(); gc.textContent = "этот гость ещё не приходил"; return; }
+        snd.collect(); haptic(8);
+        gc.innerHTML = ""; const w = document.createElement("b"); w.textContent = G.n;
+        gc.append(w, document.createTextNode(" · впервые " + fmtDay(got.t, true) + (got.n > 1 ? ", встречали " + got.n + " " + plural(got.n, "раз", "раза", "раз") : "")));
+      };
+      gg.appendChild(b);
+    });
+    body.append(label("Гости в полнолуние"), gg, gc);
+    const nx = para(nextFullText()); nx.classList.add("gnext"); body.appendChild(nx);
   }, null, {medium: true});
 }
 
@@ -3516,10 +3847,436 @@ function playEpilogue(){
   timer = setTimeout(next, 2600);
 }
 
+/* =================== ДОЖДЬ И СНЕГ =================== */
+/* погода по календарю, без интернета: на каждые три часа своя, чтобы не менялась при каждом заходе */
+function weatherNow(){
+  const d = new Date(), m = d.getMonth(); if (seasonNow()) return "";
+  const r = (hashStr(dayKey(d) + ":" + Math.floor(d.getHours()/3)) % 1000) / 1000;
+  const snowP = [.45, .42, .25, .06, 0, 0, 0, 0, 0, .04, .22, .42][m], rainP = [.03, .03, .1, .2, .2, .16, .16, .16, .24, .34, .3, .07][m];
+  return r < snowP ? "snow" : r < snowP + rainP ? "rain" : "";
+}
+let rainNode = null;
+function rainSound(on){
+  if (!on){ if (rainNode){ const n = rainNode; rainNode = null; try { n.g.gain.setTargetAtTime(.0001, ctx.currentTime, .6); setTimeout(() => { try { n.src.stop(); } catch(e){} }, 2500); } catch(e){} } return; }
+  if (rainNode || !ensureRunning() || !S.sound) return;
+  const src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+  const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1500; bp.Q.value = .5;
+  const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 3200;
+  const g = ctx.createGain(); g.gain.value = .0001; src.connect(bp).connect(lp).connect(g).connect(sfxBus);
+  src.start(); g.gain.setTargetAtTime(.022, ctx.currentTime, 1.2); rainNode = {src, g};
+}
+function applyWeather(){
+  const w = reduced() ? "" : weatherNow(); let L = $("#wx");
+  if (!L){ L = document.createElement("div"); L.id = "wx"; L.className = "wx"; L.setAttribute("aria-hidden", "true"); $("#motes").before(L); }
+  app.classList.toggle("rainy", w === "rain"); app.classList.toggle("snowy", w === "snow");
+  rainSound(w === "rain" && $("#v-home").classList.contains("on") && !document.hidden);
+  if (L.dataset.w === w) return;
+  L.dataset.w = w; L.className = "wx " + w; L.innerHTML = "";
+  if (!w) return;
+  const n = w === "rain" ? 44 : 36;
+  for (let i = 0; i < n; i++){ const e = document.createElement("i");
+    e.style.left = (Math.random()*112 - 4).toFixed(1) + "%"; e.style.setProperty("--s", (.55 + Math.random()*.75).toFixed(2));
+    e.style.animationDuration = (w === "rain" ? .75 + Math.random()*.45 : 8 + Math.random()*8).toFixed(2) + "s";
+    e.style.animationDelay = (-Math.random()*16).toFixed(2) + "s"; L.appendChild(e); }
+  const e = dayNote(); if (!e.wx){ e.wx = w; save(); }
+  if (w === "snow") firstSnow();
+}
+/* первый снег за зиму: котики смотрят вверх, Алиса замечает */
+function firstSnow(){
+  const d = new Date(), winter = d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1;
+  if (S.snowWinter === winter) return; S.snowWinter = winter; dayNote().firstSnow = 1; save();
+  setTimeout(() => { if (!homeLive() || idle.sleeping) return;
+    const r = app.getBoundingClientRect(); lookAt(r.left + r.width/2, r.top + 40);
+    setTimeout(() => setBubble(pick(["снег. первый в этом году", "смотри, снег"]), "alisa"), 700); }, 3500);
+}
+
+/* =================== ГОСТЬ В ПОЛНОЛУНИЕ =================== */
+/* в полнолуние на крыше кто-то сидит. Пока гостя не коснулись, в следующее полнолуние придёт он же; когда все знакомы, приходят по очереди */
+const GUESTS = [
+  {id: "filin", n: "Филин", e: "🦉", at: [326, 22.4], who: "alisa", notice: "на крыше филин. он на меня смотрит",
+    tap: [["угу. это он со мной поздоровался", "alisa"], ["он умеет смотреть назад. я тренируюсь", "lapula"]],
+    diary: "На крыше сидел филин и крутил головой. Я попробовала так же."},
+  {id: "bat", n: "Летучая мышь", e: "🦇", at: [343, 3], who: "lapula", notice: "там мышь. летучая. можно?",
+    tap: [["мышь, но летучая. не считается", "lapula"], ["почти родственница. тоже не любит солнце", "alisa"]],
+    diary: "Прилетала летучая мышь. Лапуля прыгала, но не достала."},
+  {id: "bcat", n: "Чёрный кот", e: "🐈‍⬛", at: [371, 22.2], who: "alisa", notice: "на крыше чужой кот. Лапуля, не смотри",
+    tap: [["это кот Калленов. он вегетарианец", "lapula"], ["гордый. даже не поздоровался", "alisa"]],
+    diary: "На крыше сидел чужой чёрный кот. Мы сделали вид, что его нет."}
+];
+/* силуэты в координатах крыши: 0,0 там, где гость сидит (у мыши — центр полёта) */
+const GART = {
+  filin: '<path d="M-4.6 0C-6.8-1.8-7-6.6-5.8-10.6C-5.5-12.6-5.7-15.2-5.4-18.4L-2.6-15.7C-1-16.3 1-16.3 2.6-15.7L5.4-18.4C5.7-15.2 5.5-12.6 5.8-10.6C7-6.6 6.8-1.8 4.6 0Z"/>'
+    + '<g class="geyes"><circle class="gh" cx="-2.3" cy="-12.2" r="2.7" fill="#ffb63a"/><circle class="gh" cx="2.3" cy="-12.2" r="2.7" fill="#ffb63a"/>'
+    + '<circle class="ge" cx="-2.3" cy="-12.2" r="1.5" fill="#ffc35a"/><circle class="ge" cx="2.3" cy="-12.2" r="1.5" fill="#ffc35a"/></g>',
+  bat: '<g class="gfly"><path class="wl" d="M-1-1C-3.2-3.2-6.6-4.4-10.2-3.2C-9.2-2.1-8.8-1-8.9.4C-7.8-.5-6.6-.6-5.6.5C-4.7-.6-3.4-.6-2.4.9C-2-.1-1.4.2-1 .8Z"/>'
+    + '<path class="wr" d="M1-1C3.2-3.2 6.6-4.4 10.2-3.2C9.2-2.1 8.8-1 8.9.4C7.8-.5 6.6-.6 5.6.5C4.7-.6 3.4-.6 2.4.9C2-.1 1.4.2 1 .8Z"/>'
+    + '<ellipse cx="0" cy="-.2" rx="1.6" ry="2.5"/><path d="M-1.3-2L-1.1-4L-.3-2.5ZM1.3-2L1.1-4L.3-2.5Z"/>'
+    + '<g class="geyes"><circle class="gh" cx="-.6" cy="-1.4" r="1.2" fill="#ff8f80"/><circle class="gh" cx=".6" cy="-1.4" r="1.2" fill="#ff8f80"/>'
+    + '<circle class="ge" cx="-.6" cy="-1.4" r=".45" fill="#ffaa9a"/><circle class="ge" cx=".6" cy="-1.4" r=".45" fill="#ffaa9a"/></g></g>',
+  bcat: '<path class="gtl" d="M4.2 1.4C6.6 2.4 9 4 11 5C12.2 5.6 12.9 5 12.7 4.2" fill="none" stroke="#1a1024" stroke-width="1.5" stroke-linecap="round"/>'
+    + '<path d="M-4.8 3C-5.8.6-5.7-3-4-5.6C-3.3-6.7-3.1-7.6-3.3-8.6C-4.1-9.6-4.3-11.4-3.8-12.7L-3.7-16.2L-1.6-14.6C-.5-14.9.5-14.9 1.6-14.6L3.7-16.2L3.8-12.7C4.3-11.4 4.1-9.6 3.3-8.6C3.1-7.6 3.3-6.7 4-5.6C5.7-3 5.8.6 4.8 3Z"/>'
+    + '<g class="geyes"><ellipse class="gh" cx="-1.5" cy="-11.2" rx="2.1" ry="1.7" fill="#a8e66a"/><ellipse class="gh" cx="1.5" cy="-11.2" rx="2.1" ry="1.7" fill="#a8e66a"/>'
+    + '<ellipse class="ge" cx="-1.5" cy="-11.2" rx=".95" ry=".72" fill="#c8f584"/><ellipse class="ge" cx="1.5" cy="-11.2" rx=".95" ry=".72" fill="#c8f584"/></g>'
+};
+const moonCycle = () => Math.floor((Date.now() - NEW0)/864e5/SYNODIC);
+function guestToday(){
+  if (!fullMoon()) return null;
+  const c = moonCycle(); S.guests = S.guests || {};
+  if (!S.gcyc || S.gcyc.c !== c){
+    const unmet = GUESTS.filter(g => !S.guests[g.id]), last = S.gcyc && S.gcyc.id;
+    const pool = unmet.length ? unmet.slice(0, 1) : GUESTS.filter(g => g.id !== last);
+    S.gcyc = {c, id: pool[Math.floor(Math.random()*pool.length)].id}; save();
+  }
+  return GUESTS.find(g => g.id === S.gcyc.id) || null;
+}
+let guestTimer = 0, guestTapAt = 0, guestTaps = 0;
+function applyGuest(){
+  const box = $("#guests"); if (!box) return;
+  const G = guestToday(), cur = box.querySelector(".gst");
+  if (!G){ if (cur){ cur.classList.remove("on"); setTimeout(() => { if (!guestToday()) box.innerHTML = ""; }, 1900); } return; }
+  if (!cur || cur.dataset.id !== G.id){
+    box.innerHTML = `<g class="gst g-${G.id}" data-id="${G.id}" transform="translate(${G.at[0]} ${G.at[1]})"><g class="gin">${GART[G.id]}</g></g>`;
+    const el = box.querySelector(".gst"); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("on")));
+  }
+  const e = dayNote(); if (e.guest !== G.id){ e.guest = G.id; save(); }
+  guestSoon();
+}
+/* котики сами замечают гостя один раз за полнолуние, если на главной тихо */
+function guestSoon(ms){
+  if (!S.gcyc || S.gcyc.said || !$("#guests .gst") || !$("#v-home").classList.contains("on")) return;
+  clearTimeout(guestTimer); guestTimer = setTimeout(() => guestNotice(0), ms ?? 5000 + Math.random()*4000);
+}
+function guestNotice(tries){
+  const G = guestToday(), el = $("#guests .gst.on"); if (!G || !el || S.gcyc.said) return;
+  const busy = !homeLive() || idle.sleeping || idle.lapNap || S.event === "quarrel" || specialBusy || app.classList.contains("toasting")
+    || document.querySelector(".celebrate, #epi, .dropflash") || Date.now() - bubbleAt < 3500 || Date.now() - preyAt < 8000;
+  if (busy){ if (tries < 6) guestTimer = setTimeout(() => guestNotice(tries + 1), 4500); return; }
+  S.gcyc.said = 1; save();
+  const [x, y] = centerOf(el); lookAt(x, y);
+  setTimeout(() => setBubble(G.notice, G.who), 500);
+}
+function guestTap(el){
+  const G = GUESTS.find(g => g.id === el.dataset.id); if (!G) return;
+  if (performance.now() - guestTapAt < 1300) return; guestTapAt = performance.now();
+  const [x, y] = centerOf(el); lookAt(x, y); haptic(8); clearTimeout(guestTimer);
+  const inn = el.querySelector(".gin"), eyes = el.querySelectorAll(".ge");
+  if (!reduced()){
+    if (G.id === "filin"){
+      el.querySelector(".geyes").animate([{transform: "none"}, {transform: "translateX(-1.9px)", offset: .22}, {transform: "translateX(-1.9px)", offset: .45}, {transform: "translateX(1.9px)", offset: .7}, {transform: "none"}], {duration: 1600, easing: "ease-in-out"});
+      inn.animate([{transform: "none"}, {transform: "translateY(-1.2px)", offset: .15}, {transform: "none", offset: .3}, {transform: "none"}], {duration: 1600, easing: "ease-out"});
+    } else if (G.id === "bat"){
+      inn.animate([{transform: "none"}, {transform: "translate(11px,-7px)", offset: .3}, {transform: "translate(1px,-15px)", offset: .55}, {transform: "translate(-11px,-6px)", offset: .8}, {transform: "none"}], {duration: 1300, easing: "ease-in-out"});
+    } else {
+      eyes.forEach(ey => ey.animate([{transform: "none"}, {transform: "scaleY(.1)", offset: .35}, {transform: "scaleY(.1)", offset: .6}, {transform: "none"}], {duration: 1100, easing: "ease-in-out"}));
+      el.querySelector(".gtl").animate([{transform: "none"}, {transform: "rotate(-26deg)", offset: .3}, {transform: "rotate(8deg)", offset: .65}, {transform: "none"}], {duration: 900, easing: "ease-in-out"});
+    }
+  }
+  if (G.id === "filin") snd.hoot(); else if (G.id === "bat") snd.chirp(); else snd.meow("guest");
+  S.guests = S.guests || {}; const first = !S.guests[G.id];
+  if (first) S.guests[G.id] = {t: Date.now(), n: 0};
+  S.guests[G.id].n++; if (S.gcyc) S.gcyc.said = 1;
+  if (S.event !== "quarrel"){ const [txt, who] = G.tap[guestTaps++ % G.tap.length]; setTimeout(() => setBubble(txt, who), 500); }
+  egg("guest");
+  if (first && Object.keys(S.guests).length > 1) toast({e: G.e, t: G.n, s: "новый гость в шкатулке", k: "гость"});
+  save(); renderDiaryCard();
+}
+/* =================== ЧЕМ ОНИ ЗАНЯТЫ =================== */
+/* пришла, а у котиков свои дела. Касание или шесть секунд, и они замечают тебя */
+let busyAct = null;
+const BOX_SVG = '<svg class="cbox" viewBox="0 0 200 104" aria-hidden="true"><path d="M16 26 L-8 8 L8 2 L32 26 Z" fill="#a8774c"/><path d="M184 26 L208 8 L192 2 L168 26 Z" fill="#a8774c"/>'
+  + '<path d="M18 30 L182 30 L177 104 L23 104 Z" fill="#b98a5c"/><path d="M18 30 L182 30 L180 46 L20 46 Z" fill="#000" opacity=".12"/>'
+  + '<path d="M13 23 L187 23 L183 33 L17 33 Z" fill="#d3a575"/><rect x="91" y="33" width="18" height="71" fill="#e1c597" opacity=".5"/>'
+  + '<text x="40" y="74" fill="#6e4a2c" opacity=".55" transform="rotate(-3 40 74)">ХРУПКОЕ</text><text x="146" y="92" fill="#6e4a2c" opacity=".5">↑↑</text></svg>';
+const YARN_SVG = '<svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="11.5" fill="#b13f66"/><g fill="none" stroke="#e37f9f" stroke-width="1.2" stroke-linecap="round" opacity=".85">'
+  + '<path d="M-9.5-4.5Q0-12.5 9.5-4.5M-11 1.5Q0-6.5 11 1.5M-9 7Q0-.5 9 7M-4.5-10.5Q-10 0-3.5 10.5M3.5-10.5Q9 0 4.5 10.5"/></g><circle r="11.5" fill="none" stroke="#7d2445" stroke-width="1"/></svg>';
+const BUSY = {
+  wash: {
+    start(who){ const c = catOf(who); c.classList.add("washing"); const other = who === "alisa" ? "lapula" : "alisa";
+      setTimeout(() => glance(catOf(other), who === "alisa" ? -1 : 1, 2600), 900);
+      busyAct.iv = setInterval(() => snd.lick(), 2600); setTimeout(() => busyAct && busyAct.kind === "wash" && snd.lick(), 1000); },
+    stop(who){ const c = catOf(who), wp = c.querySelector(".wpaw"), m = getComputedStyle(wp).transform;
+      c.classList.add("washend"); c.classList.remove("washing");
+      wp.animate([{transform: m === "none" ? "translate(114px,142px)" : m}, {transform: "translate(124px,222px)"}], {duration: 340, easing: "ease-in"}).onfinish = () => c.classList.remove("washend"); },
+    line: who => who === "alisa" ? ["я умывалась. теперь можно гладить", "alisa"] : ["ой. я тут умывалась вообще-то", "lapula"]
+  },
+  box: {
+    start(who){ const c = catOf(who); c.insertAdjacentHTML("beforeend", BOX_SVG); const bx = c.querySelector(".cbox");
+      bx.animate([{opacity: 0, transform: "translateY(10px) scale(.94)"}, {opacity: 1, transform: "none"}], {duration: 320, easing: "ease-out"});
+      c.querySelector(".breathe").animate([{transform: "none"}, {transform: "translateY(-16%)", offset: .4}, {transform: "none"}], {duration: 520, easing: "ease-out"});
+      setTimeout(() => { c.classList.add("inbox"); snd.thump(); }, 200); },
+    stop(who){ const c = catOf(who), bx = c.querySelector(".cbox"); c.classList.remove("inbox"); snd.jump();
+      c.querySelector(".breathe").animate([{transform: "none"}, {transform: "translateY(-12%)", offset: .4}, {transform: "none"}], {duration: 520, easing: "ease-out"});
+      if (bx) bx.animate([{opacity: 1, transform: "none"}, {opacity: 0, transform: "translateY(16px) rotate(3deg)"}], {duration: 420, easing: "ease-in", fill: "forwards"}).onfinish = () => bx.remove(); },
+    line: who => who === "lapula" ? ["это моя коробка. я тут живу", "lapula"] : ["коробка теперь моя. так решили", "alisa"]
+  },
+  yarn: {
+    start(){
+      const duo = $("#duo"), D = duo.getBoundingClientRect(), A = catOf("alisa").getBoundingClientRect(), L = catOf("lapula").getBoundingClientRect();
+      const r = Math.max(10, A.width*.074), y = A.bottom - D.top - r*1.1, xA = A.left - D.left + A.width*.8, xL = L.left - D.left + L.width*.2;
+      const el = document.createElement("div"); el.className = "yarn"; el.style.width = el.style.height = (r*2).toFixed(1) + "px"; el.innerHTML = YARN_SVG; duo.appendChild(el);
+      const sv = el.firstChild, st = {x: xL, from: xL, to: xA, t0: performance.now(), leg: 0, live: true};
+      const bat = side => { const p = document.querySelector(`#duo .pet[data-cat="${side}"] .${side === "alisa" ? "pr" : "pl"}`), s = side === "alisa" ? 1 : -1;
+        if (p) p.animate([{transform: "none"}, {transform: `translate(${s*9}px,-13px) rotate(${s*12}deg)`, offset: .4}, {transform: "none"}], {duration: 380, easing: "ease-out"}); snd.pat(); haptic(4); };
+      bat("lapula");
+      const step = now => { if (!st.live) return;
+        const k = Math.min(1, (now - st.t0)/950), e = 1 - Math.pow(1 - k, 2.2); st.x = st.from + (st.to - st.from)*e;
+        el.style.transform = `translate(${(st.x - r).toFixed(1)}px,${(y - r).toFixed(1)}px)`; sv.style.transform = `rotate(${(st.x/r*57.3).toFixed(1)}deg)`;
+        lookAt(D.left + st.x, D.top + y);
+        if (k >= 1){ const side = st.to === xA ? "alisa" : "lapula"; bat(side); st.leg++; st.from = st.to; st.to = st.to === xA ? xL : xA; st.t0 = now + 120; }
+        requestAnimationFrame(step); };
+      requestAnimationFrame(step); busyAct.yarn = {el, st, r, y, xA, xL, D};
+    },
+    stop(who, b){ const Y = b && b.yarn; if (!Y) return; Y.st.live = false;
+      const x0 = Y.st.x, x1 = Y.xL + (Y.xL - Y.xA)*.2;
+      Y.el.animate([{transform: `translate(${(x0 - Y.r).toFixed(1)}px,${(Y.y - Y.r).toFixed(1)}px)`, opacity: 1}, {transform: `translate(${(x1 - Y.r).toFixed(1)}px,${(Y.y - Y.r).toFixed(1)}px)`, opacity: 0}], {duration: 500, easing: "ease-out", fill: "forwards"}).onfinish = () => Y.el.remove(); },
+    line: () => Math.random() < .5 ? ["я выиграла. Лапуля не согласна", "alisa"] : ["клубок мой. Алиса просто рядом стояла", "lapula"]
+  },
+  moon: {
+    start(){ app.classList.add("moongaze"); const m = $("#moon").getBoundingClientRect(); gazeHold(m.left + m.width/2, m.top + m.height/2); },
+    stop(){ app.classList.remove("moongaze"); },
+    line: () => app.classList.contains("snowy") ? ["считали снежинки. сбились", "lapula"] : app.classList.contains("rainy") ? ["смотрели на дождь. гулять не пойдём", "alisa"]
+      : Math.random() < .5 ? ["мы следим за луной. работа такая", "alisa"] : ["проверяли луну. на месте", "lapula"]
+  }
+};
+/* взгляд без возврата: пока котики чем-то заняты, смотрят туда, куда надо */
+function gazeHold(x, y){ clearTimeout(gazeT); document.querySelectorAll("#duo .cat").forEach(c => { const r = c.getBoundingClientRect(), dx = x - (r.left + r.width*.5), dy = y - (r.top + r.height*.43), d = Math.hypot(dx, dy) || 1; setGaze(c, dx/d*3.6, dy/d*2.8); }); }
+function busyPick(){
+  const h = new Date().getHours(), sky = fullMoon() || app.classList.contains("snowy") || app.classList.contains("rainy");
+  const pool = h >= 5 && h < 12 ? ["wash", "wash", "box"] : h < 18 ? ["box", "yarn", "yarn", "wash"] : ["moon", "yarn", "wash", "box"];
+  if (sky) pool.push("moon", "moon");
+  const p2 = pool.filter(k => k !== S.lastBusy), k = pick(p2.length ? p2 : pool); S.lastBusy = k; return k;
+}
+function startBusy(then){
+  if (reduced() || busyAct || !homeLive() || specialBusy || idle.sleeping || idle.lapNap || S.event === "quarrel" || (knead && knead.cat)) return false;
+  const kind = busyPick(), who = kind === "box" ? (Math.random() < .6 ? "lapula" : "alisa") : Math.random() < .5 ? "alisa" : "lapula";
+  specialBusy = true; busyAct = {kind, who, then}; busyAct.t = setTimeout(() => endBusy(), 6500);
+  BUSY[kind].start(who); return true;
+}
+function endBusy(){
+  const b = busyAct; if (!b) return; busyAct = null; clearTimeout(b.t); clearInterval(b.iv);
+  BUSY[b.kind].stop(b.who, b); lookHome();
+  document.querySelectorAll("#duo .pet").forEach((p, i) => p.animate([{transform: "none"}, {transform: "translateY(-6px)", offset: .4}, {transform: "none"}], {duration: 420, delay: 200 + i*90, easing: "ease-out"}));
+  setTimeout(() => { specialBusy = false; const line = BUSY[b.kind].line(b.who); if (b.then) b.then(line); else setBubble(line[0], line[1]); }, 650);
+}
+app.addEventListener("pointerdown", () => { if (busyAct) endBusy(); }, {capture: true, passive: true});
+
+/* =================== КОТИКИ ДРУГ С ДРУГОМ =================== */
+/* пока их не трогают: переморгнутся, Лапуля поохотится на хвост Алисы, посидят бок о бок, зевнут по очереди */
+let duoAt = 0;
+function noseMid(){ const p = ["alisa", "lapula"].map(w => { const r = catOf(w).getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height*.5]; }); return [(p[0][0] + p[1][0])/2, (p[0][1] + p[1][1])/2]; }
+const DUO_PLAY = {
+  blink(){ const a = catOf("alisa"), l = catOf("lapula"), sb = c => { c.classList.remove("slowblink"); void c.offsetWidth; c.classList.add("slowblink"); setTimeout(() => c.classList.remove("slowblink"), 1600); };
+    glance(a, 1, 3200); setTimeout(() => glance(l, -1, 2600), 500);
+    setTimeout(() => sb(a), 900); setTimeout(() => sb(l), 2000);
+    setTimeout(() => { const [x, y] = noseMid(); FX.burst(x, y, {emojis: ["🤍"], n: 2, speed: [30, 70], grav: -40, size: [14, 20], life: [1.2, 1.6]});
+      if (Math.random() < .5) setBubble("мы так моргаем, когда любим", "lapula"); }, 2900);
+    return 3600; },
+  tail(){ const a = catOf("alisa"), l = catOf("lapula"), lp = document.querySelector('#duo .pet[data-cat="lapula"]');
+    a.classList.add("tailplay"); l.classList.add("hunt");
+    const tip = () => { const r = a.querySelector(".tail").getBoundingClientRect(); return [r.left + r.width*.8, r.top + r.height*.3]; };
+    let tr = setInterval(() => { const [x, y] = tip(), r = l.getBoundingClientRect(), dx = x - (r.left + r.width*.5), dy = y - (r.top + r.height*.43), d = Math.hypot(dx, dy) || 1; setGaze(l, dx/d*3.6, dy/d*2.8); }, 120);
+    setTimeout(() => l.querySelector("svg").animate([{transform: "none"}, {transform: "translateX(-2.5px)"}, {transform: "translateX(2.5px)"}, {transform: "translateX(-2.5px)"}, {transform: "translateX(2.5px)"}, {transform: "none"}], {duration: 650, easing: "linear"}), 1500);
+    setTimeout(() => { clearInterval(tr); a.classList.remove("tailplay"); snd.jump(); haptic(6);
+      lp.animate([{transform: "none"}, {transform: "translate(-24px,-18px)", offset: .4}, {transform: "translate(-12px,0)", offset: .75}, {transform: "none"}], {duration: 760, easing: "ease-out"});
+      setTimeout(() => snd.land(.35), 420); }, 2300);
+    setTimeout(() => { l.classList.remove("hunt"); setGaze(l, 0, 0); if (Math.random() < .5) setBubble("это мой хвост. он не игрушка", "alisa"); }, 3200);
+    return 3800; },
+  cuddle(){ app.classList.add("cuddle"); ["alisa", "lapula"].forEach(w => catOf(w).classList.add("content"));
+    const p = startPurr(.16); setTimeout(() => { const [x, y] = noseMid(); FX.burst(x, y, {emojis: ["💗", "🤍"], n: 3, speed: [30, 80], grav: -40, size: [14, 20], life: [1.2, 1.6]}); }, 700);
+    setTimeout(() => { app.classList.remove("cuddle"); ["alisa", "lapula"].forEach(w => catOf(w).classList.remove("content")); p && p.stop(); }, 3400);
+    return 4000; },
+  yawn(){ yawn("lapula"); yawn("alisa", 1300); return 3200; }
+};
+function duoPlay(){
+  if (reduced() || specialBusy || busyAct || idle.sleeping || idle.lapNap || S.event === "quarrel" || (knead && knead.cat) || document.querySelector(".prey")) return;
+  const ids = Object.keys(DUO_PLAY).filter(k => k !== duoPlay.last), id = pick(ids); duoPlay.last = id; duoAt = Date.now();
+  specialBusy = true; const ms = DUO_PLAY[id](); setTimeout(() => { specialBusy = false; }, ms);
+  if (id !== "yawn") noteList("duo", id);
+}
+
+/* =================== КОТИКИ СПРАШИВАЮТ =================== */
+/* один вопрос в день, в тихую минуту. Ответы котики потом вспоминают */
+const ASK = [
+  {id: "who", who: "alisa", q: "кого гладить первой?", a: "Алису", b: "Лапулю", ra: ["правильно. я старше", "alisa"], rb: ["ура. Алиса, подвинься", "lapula"]},
+  {id: "moon", who: "lapula", q: "кто красивее: я или луна?", a: "ты", b: "луна", da: "Лапуля", ra: ["я так и знала. луна, извини", "lapula"], rb: ["луна?! ладно. она хотя бы далеко", "lapula"]},
+  {id: "rainsnow", who: "lapula", q: "дождь или снег?", a: "дождь", b: "снег", ra: ["дождь так дождь. буду слушать", "lapula"], rb: ["снег! буду ловить лапой", "lapula"]},
+  {id: "damon", who: "alisa", q: "Деймон или Стефан?", a: "Деймон", b: "Стефан", team: ["damon", "stefan"], ra: ["Деймон. у него взгляд, как у меня", "alisa"], rb: ["Стефан. добрый, как Лапуля", "alisa"]},
+  {id: "pet", who: "alisa", q: "гладить или чесать за ушком?", a: "гладить", b: "за ушком", ra: ["гладить. принято", "alisa"], rb: ["за ушком. Лапуля, запиши", "alisa"]},
+  {id: "fish", who: "lapula", q: "рыбка или курочка?", a: "рыбка", b: "курочка", ra: ["рыбка! мы одной крови", "lapula"], rb: ["курочка. тоже вкусно, я не спорю", "lapula"]},
+  {id: "edward", who: "lapula", q: "Эдвард или Джейкоб?", a: "Эдвард", b: "Джейкоб", team: ["edward", "jacob"], ra: ["Эдвард. он тоже блестит, как я", "lapula"], rb: ["Джейкоб. тёплый, на нём можно спать", "lapula"]},
+  {id: "owl", who: "alisa", q: "ты сова или жаворонок?", a: "сова", b: "жаворонок", ra: ["сова. как я, мы ночные", "alisa"], rb: ["жаворонок. значит, будем видеться утром", "alisa"]},
+  {id: "blood", who: "alisa", q: "кровь или томатный сок?", a: "кровь", b: "сок", ra: ["правильный ответ. ты наша", "alisa"], rb: ["сок. ладно, сделаем вид, что это кровь", "alisa"]}
+];
+const TEAM_NAME = {damon: "Деймон", stefan: "Стефан", edward: "Эдвард", jacob: "Джейкоб"};
+function askDue(){
+  S.answers = S.answers || {}; const today = dayKey(), qd = S.qd;
+  if (qd && qd.d === today){
+    if (S.answers[qd.id] || qd.n >= 2 || Date.now() - qd.at < 180000) return null;
+    return ASK.find(x => x.id === qd.id) || null;
+  }
+  return ASK.find(x => !S.answers[x.id]) || null;
+}
+function askNow(){
+  const Q = askDue(); if (!Q) return false;
+  if (!homeLive() || specialBusy || busyAct || idle.sleeping || idle.lapNap || S.event === "quarrel" || app.classList.contains("toasting") || Date.now() - bubbleAt < 5000) return false;
+  const today = dayKey(); S.qd = S.qd && S.qd.d === today && S.qd.id === Q.id ? Object.assign(S.qd, {n: S.qd.n + 1, at: Date.now()}) : {d: today, id: Q.id, n: 1, at: Date.now()}; save();
+  setBubble(Q.q, Q.who, t => {
+    const row = document.createElement("span"); row.className = "qchips";
+    [["a", Q.a], ["b", Q.b]].forEach(([v, label], i) => { const c = document.createElement("button"); c.className = "qchip"; c.type = "button"; c.textContent = label;
+      c.style.animationDelay = (260 + i*80) + "ms"; c.onclick = ev => { ev.stopPropagation(); answerQ(Q, v, c); }; row.appendChild(c); });
+    t.appendChild(row);
+  });
+  return true;
+}
+function answerQ(Q, v, chip){
+  if (S.answers[Q.id]) return;
+  S.answers[Q.id] = {v, d: dayKey(), t: Date.now()};
+  const e = dayNote(); e.ans = e.ans || []; e.ans.push(Q.id + ":" + v); save();
+  snd.tap(); haptic(8); chip.classList.add("on");
+  if (!reduced()) chip.animate([{transform: "scale(1)"}, {transform: "scale(1.12)", offset: .4}, {transform: "scale(1)"}], {duration: 420, easing: springPop()});
+  let [txt, who] = v === "a" ? Q.ra : Q.rb;
+  /* в настройках выбрана команда, а ответ другой: котики это видят */
+  /* Деймон стоит по умолчанию, поэтому он считается выбором, только если команду трогали */
+  if (Q.team && Q.team.includes(S.team) && (S.team !== "damon" || S.teamPicked) && Q.team[v === "a" ? 0 : 1] !== S.team){ txt = `а в команде у тебя ${TEAM_NAME[S.team]}. я всё вижу`; who = "alisa"; }
+  setTimeout(() => setBubble(txt, who), 520);
+}
+
+function nextFullText(){
+  if (fullMoon()) return "Сейчас полнолуние. Посмотри на крышу.";
+  const dd = ((.5 - moonPhase() + 1) % 1)*SYNODIC;
+  return "Ближайшее полнолуние " + new Date(Date.now() + dd*864e5).toLocaleDateString("ru-RU", {day: "numeric", month: "long"}) + ".";
+}
+
+/* =================== ЗАГАДКА ДНЯ =================== */
+/* слово из пяти букв, шесть попыток. Отсчёт с первого дня, когда Диана открыла загадку: так порядок слов задуман целиком */
+const WD_ANS = "КОШКА ТУМАН АЛИСА СВЕЧА ХВОСТ ГРОЗА ДИАНА РЫБКА ЗАМОК ФИЛИН ПЕСНЯ КРОВЬ МЫШКА БЕЛЛА ОСЕНЬ КАПЛЯ ВАЛЬС ЛАПКА МАСКА ВОРОН МЕЧТА ЕЛЕНА КАМИН ЛАЗЕР ТАЙНА ЗЕФИР ВЕНОК МОРОЗ ОХОТА ТЫКВА ФОРКС ВЕЧЕР МЯЧИК ЗАКАТ ЧАШКА ИСКРА ЛАСКА ТАНЕЦ НОСОК МЕСЯЦ ДОЖДЬ КРЫША БУКЕТ ПЛАМЯ КАКАО ТИАРА ВЕТЕР ПУШОК ЛЕНТА ДИВАН НОСИК ЛИЛИЯ КОТИК".split(" ");
+const WD_NAMES = ["ЕЛЕНА", "БЕЛЛА", "ФОРКС", "АЛИСА", "ДИАНА"];
+const WD_PRIZE = [15, 15, 12, 10, 8, 6];
+/* словарь: существительные из пяти букв в именительном падеже, единственное число (OpenCorpora через pymorphy3), плюс несколько имён */
+const WD_DICT = "АБАКААББАТАБВЕРАБЗАЦАБОРТАБРЕКАБРИСАБХАЗАБЦУГАВАЛЬАВАНСАВГИТАВГУРАВЕНЮАВЕРСАВИЗОАВЛОСАВОСТАВРАЛАВРАНАВТОЛАВТОРАГАВААГАМААГАМИАГЕНСАГЕНТАГНАТАГНЕЦАГОРААГРАФАГУТИАДЕПТАДМИНАДРЕСАДРОНАЖГОНАЗАРТАЗИАТАЙВАНАЙМАКАЙМАРАЙРАНАЙРОЛАЙСОРАЙФОНАКАЖУАКАНТАКАНФАКРИЛАКРОНАКСЕСАКСОНАКТЕРАКТИВАКТИНАКТОРАКУЛААКЦИЗАКЦИЯАЛГОЛАЛЕУТАЛИБИАЛИНААЛИСААЛКАШАЛКИЛАЛЛАХАЛЛЕЯАЛЛИЛАЛЛОДАЛЛЮРАЛМАЗАЛОИНАЛТЕЙАЛТЕЯАЛТЫНАЛЧБААЛЫЧААЛЬБААЛЬФААМБАЛАМБАРАМБРААМБРЕАМВОНАМЕБААМОРФАМПЕРАМПИРАНГАРАНГЕЛАНГОБАНИМЕАНИОНАНКАСАНКЕРАННИТАНОНСАНТЕЙАНТИКАНТЬЕАНЧАРАОРТААПЕКСАПОРТАПРОШАРБУЗАРГАЛАРГОНАРГУСАРДЕНАРЕАЛАРЕКААРЕНААРЕСТАРИЕЦАРКАНАРКОЗАРМИЯАРМЮРАРМЯКАРПАНАРСИСАРТОСАРХАРАРХАТАРХИВАРЧАКАРШИНАСАНААСКЕРАСКЕТАСПИДАССАИАСТАТАСТМААСТРААСЦИТАСЬКААТАКААТЛАСАТЛЕТАТОЛЕАТОЛЛАТРИЙАТТИКАУДИОАУДИТАУРАТАФЕРААФИШААФРИТАХЕЕЦАЦТЕКАШРАМАЭРОБАЭРОНБАБАЙБАБКАБАБЛОБАБЬЕБАГАЖБАГЕРБАГЕТБАГОРБАДАНБАДЬЯБАЗАРБАЗИСБАЙКАБАКАНБАКЕНБАЛДАБАЛЕЙБАЛЕТБАЛКАБАЛЫКБАЛЬИБАМИЯБАНАНБАНДАБАНДИБАНЕРБАНКАБАРАКБАРАНБАРБИБАРЕЖБАРЖАБАРИЙБАРИНБАРИТБАРИЧБАРКАБАРОНБАРЫШБАСКАБАСМАБАСНЯБАСОКБАСОНБАСТРБАТАНБАТАТБАТИКБАТОГБАТОНБАТУДБАТУНБАТУТБАТЫРБАФИЯБАФТАБАХЧАБАЧОКБАШКАБАШНЯБЕГУНБЕДРОБЕЗИКБЕЙДЖБЕЙКАБЕЙРАБЕКАРБЕКАСБЕКОНБЕЛЕКБЕЛЕЦБЕЛКАБЕЛЛАБЕЛОКБЕЛЬЕБЕЛЯКБЕЛЯШБЕРДОБЕРЕГБЕРЕТБЕРИЛБЕРМАБЕРЦЕБЕРЦОБЕТОНБИБОПБИВАКБИГУСБИДОНБИЗОНБИЛЕТБИЛЛЬБИНГОБИНОМБИОНТБИОТАБИРЖАБИРКАБИРЮКБИРЮЧБИСЕРБИСТРБИТВАБИТЕРБИТОКБИТУМБИТЬЕБИТЮГБИШОПБЛАГОБЛАЖЬБЛАНКБЛАСТБЛЕСКБЛИЗЬБЛИНДБЛИНКБЛИНТБЛОХАБЛУЗАБЛЮДОБЛЮМСБЛЯДЬБЛЯХАБОБЕРБОБИКБОБОКБОГАЧБОДУНБОДЯКБОЖБАБОЖОКБОЗОНБОИНГБОЙНЯБОКАЛБОККАБОЛИДБОЛЮСБОМБАБОНГОБОНЗАБОНМОБОННАБОННИБОНУСБОРАТБОРДОБОРЕЙБОРЕЦБОРИДБОРОВБОРТЬБОСЯКБОТАНБОТВАБОТИКБОЧАГБОЧАРБОЧКАБОЧОКБРАГАБРАДАБРАНЬБРАССБРЕВЕБРЕЙКБРЕМЯБРЕНДБРЕШЬБРИДЖБРИТТБРОВЬБРОНХБРОНЬБРОНЯБРОШЬБРЫЛАБРЭНДБРЮХОБУБАЛБУБЕНБУБНАБУБОНБУГАЙБУГОРБУДДАБУДКАБУДРАБУЗУНБУКАНБУКВАБУКЕРБУКЕТБУКЛЕБУКЛЯБУКСАБУЛАТБУЛГАБУЛКАБУЛЛАБУЛЬББУРАВБУРАКБУРАНБУРАТБУРДАБУРЕТБУРКАБУРСАБУРУНБУРЯТБУТАНБУТИКБУТИЛБУТОНБУТСАБУТУЗБУФЕРБУФЕТБУХЛОБУХТАБЫДЛОБЫЛЬЕБЫТИЕБЫЧОКБЬЮИКБЭКУСБЮВАРБЮВЕТБЯШКАВАБИКВАГОНВАЗОНВАКАТВАКСАВАЛАХВАЛЕКВАЛЕРВАЛЕТВАЛЕЦВАЛИКВАЛКАВАЛОКВАЛУЙВАЛУНВАЛУХВАЛЬСВАННАВАНТАВАРАНВАРКАВАРЯГВАТЕРВАТИНВАТКАВАФЛЯВАХНЯВАХТАВБРОСВДОВАВЕДДАВЕДРОВЕДУНВЕЖДАВЕЙКАВЕКШАВЕЛИКВЕЛЬДВЕЛЬСВЕЛЮРВЕНГРВЕНЕДВЕНЕТВЕНЕЦВЕНИКВЕНКАВЕНОКВЕНТАВЕПРЬВЕРБАВЕРВЬВЕРЕДВЕРЕСВЕРЕЯВЕРЖЕВЕРФЬВЕРШАВЕСЛОВЕСНАВЕСТЬВЕТВЬВЕТЕРВЕТКАВЕТЛАВЕЧЕРВЕШКАВЕЩУНВЗВАРВЗВОДВЗВОЗВЗДОРВЗДОХВЗЛЕТВЗЛОМВЗМАХВЗМЕТВЗМЫВВЗНОСВЗРЕЗВЗРЫВВЗЫСКВИВЕРВИДЕОВИДИКВИЗИРВИЗИТВИЛКАВИЛЛАВИЛОКВИНИЛВИНЦОВИОЛАВИОЛЬВИРАЖВИРУСВИСКИВИСОКВИТИЯВИТОКВИТЬЕВИХОРВИХРЬВИШНЯВКЛАДВЛАГАВНУКАВОБЛАВОГУЛВОДКАВОЖАКВОЖДЬВОЖЖАВОЗКАВОЗНЯВОЗОКВОЙНАВОКАЛВОЛАНВОЛГАВОЛНАВОЛОКВОЛОСВОЛОХВОЛХВВОЛЬТВОМЕРВОПЛЬВОРОГВОРОНВОРОТВОРОХВОТУМВОТЯКВОШКАВОЯКАВПУСКВРАЛЬВРЕМЯВРУШАВСКОКВСХОДВТОРАВУАЛЬВЪЕЗДВЫБЕГВЫБОРВЫВАЛВЫВИХВЫВОДВЫВОЗВЫГИБВЫГОНВЫГУЛВЫДЕЛВЫДОХВЫДРАВЫЕЗДВЫЖИГВЫЖИМВЫЗОВВЫЗОЛВЫКАТВЫКОСВЫКУПВЫКУСВЫЛАЗВЫЛЕТВЫЛОВВЫЛОМВЫМОЛВЫНОСВЫПАДВЫПАЛВЫПАРВЫПАСВЫПЕКВЫПОРВЫПОТВЫРЕЗВЫРУБВЫСЕВВЫСЕДВЫСОВВЫТЬЕВЫХОДВЫЧЕТВЫШАГВЫШКАВЬЮГАВЯЗКАВЯТИЧВЯТКАГАВОТГАГАТГАЗИКГАЗОНГАЙАЛГАЙДАГАЙКАГАЛИДГАЛИТГАЛКАГАЛОНГАЛОПГАЛУНГАМАКГАМЕНГАММАГАНАШГАНЕЦГАНИТГАНКАГАРАЖГАРДАГАРЕМГАРУСГАУЧОГАЧЕКГАШИШГАЮИНГБАЙТГВАЛТГЕВЕЯГЕЙШАГЕЛИЙГЕММАГЕНИЙГЕНОМГЕНРИГЕОИДГЕРЕЙГЕРМАГЕРОЙГЕТИТГЕТРАГЕТТОГИДРАГИЕНАГИЛЕЯГИЛЯКГИМЕНГИНЕЯГИОИДГИПЮРГИРЕЙГИРКАГИРЛОГИТОВГИЧКАГЛАВАГЛАВКГЛАДЬГЛАЙДГЛЕНЬГЛИНАГЛИПТГЛИСТГЛУБЬГЛУШЬГЛЫБАГЛЮОНГМИНАГНЕЙСГНИДАГНИЛЬГНОМАГНУСЬГОБАНГОББЛГОБОЙГОВНОГОВОРГОГОТГОДИКГОДОКГОЛЕЦГОЛИКГОЛОДГОЛОСГОЛЫШГОЛЬДГОЛЬЕГОЛЬФГОЛЯКГОМИКГОМОНГОНЕЦГОНКАГОНОРГОПАКГОРАЛГОРЕЦГОРЖАГОРКАГОРЛОГОРОДГОРОХГОРСТГОРЮНГОСТЬГОФЕРГОХУАГРАММГРАНДГРАНТГРАНЬГРАУСГРАФАГРЕЗАГРЕНАГРЕЧАГРИВАГРИДЬГРИЛЬГРИОТГРИППГРОЗАГРОЗДГРОССГРУДАГРУДЬГРУНТГРУШАГРЫЖАГРЯДАГРЯЗЬГУАВАГУАНОГУАРИГУАШЬГУБАНГУБКАГУДОКГУЖОНГУЗКАГУЗНОГУКЕРГУЛЯШГУМБОГУМИНГУМИТГУММАГУММИГУМНОГУМУСГУРАНГУРИЯГУРКХГУСАКГУСАРГУСЕКГУСИТГУЦУЛГЮРЗАДАВКАДАЗАРДАЙКАДАЙМЕДАЙНАДАЙОНДАЙРАДАЛИЯДАМАНДАМБАДАМКАДАМНОДАНИОДАРИКДАРТСДАРЬЯДАЦАНДАЦИТДАЧКАДВЕРЬДЕБЕТДЕБИЛДЕБИТДЕБОШДЕБЮТДЕВИЗДЕВКАДЕВОНДЕГРАДЕДКАДЕЖКАДЕИЗМДЕИСТДЕКАНДЕКОРДЕЛЕЖДЕЛЕЦДЕМОНДЕМОСДЕНГЕДЕНДИДЕНЕКДЕНИСДЕРБАДЕРБИДЕРЕНДЕРМАДЕРТЬДЕСНАДЕСТЬДЕТВАДЕТКАДЕФИСДЖАЙВДЖАЙНДЖИГАДЖИННДЗЕТАДЗОРИДЗЭТАДЗЮДОДИАДАДИАНАДИВАНДИЕТАДИЛЕРДИМЕРДИНАРДИНАСДИНГОДИСКОДИХТАДИЧОКДИЭДРДЛАНЬДЛИНАДНИЩЕДНЮХАДОБЛАДОБОРДОБРОДОВОДДОГМАДОЖДЬДОЗОРДОЙКАДОЙНАДОЙРАДОКЕРДОЛЛИДОМЕНДОМИКДОМНАДОМОКДОМОЛДОМРАДОНЕЦДОНКАДОННАДОНОРДОНОСДОНЦЕДОНЬЯДОСКАДОСОЛДОСУГДОСЬЕДОФИНДОХОДДОЧКАДРАГАДРАЖЕДРАЙВДРАКАДРАМАДРАНЬДРАФТДРЕВОДРЕЙФДРЕЛЬДРЕМАДРЕНАДРИНКДРИФТДРОБЬДРОГАДРОЖЬДРОЗДДРОИДДРОНТДРОССДРОФАДРУЗАДРУИДДРЯЗГДРЯНЬДУБКАДУБЛЬДУБОКДУБЬЕДУВАНДУДАКДУДКАДУЖКАДУКАТДУЛЕБДУМЕЦДУМКАДУНИТДУОЛЬДУПЛОДУРАКДУРРАДУРРОДУТАРДУТИКДУТЫШДУТЬЕДУХАНДУЧКАДУШКАДУШОКДУЭЛЬДЩЕРЬДЫЛДАДЫМКАДЫМОКДЫРКАДЫШЛОДЮКЕРДЮРОЛДЮШЕСДЯТЕЛЕБЛАНЕВНУХЕВРЕЙЕГЕРЬЕГОЗАЕЖИХАЕЗДКАЕЗДОКЕЛЕНАЕМЕЙЛЕМШАНЕРЕСЬЕРНИКЕРШИКЕСАУЛЕХИДАЖАБКАЖАБРАЖАЖДАЖАКАНЖАКЕТЖАМКАЖАРКАЖАРОКЖАТВАЖАТКАЖВАЛОЖЕВОКЖЕЛНАЖЕЛОБЖЕЛТЬЖЕЛЧЬЖЕНИХЖЕНКАЖЕОДАЖЕРДЬЖЕРЕХЖЕРЛОЖЕСТЬЖЕТОНЖИВЕЦЖИВОЙЖИВОТЖИГАНЖИЗНЬЖИЛЕТЖИЛЕЦЖИЛКАЖИЛЬЕЖИМОКЖИНКАЖИРАТЖИРАФЖИРОКЖИРЯКЖИСТЬЖИТИЕЖИТЬЕЖМЕНЯЖМУДЬЖНИВАЖНИВОЖНИЦАЖОКЕЙЖРИЦАЖУЛАНЖУЛИКЖУЛЬЕЖУПАНЖУПЕЛЖУЧКАЖУЧОКЗАБЕГЗАБОЙЗАБОРЗАВАЛЗАВЕТЗАВОДЗАВОЗЗАВУЧЗАГАРЗАГИБЗАГОНЗАГУЛЗАДЕЛЗАДИКЗАДОКЗАДОРЗАЕЗДЗАЖИМЗАЖИНЗАЖОРЗАЗОРЗАЗЫВЗАИКАЗАЙКАЗАКАЗЗАКАЛЗАКАТЗАКОЛЗАКОНЗАКУПЗАКУТЗАЛЕТЗАЛИВЗАЛИЗЗАЛОГЗАЛОМЗАМАЙЗАМАХЗАМЕРЗАМЕСЗАМЕТЗАМОКЗАМОРЗАМШАЗАНОСЗАПАДЗАПАЛЗАПАСЗАПАХЗАПЕВЗАПОЙЗАПОРЗАРЕЗЗАРОДЗАРОКЗАРУБЗАРЯДЗАСЕВЗАСОВЗАСОЛЗАСОРЗАСОСЗАТЕКЗАТЕСЗАТЕЯЗАТОКЗАТОНЗАТОРЗАТЯГЗАУМЬЗАХОДЗАЦЕПЗАЧЕСЗАЧЕТЗАЧИНЗВЕНОЗВЕРЬЗЕБРАЗЕВОКЗЕЛОТЗЕЛЬЕЗЕЛЬЦЗЕМЕЦЗЕМЛЯЗЕНДОЗЕНИТЗЕРНОЗЕРНЬЗЕФИРЗИЛОТЗИПУНЗЛАТОЗЛОБАЗЛЮКАЗНАМЯЗНАТЬЗОЛКАЗОМБИЗООИДЗРАЗАЗУБЕЦЗУБИКЗУБОКЗУЛУСЗУМПФЗУРНАЗЫБКАЗЫБУНЗЯТЕКИБЛИСИВАСИИВИНАИВНЯКИВРИТИГОРЬИГРЕКИГРЕЦИГРОКИГРУНИДЕАЛИДИОМИДИОТИЕРЕЙИЖИЦАИЗБАЧИЗВЕТИЗВИВИЗВОДИЗВОЗИЗГИБИЗГОЙИЗЛЕТИЗЛОМИЗМОРИЗНОСИЗЪЯНИЗЫСКИЗЮБРИКОНАИКОТАИКСИЯИКТУСИЛЕИТИЛЬКАИМАГОИМИДЖИНВАРИНГУШИНДИЙИНДОЛИНДРИИНДУСИНДЮКИНЖИРИНИОНИНКУБИНОКАИНТИМИОДИДИОМЕНИОНИЙИОНИКИОНИТИПРИТИРБИСИРИНАИРМОСИСКРАИСКУСИСЛАМИСПОДИСПУГИССОПИСТЕЦИСТОДИСТОКИСХОДИТЭЭРИУДЕЙИШИАСИШПАНЙАППИЙОДАТЙОДИДЙОМЕНКААБАКАБАККАБАНКАБИЛКАБУЛКАВЕРКАВУНКАГАЛКАГАНКАГАТКАГОРКАДДИКАДЕТКАДИЙКАДКАКАДЫККАЗАККАЗАНКАЗАХКАЗНАКАЗНЬКАЗУСКАЙЛАКАЙЛОКАЙМАКАЙРАКАКАОКАЛАМКАЛАЧКАЛИЙКАЛИНКАЛЛАКАЛПАКАЛЫМКАМАЗКАМЕЯКАМИНКАМКАКАМПОКАМСАКАМЧАКАМЫШКАНАККАНАЛКАНАТКАНВАКАННАКАНОНКАНОЭКАНУНКАНЮККАПЕРКАПЛЯКАПОККАПОРКАПОТКАППАКАПУТКАРАТКАРГАКАРГОКАРДАКАРЕЛКАРИБКАРЛАКАРМАКАРРАКАРРИКАРСТКАРТАКАРЧАКАСБАКАСИККАСКАКАСКОКАССАКАСТАКАТАРКАТЕРКАТЕТКАТОДКАТОККАТТИКАТЫККАТЫШКАУРИКАФИРКАЦАПКАЦИККАЧКАКАЧЧАКАШКАКАШНЕКАШПОКАШУБКАЮГАКАЮТАКБАЙТКВАНТКВАРККВАРЦКВАЧАКВЕСТКВОТАКЕБАБКЕГЛЬКЕГЛЯКЕЛПИКЕЛЬТКЕЛЬЯКЕНАРКЕНАФКЕНДОКЕПКАКЕРМАКЕТКАКЕТОНКЕФИРКЕЧУАКЕШЬЮКИАНГКИБЕИКИБУЦКИВЕРКИВОККИВОТКИДАСКИДКАКИЗИЛКИЗЯККИЛИМКИЛТИКИМВРКИНЕЗКИНИККИНИНКИОСККИРЗАКИРКАКИРХАКИСЕТКИСЕЯКИСКАКИСТАКИСТЬКИФОЗКИЧИМКИЧКАКИШКАКЛАДЬКЛАКАКЛАРККЛАРОКЛАССКЛАУСКЛЕРККЛЕСТКЛЕТЬКЛЕФТКЛИКАКЛИКОКЛИНЧКЛИЦАКЛИШЕКЛОУНКЛУНЯКЛУППКЛУШАКЛЮКАКЛЮФТКЛЯМСКЛЯЧАКНЕЛЬКНЕХТКНИГАКНИЦАКНЯЗЬКОАЛАКОБЕЛКОБЗАКОБЛЬКОБОЛКОБРАКОВАРКОВАЧКОВЕРКОВКАКОДАККОДЕККОДЕРКОДЛАКОДОНКОЖАНКОЖУХКОЗЕЛКОЗОНКОИПУКОЙКАКОЙНЕКОЙОТКОКЕТКОКОНКОКОРКОКОСКОЛБАКОЛЕРКОЛЕТКОЛЕЯКОЛИТКОЛКАКОЛЛИКОЛОБКОЛОККОЛОНКОЛОРКОЛОСКОЛУНКОЛЬЕКОЛЬТКОЛЮРКОМАРКОМБИКОМИККОММАКОМОДКОМОККОНГАКОНЕККОНЕЦКОНИККОНКАКОНУСКОНХАКОНЮХКОПАЛКОПАЧКОПЕРКОПИРКОПИЯКОПКАКОПНАКОПРАКОПУНКОПЫЛКОПЬЕКОРАНКОРГИКОРДАКОРЕЦКОРЕШКОРКАКОРМАКОРОБКОРЧАКОРЬЕКОРЯККОСАЧКОСЕЦКОСОККОСТЬКОСЯККОТЕЛКОТИККОФЕЙКОФИЙКОФИККОФТАКОХИЯКОЧАНКОЧЕТКОЧКАКОШЕРКОШКАКОШМАКОЩЕЙКРАГАКРАЖАКРАЙТКРАКСКРАЛЯКРАППКРАСАКРАФТКРЕДОКРЕЙТКРЕОЛКРЕОНКРЕПЬКРЕССКРЕСТКРИЦАКРОВЬКРОКИКРОЛЬКРОНАКРОССКРОХАКРОШЕКРУИЗКРУНЯКРУПАКРУЧАКРУЧЬКРЫЛОКРЫСАКРЫШАКСИВАКУБИККУБИТКУБОККУЗЕНКУЗНЯКУЗОВКУКАНКУКИШКУКЛАКУКРИКУЛАЖКУЛАККУЛАНКУЛЕККУЛЕРКУЛЕШКУЛИККУЛИЧКУЛОНКУЛЬМКУЛЬТКУМАЧКУМЖАКУМИРКУМЫККУМЫСКУНАККУПАЖКУПЕЦКУПЛЯКУПОЛКУПОНКУРАЖКУРВАКУРИЯКУРОККУРОСКУРТАКУРЬЯКУСОККУТАСКУТЕЖКУТИСКУТОККУТТАКУТУМКУТЬЯКУФИЯКУХНЯКУЧЕРКУЧКАКУШАККХАРИКХМЕРКЬЮПИКЭМПОКЮВЕТКЮРИЙКЮРИНКЯРИЗЛАБАЗЛАБУХЛАВАШЛАВКАЛАВРАЛАГЕРЛАДАНЛАДЬЯЛАЗЕРЛАЙБАЛАЙДАЛАЙКАЛАКЕЙЛАКЕЦЛАМЕРЛАМИЯЛАМПАЛАМУТЛАНДОЛАНКАЛАПКАЛАПТАЛАПШАЛАРЕКЛАРЕЦЛАСКАЛАССОЛАТКАЛАТУКЛАТЫШЛАФЕТЛАФИТЛАЧОКЛБИНАЛБИЩЕЛЕВАКЛЕВИТЛЕВШАЛЕВЫЙЛЕГАТЛЕГАШЛЕДОКЛЕЖАКЛЕЖКАЛЕЗИЯЛЕЙАСЛЕЙБЛЛЕЙКАЛЕКАЖЛЕКИФЛЕМЕХЛЕММАЛЕМУРЛЕНОКЛЕНТАЛЕНЦАЛЕПЕТЛЕПКАЛЕПРАЛЕПТАЛЕРКАЛЕСКАЛЕСОКЛЕСТЬЛЕТИЕЛЕТКАЛЕТОКЛЕТУНЛЕШАКЛЕШИЙЛЕЩИКЛИАЗАЛИАНАЛИАРДЛИВЕРЛИДАРЛИДЕРЛИЗАТЛИЗИНЛИЗИСЛИЗОЛЛИЗУНЛИКЕРЛИЛИЯЛИМАНЛИМБОЛИМЕЦЛИМИТЛИМОНЛИМФАЛИНДИЛИНЕКЛИНЗАЛИНИНЛИНИЯЛИПЕЦЛИПИДЛИПКАЛИРИКЛИСКАЛИТЕРЛИТИЙЛИТИЯЛИТКАЛИТЬЕЛИХАЧЛИХВАЛИЦЕЙЛИЧКАЛИШАЙЛИШЕКЛОБАНЛОББИЛОБИКЛОБОКЛОВЕЦЛОВЛЯЛОГИКЛОГИНЛОГОСЛОДКАЛОЖКАЛОЖОКЛОКВАЛОКЕРЛОКОНЛОКУСЛОМИКЛОМКАЛОНЖАЛОПУХЛОРЧАЛОТОКЛОТОСЛОЦИЯЛОШАКЛУБОКЛУЖОКЛУЗГАЛУЗЕРЛУКНОЛУНКАЛУПКАЛУЧИКЛУЧОКЛЫЖНЯЛЫСКАЛЫСУНЛЫСЫЙЛЫЧКОЛЬЯЛОЛЮБКАЛЮМЕНЛЮНЕТЛЮПИНЛЮПУСЛЮТИКЛЮТИЧЛЮТНЯЛЮФФАЛЮЧОКЛЯЖКАЛЯМКАЛЯПИСЛЯРВАМАГИЯМАГМАМАДАММАДИЯМАЕТАМАЖОРМАЗЕРМАЗИКМАЗКАМАЗЛОМАЗНЯМАЗОКМАЗУТМАЙКАМАЙНАМАЙОРМАКАОМАКЕТМАКСАМАЛЕКМАЛЕЦМАЛИКМАЛКАМАЛОЕМАЛЫЙМАЛЫШМАЛЬЕМАЛЬММАЛЯРМАМБАМАМБОМАМКАМАМОНМАНАТМАНГАМАНГОМАНЕЖМАНЕРМАНИЕМАНИЯМАНКАМАНКОМАННАМАНОКМАНОРМАНСИМАНТАМАНТОМАНУЛМАНЬЕМАОРИМАРАЛМАРГОМАРЖАМАРИЯМАРКАМАРЛЯМАРОНМАСКАМАСЛОМАСОНМАССАМАСТЬМАТКАМАТРАМАТЮГМАФИЯМАФОНМАХАЧМАХРАМАЧОКМАЧТАМБАЙТМЕГОММЕДИКМЕДОКМЕДЯКМЕЗГАМЕЗИММЕЗОНМЕЙОЗМЕЛИСМЕЛИЯМЕЛОКМЕЛОСМЕРВАМЕРЕЯМЕРИНМЕРКАМЕССАМЕСТОМЕСТЬМЕСЬЕМЕСЯЦМЕТАНМЕТЕКМЕТИЗМЕТИКМЕТИЛМЕТИСМЕТКАМЕТЛАМЕТОДМЕТОЛМЕТОПМЕТРОМЕЦЦОМЕЧТАМЕШОКМИГАЧМИДИЯМИЗЕРМИКОЗМИКСТМИЛКАМИЛЛЬМИЛОКМИНЕРМИНЕЯМИНОРМИНУСМИОМАМИРАЖМИРЗАМИРОКМИРОНМИРРАМИСКАМИТОЗМИТРАМИШКАМЛЕКОМОГАРМОГОЛМОДЕММОДУСМОЙВАМОЙКАМОЙРАМОККОМОКШАМОЛВАМОЛВЬМОЛОТМОЛОХМОЛЯРМОНАХМОНОММОПЕДМОРДАМОРИНМОРОЗМОРОКМОРФАМОРЦОМОРЯКМОСОЛМОСЬЕМОТЕТМОТИВМОТКАМОТНЯМОТОКМОТОРМОТТОМОХЕРМОЧКАМОШКАМОШНАМРАЗЬМРЕЖАМУДАКМУЖИКМУЗЕЙМУЛАТМУЛЕКМУЛЛАМУЛЯЖМУМИЕМУМИЯМУРАШМУРЗАМУРЛОМУРЬЯМУСОРМУТОНМУФТАМУХУРМУЦИНМУЧКАМУШКАМЦЫРИМЫМРАМЫСИКМЫСЛЬМЫСОКМЫТЬЕМЫШЕЙМЫШКАМЫШЦАМЭНОРМЭРИЯМЮЗЕТМЮРИДМЮСЛИМЯЗГАМЯКИШМЯЛКАМЯМЛЯМЯСКОМЯСЦОМЯТЕЖМЯТИЕМЯТЬЕМЯЧИКНАБАТНАБЕГНАБОБНАБОРНАВАЛНАВАРНАВЕСНАВЕТНАВИСНАВОЗНАВОЙНАВЫКНАГАННАГАРНАГИБНАГОННАГУЛНАДЕЛНАДИРНАДОЙНАДУВНАЕЗДНАЖИМНАЖИННАЖОРНАЗЕМНАЙРАНАКАЗНАКАЛНАКАТНАКОСНАЛЕТНАЛИВНАЛИМНАЛОГНАЛОЙНАМАЗНАМЕКНАМЕТНАМИННАМОЛНАМЫВНАНДУНАНКАНАНОСНАПЕВНАПОЙНАПОРНАРЕЗНАРИКНАРОДНАРТАНАРЫВНАРЯДНАСАДНАСОСНАСЫПНАТЕКНАТЯГНАУКАНАХАЛНАХОДНАЦИЯНАЧЕСНАЧЕТНАЧИННАЯДАНЕВМАНЕВОДНЕВУСНЕГУСНЕДУГНЕЙКАНЕМЕЦНЕМКАНЕНЕЦНЕНИЯНЕНКАНЕРКАНЕРОЛНЕРПАНЕСЯКНЕФТЬНЕЧЕТНИВОЗНИВУХНИЗКАНИЗОКНИЛОТНИМФАНИНОННИСАННИСЕИНИТКАНИТОННИЧЬЯНОБЛЬНОВИКНОВОЕНОЖИКНОЖКАНОЙОННОЛИКНОМАДНОМЕННОМЕРНОНЕТНОРИЯНОРКАНОРМАНОРОВНОСАЧНОСИКНОСКАНОСОКНОТИСНОТКАНОЧВАНОЧКАНУБИЯНУЖДАНУКЕРНУЛИКНУТРОНЫРОКНЫТИКНЫТЬЕНЮАНСНЮХАЧНЯШКАОАЗИСОБВАЛОБВЕСОБВОДОБВОЗОБГОНОБДИРОБДУВОБЖИГОБЖИМОБЖИНОБЖОГОБЗОЛОБЗОРОБИДАОБКАТОБКОМОБЛЕТОБЛИКОБЛОВОБЛОГОБЛОЙОБЛОМОБМАНОБМЕНОБМЕРОБМЕТОБМИНОБМОЛОБМЫВОБНОСОБОРАОБРАЗОБРАТОБРЕЗОБРОКОБРУБОБРУЧОБРЫВОБРЯДОБСЕВОБУВЬОБУЗАОБХОДОБЩАКОБЪЕМОБЫСКОВИЗМОВРАГОВСЕЦОВСЮГОВЧАРОГИВАОГОНЬОГРЕХОДЕЖАОДЕОНОДУРЬОЗЕРООЗИМЬОЗНОБОЙРОТОКАПИОКЕАНОКИСЬОКЛАДОКЛИКОКОВАОКОЕМОКОРМОКРАСОКРИКОКРОЛОКРУГОКСИДОКТАНОКТЕТОКТИЛОКТОДОКУНЬОЛЕАТОЛЕИНОЛЕНЬОЛЕУМОЛИВАОЛИФАОЛОВООЛУШАОЛЬГАОЛЬПАОЛЬХАОМЕГАОМЕЛАОМЛЕТОМУЛЬОНАГРОНИКСОНУЧАООЛИТОПАЛАОПАРАОПЕКАОПЕРАОПИАТОПИСЬОПИУМОПЛОТОПЛЫВОПОЕКОПОКАОПОРАОПРОСОПТИКОПУСКОПЦИЯОРАВАОРАЛООРАРЬОРГАНОРГИЯОРДЕНОРДЕРОРЕОЛОРИКСОРЛАНОРЛЕЦОРЛИКОРЛОПОРЛЯКОРСИНОРТИТОРХИТОРШАДОСАДАОСЕНЬОСЕТРОСИНАОСКАЛОСКАРОСЛИКОСЛОПОСЛЯКОСМИЙОСМОЛОСМОСОСОБАОСОБЬОСОЕДОСОКАОСТИТОСТОВОСТЯКОСЫПЬОТАВАОТАКУОТАРАОТБЕЛОТБИВОТБОЙОТБОРОТВАЛОТВАРОТВЕСОТВЕТОТВОДОТВОЗОТГИБОТГОНОТГУЛОТДЕЛОТДУХОТДЫХОТЕЛЬОТЖИГОТЖИМОТЗОЛОТЗЫВОТКАЗОТКАТОТКОЛОТКОСОТКУПОТКУСОТЛЕТОТЛИВОТЛОВОТЛУПОТМАХОТМИНОТНОСОТПАДОТПАЙОТПОРОТРЕЗОТРОГОТРОКОТРУБОТРЫВОТРЯДОТСЕВОТСЕКОТСОСОТТЕКОТТОКОТХОДОТЦЕПОТЧАЛОТЧЕТОТЧИМОТШИБОТЪЕМОФЕНЯОФОРТОФСЕТОФШОРОХВАТОХОТАОЧЕРКОЧКУРОЧНИКОШЕЕКОЩУПЬПАВЕЛПАДЕЖПАДЛАПАДЛОПАДРЕПАДУБПАДУНПАЗОКПАЙКАПАЙСАПАКЕРПАКЕТПАКЛЯПАЛАСПАЛАЦПАЛАЧПАЛАШПАЛЕЦПАЛЕЯПАЛИЯПАЛКАПАЛЛАПАЛЮСПАМПАПАНАШПАНГАПАНДАПАННАПАННОПАНЫЧПАОЛОПАПИКПАПКАПАРАДПАРАФПАРЕЗПАРИКПАРИЯПАРКАПАРОДПАРОКПАРОМПАРСИПАРТАПАРУСПАРФЕПАРЧАПАРШАПАСМОПАСТАПАСТЬПАСХАПАСЮКПАТАНПАТЕРПАТИОПАТУАПАУЗАПАФОСПАХАНПАХИТПАХТАПАЦАНПАЧКАПАШНЯПАШОТПЕВЕЦПЕВУНПЕГАСПЕКАНПЕКЛОПЕЛЕАПЕЛИТПЕМЗАПЕНАЛПЕНЕКПЕНИЕПЕНИСПЕНКАПЕННИПЕНЬЕПЕПЕЛПЕПИНПЕПСИПЕРГАПЕРЕДПЕРЕЦПЕРКАПЕРЛЬПЕРРИПЕРСТПЕСЕЦПЕСИКПЕСНЬПЕСНЯПЕСОКПЕТАЗПЕТЕЛПЕТИТПЕТЛЯПЕТУХПЕЧКАПЕШКАПЕШНЯПЕЩУРПИАЛАПИВКОПИВЦОПИГУСПИДОРПИЕТАПИЖМАПИЖОНПИЗДАПИКАППИКЕРПИКЕТПИКОНПИКШАПИЛАВПИЛКАПИЛОНПИЛОТПИЛУМПИНИЯПИНОКПИНТАПИПКАПИРАТПИРЕНПИРИТПИРКЕПИРОГПИРОНПИРОППИСЕЦПИСУНПИТИЕПИТОНПИТТАПИТУХПИТЬЕПИФИЯПИФОСПИХТАПИЦЦАПИЧОКПИЩИКПЛАВЬПЛАЙЯПЛАМЯПЛАСТПЛАТАПЛАТОПЛАУНПЛАХАПЛЕБСПЛЕВАПЛЕЕРПЛЕМЯПЛЕНАПЛЕСКПЛЕТЬПЛЕЧОПЛЕШЬПЛИНТПЛИТАПЛИЦАПЛОТЬПЛЮХАПНИЩЕПОБЕГПОБОРПОВАЛПОВАРПОВЕТПОВОДПОВОЙПОГИБПОГОНПОДИЙПОДОГПОДОЛПОЕЗДПОЖАРПОЖНЯПОЖОГПОЗЕМПОЗЕРПОЗОРПОЗЫВПОИСКПОЙКАПОЙЛОПОЙМАПОЙНТПОКАЗПОКАТПОКЕРПОКЕТПОКОЙПОКОСПОЛБАПОЛЕТПОЛИВПОЛИППОЛИРПОЛИСПОЛКАПОЛОГПОЛОЗПОЛОКПОЛОМПОЛОНПОЛТЬПОЛЬЕПОЛЮСПОЛЯКПОМЕТПОМИНПОМОЛПОМОРПОМПАПОНОРПОНОСПОНТОПОНЧОПОНЮХПОПИКПОПКАПОПСАПОРЕЗПОРЕЙПОРКАПОРНОПОРОГПОРОЗПОРОКПОРОСПОРОХПОРСКПОРТОПОРЧАПОРЫВПОСАДПОСЕВПОСОЛПОСОХПОСУЛПОСЫЛПОТАШПОТЕКПОТИРПОТОКПОТОППОТТОПОТЯГПОХОДПОХУЛПОЧВАПОЧЕТПОЧИНПОЧКАПОЧТАПОШИБПОШИВПОЭМАПРАВОПРАЙДПРАЙСПРАЩАПРЕЛЬПРЕОНПРЕССПРИЕМПРИМАПРИНЦПРИОРПРИУЗПРИЧТПРИЮТПРОБАПРОГАПРОЕМПРОЗАПРОПСПРОСОПРОФИПРУССПРУШАПРЫТЬПРЯДЬПРЯЖАПРЯХАПСАРЬПСИНАПСИОНПСИЦАПТАХАПТИЦАПУАЛЮПУАНТПУГАЧПУДЖАПУДИКПУДРАПУЗАНПУЗАЧПУКЛЯПУЛЬСПУЛЬТПУНКТПУПОКПУРГАПУРИМПУРИНПУРКАПУТЕЦПУТЛОПУТЛЯПУФИКПУЧОКПУШКАПУШОКПУШТУПЧЕЛАПШЕНОПЫЖИКПЫРЕЙПЫТКАПЫШКАПЬЕЗАПЬЕРОПЬЕСАПЬЯНЬПЯЛКАПЯСТЬПЯТАКПЯТКАПЯТНОПЯТОКРАДАРРАДЖАРАДИЙРАДИОРАДОНРАЗЕРРАЗИКРАЗОКРАЗОРРАЗУМРАИНАРАЙНАРАЙОНРАКИЯРАКЛЯРАКУНРАКШАРАЛЛИРАМКАРАММИРАМПАРАНЕТРАНЕЦРАНКАРАНЧОРАПИДРАСТРРАТАЙРАТИНРАУНДРАФИКРАФИЯРАХИСРАХИТРАЦЕЯРАЦИЯРАЧОКРВАНЬРВОТАРДЕСТРЕБЕКРЕБРОРЕБУСРЕВУНРЕГБИРЕГГИРЕДАНРЕДИСРЕДУТРЕЖИМРЕЗАКРЕЗЕНРЕЗЕЦРЕЗИТРЕЗКАРЕЗНЯРЕЗОЛРЕЗОНРЕЗУСРЕЙКАРЕЛИЗРЕЛИНРЕЛИТРЕЛЬСРЕМЕЗРЕМИЗРЕНЕТРЕНИЙРЕНИНРЕНТАРЕПЕЙРЕПЕРРЕПКАРЕТРОРЕЧКАРЕШКАРЖИЩЕРИБОПРИДЕРРИЗОМРИКШАРИНИТРИПУСРИСКАРИТОРРИФЛЯРИФМАРИЦИНРИШТАРОБОТРОВЕРРОВИКРОВНЯРОГАЧРОГОЗРОДЕОРОДИЙРОДИЧРОДНЯРОЖОКРОЖОНРОЗАНРОЗГАРОЗНЬРОЙБАРОКЕРРОКОТРОЛИКРОМАНРОМЭНРОНДОРОНЖАРОПАКРОПОТРОСТРРОТИКРОТОКРОТОНРОТОРРОХЛЯРОЯЛЬРТИЩЕРТУТЬРУБЕЖРУБЕЦРУБИНРУБКАРУБЛЬРУГНЯРУДЯКРУЖЬЕРУИНАРУКАВРУЛЕТРУЛОНРУМБАРУМЫНРУНЕТРУНЕЦРУПИЯРУПОРРУСАКРУСИНРУСИЧРУСЛОРУТИЛРУЧЕЙРУЧКАРЫБАКРЫБЕЦРЫБКАРЫВОКРЫЖЕЙРЫЖИЙРЫЖИКРЫНДАРЫНОКРЫСАКРЫСЦАРЫТЬЕРЫЧАГРЭКЕТРЭЛЕЙРЭПЕРРЮМКАРЮШКАРЯБОКРЯДНОРЯДОКРЯСКАРЯШКАСААМИСАБАНСАБЗАСАБЛЯСАБУРСАВАНСАВКАСАГАНСАГИБСАДЖАСАДИКСАДКАСАДОКСАДХУСАЗАНСАЙГАСАЙДАСАЙКАСАЙРАСАКВАСАКЛЯСАЛАТСАЛЕПСАЛКАСАЛОЛСАЛОНСАЛОПСАЛУНСАЛЮТСАМАНСАМБАСАМБОСАМЕЦСАМКАСАМУМСАПЕРСАПКАСАПОГСАПУНСАРАЙСАРАНСАРГОСАРЖАСАРОССАРЫЧСАТИНСАТИРСАУНАСАУЭРСАХАРСАХИБСАЧОКСБРОДСБРОССБРУЯСВАМИСВАРАСВАХАСВЕЧАСВИЛЬСВИНГСВИСТСВИТАСВИТЧСВОРАСВОЯКСВЯЗЬСГЛАЗСДАЧАСДВИГСДОБАСЕАНССЕВАКСЕВЕРСЕВЕЦСЕВОКСЕГУНСЕДАНСЕДЕРСЕДЛОСЕДОКСЕЗАМСЕЗОНСЕКАЧСЕКТАСЕЛЕНСЕЛФИСЕМГАСЕМИКСЕМИТСЕМПЛСЕМЬЯСЕНАЖСЕНАТСЕНЦОСЕПИЯСЕПТАСЕРАКСЕРАОСЕРИНСЕРИФСЕРИЯСЕРКАСЕРКОСЕРНАСЕРСОСЕРУМСЕРЯКСЕСТАСЕТКАСЕЧКАСИАЛЬСИВЕРСИВКАСИВКОСИВУЧСИГМАСИДКАСИДХИСИЕНАСИЖОКСИЗИФСИЗЯКСИКОЗСИЛАНСИЛАЧСИЛЕНСИЛОКСИЛОНСИЛОССИЛУРСИЛЬФСИМКАСИНАПСИНГЛСИНЕЦСИНОДСИНУССИНЯКСИПАЙСИРИНСИРОПСИСТРСИТАРСИТЕЦСИТРОСИТЦЕСИФОНСКАЛАСКАЛОСКАНЬСКАРБСКАРНСКАУТСКВЕРСКВИДСКВОБСКВОТСКВОШСКЕЙТСКЕТЧСКИРДСКИРРСКИФЛСКЛАДСКЛЕПСКЛИЗСКЛОНСКОБАСКОПАСКОРАСКОРМСКОТЧСКРАБСКРАПСКРЕПСКРИБСКРИПСКУБАСКУДОСКУКАСКУЛАСКУНССКУЧЕСЛАВАСЛАЙДСЛЕГАСЛЕЗАСЛЕНГСЛИВАСЛИЗЬСЛИНГСЛОВОСЛУГАСЛЮДАСЛЮНАСМАЗЬСМАЙЛСМЕЙЗСМЕНАСМЕРДСМЕРЧСМЕСЬСМЕТАСМОЛАСМОЛЬСМОТРСМРАДСМСКАСМУТАСМЫСЛСНАРКСНЕДЬСНИЦАСНОХАСНЫТЬСОБЕССОБОРСОВЕТСОВИКСОВКАСОВОКСОДАРСОДОМСОЗЫВСОЙКАСОЙМАСОЙОТСОКЕТСОКОЛСОЛЕЯСОЛКАСОЛОДСОМИКСОМИТСОНАРСОНЕТСОПКАСОПЛОСОПЛЯСОПОРСОПУНСОРГОСОРИТСОРОМСОРУССОСЕДСОСЕЦСОСКАСОСНАСОСОКСОСУДСОСУНСОТАЯСОТКАСОТНЯСОФИТСОФИЯСОЧОКСОШКАСПАГИСПАЗМСПЕКЛСПЕЛЬСПЕСЬСПИНАСПИРТСПИЦАСПЛАВСПЛИНСПОРАСПОРТСПРИТСПРОССПРУТСПУРТСПУСКСПЮРКСРАНЬСРЕДАСРОСТССОРАССУДАСТАДОСТАЛЬСТАНССТАРНСТАРТСТАРЬСТАТЬСТАУТСТВОЛСТВОРСТЕГАСТЕЗЯСТЕЙКСТЕКАСТЕЛАСТЕЛССТЕЛЬСТЕНАСТЕНДСТЕПССТЕПЬСТЕРХСТИЛОСТИЛЬСТИНГСТОИКСТОКССТОЛБСТОЛПСТОМАСТОМПСТОПАСТОУНСТОЯКСТРАЖСТРАЗСТРАХСТРИЖСТРИМСТРИПСТРИТСТРОБСТРОЙСТРОПСТРУГСТРУПСТРУЯСТУЖАСТУПАСУАРЕСУБИЗСУВОЙСУДАКСУДИЯСУДНОСУДОКСУДЬЯСУЕТАСУИНГСУКНОСУЛЕЯСУЛОЙСУЛОКСУМАХСУМЕТСУМКАСУММАСУННАСУОМИСУПЕЦСУПИНСУРЖАСУРИКСУРОКСУСАКСУСЕКСУСЛОСУТАЖСУТРАСУФИЙСУФЛЕСУЧКАСУЧОКСУШКАСУЩИКСФЕРАСХВАТСХЕМАСХИМАСЦЕНАСЦИНКСЪЕЗДСЫНОКСЫПЕЦСЫРЕЦСЫРОКСЫРТЬСЫРЦАСЫРЬЕСЫЧУГСЫЩИКСЭБИНСЭГУЭСЭНЬОСЮЖЕТСЮИТАСЯВКАСЯЖОКТАБАКТАБЕСТАБЛАТАБЛОТАБОРТАБУНТАВОТТАВРОТАГАНТАГОСТАЗИКТАЙГАТАЙКАТАЙМСТАЙНАТАКИНТАКСАТАКСИТАКЫРТАЛАНТАЛЕРТАЛЕСТАЛИБТАЛИКТАЛИСТАЛИЯТАЛОНТАЛЫШТАЛЬКТАЛЬЯТАМГАТАМИЛТАНГОТАНЕЦТАНИДТАНИНТАПАСТАПЕРТАПИРТАПКАТАРАНТАРИФТАСКАТАСТАТАТКАТАТРАТАФТАТАФЬЯТАХТАТАЦЕТТАЧКАТАШКАТВАРЬТВИСТТЕАТРТЕЗИСТЕЗКАТЕИЗМТЕИСТТЕКСТТЕЛЕКТЕЛЕЦТЕЛИКТЕЛКАТЕЛОКТЕМБРТЕМПЛТЕНАРТЕНЕКТЕНИЯТЕНОРТЕНЦАТЕПЛОТЕРЕМТЕРЕЦТЕРКАТЕСАКТЕСКАТЕСЛОТЕСТОТЕСТЬТЕТКАТЕУРГТЕФРАТЕХНОТЕЧКАТЕШКАТИАРАТИГЛЬТИЗЕРТИКЕРТИМИНТИМОЛТИМУСТИПАЖТИПЕЦТИПИКТИПУНТИПУСТИРАЖТИРАНТИРИТТИТАНТИТЛАТИТЛОТИТУЛТКАНЬТОВАРТОЙОНТОКАЙТОЛПАТОЛЩАТОЛЩЬТОМАТТОМЕЦТОМИКТОМИЧТОНАРТОНЕРТОНИКТОННАТОНУСТОПАЗТОПКАТОПОРТОПОТТОРБАТОРЕЦТОРИЙТОРИТТОРОНТОРОСТОРУСТОСКАТОТЕМТОФУСТОФФИТОХАРТОЧКАТРАВАТРАКТТРАМПТРАНСТРАНШТРАППТРАСТТРАТАТРАУРТРЕБАТРЕЛЬТРЕМАТРЕНДТРЕСКТРЕСТТРЕТЬТРЕУХТРЕФАТРИАСТРИБАТРИЕРТРИЗМТРИКОТРИОДТРИПСТРОМБТРОМПТРОПАТРОЯКТРУБАТРУХАТРЮМОТСУГАТУБУСТУГУНТУЗИКТУКАНТУЛИЙТУЛУКТУЛУПТУЛЬЯТУЛЯКТУМАКТУМАНТУМБАТУМОРТУНЕЦТУПЕЙТУПЕЦТУПИКТУПЫШТУРИКТУРНЕТУРОКТУТОРТУТСИТУТТИТУФЛЯТУФТАТУЧКАТУШИНТУШКАТЩЕТАТЫКВАТЫНОКТЫРЛОТЫЧОКТЭММИТЮБИКТЮНЕРТЮНИКТЮРОКТЮТЮНТЮФЯКТЮЧОКТЯБЛОТЯГАЧТЯГЛОТЯГУНТЯЖБАТЯПКАУАЗИКУБРУСУБЫЛЬУВРАЖУГОДАУГОЛЬУГОРЬУДАЛЬУДАЧАУДЕРЖУДЭГЕУЗБЕКУЗИНАУЗНИКУЙГУРУКЛАДУКЛОНУКРОПУКРУТУКРЮКУКСУСУЛИКАУЛИТАУЛИЦАУЛУНГУЛЫБАУМБРАУМИАКУМНИКУМОЛКУМОРАУНИАТУНКУСУНТЕРУНЦИЯУПРЕКУПЫРЬУРЕМАУРИНАУРМАНУСИЩЕУСПЕХУСТАВУСТОЙУСТУПУСТЬЕУТЕРЯУТЕХАУТИЛЬУТИЦАУХАРЬУХВАТУХОЖЬУЧЕБАУШИЦАУШКАНУШКУЙУШНИКУЩЕРБФАБРАФАВОРФАГОТФАЗАНФАЗЕРФАЗИСФАКЕЛФАКИРФАЛДАФАЛЕЦФАЛЬЦФАНАТФАНЗАФАРСИФАСАДФАСЕТФАСКАФАСОНФАТУМФАТЮЙФАУНАФАЦЕТФАЦИЯФАЯНСФЕЛОНФЕНЕКФЕНИЙФЕНИЛФЕНОЛФЕРЗЬФЕРМАФЕРМИФЕСКАФЕТВАФЕТИШФЕТЮКФЕФЕРФИАКРФИБРАФИГНЯФИДЕРФИЗИКФИЗИЯФИКУСФИЛЕЙФИЛЕРФИЛИНФИЛОНФИЛЬМФИЛЮМФИМОЗФИНАЛФИНИКФИНИШФИНКАФИННАФИОРДФИРМАФИТИНФИШКАФЛАНГФЛАНКФЛЕЙМФЛЕЙЦФЛЕШЬФЛИНГФЛИНТФЛИРТФЛОКСФЛОРАФЛЮИДФЛЯГАФЛЯЕРФОБИЯФОКУСФОЛИОФОМКАФОНДЮФОНОНФОРЕЗФОРКСФОРМАФОРУМФОСКАФОТКАФОТОНФОФАНФРАЕРФРАЗАФРАНКФРАНТФРАУНФРАХТФРЕЗАФРЕЙМФРЕНДФРЕНЧФРЕОНФРОНТФРУКТФУГАСФУЖЕРФУЗЕЯФУЗИЯФУКУСФУЛЯРФУНДАФУРАЖФУРИЯФУРМАФУРОРФУТЕРФУТОРФУФЛОФУЭТЕФЫРОКФЬОРДФЬЮЖНФЮЗЕНФЮРЕРХАБАРХАБУБХАДЖИХАЗАРХАЙЛОХАКАНХАКАСХАКЕРХАЛАТХАЛВАХАЛДАХАЛЕОХАЛИФХАМКАХАМОНХАМСАХАМЬЕХАНЖАХАНШАХАПОКХАПУНХАРЧОХАСИДХАТКАХАУСАХАФИЗХАФИРХВАЛАХВОРЬХВОСТХЕДЕРХЕДИВХЕННАХЕРЕСХЕРИКХЕРНЯХИАЗМХИЛУСХИЛЯКХИМИКХИМИЯХИМУСХИНДИХИНДУХИНИНХИНОНХИППИХИТИНХИТОНХЛЕСТХЛУПЬХЛЫСТХЛЮСТХЛЯБЬХМАРАХМАРЬХМЕЛЬХМУРЬХМЫРЬХОББИХОБОТХОГАНХОДЖАХОДИКХОДКАХОДОКХОДУНХОЛИНХОЛКАХОЛОДХОЛОПХОЛСТХОЛУЙХОМУТХОМЯКХОНДАХОРАЛХОРДАХОРЕЙХОРЕКХОРЕЯХОХМАХОХОЛХОХОТХОШУНХРЕНЬХРУСТХРЯПАХРЯСКХРЯСТХУЙНЯХУНТАХУРАЛХУРМАХУТБАХУТИЯХУТОРХЭДЕРЦАДИКЦАНГАЦАПКАЦАПЛЯЦАПУНЦАПФАЦАРЕКЦАХУРЦАЦКАЦВЕЛЬЦЕВКАЦЕВЬЕЦЕДРАЦЕЗИЙЦЕЛИКЦЕЛЛАЦЕЛОЕЦЕНОЗЦЕНТРЦЕПКАЦЕПНЯЦЕППАЦЕРВАЦЕРИЙЦЕРИТЦЕХИНЦИБИКЦИГАНЦИКЛЯЦИНАШЦИНГАЦИНИКЦИСТАЦИТРАЦИФРАЦОКОТЦУКАТЦУЦИКЦЫГАНЦЫПКАЧАБАНЧАБЕРЧАДЕЦЧАДКАЧАДРАЧАЙКАЧАЙЛДЧАКРАЧАЛКАЧАЛМАЧАЛЫЙЧАРКАЧАСИКЧАСОКЧАСТЬЧАТНИЧАШКАЧЕБАКЧЕБОТЧЕКАНЧЕКЕРЧЕЛКАЧЕПАНЧЕПЕЦЧЕРВАЧЕРВЬЧЕРЕДЧЕРЕПЧЕРНЬЧЕРТАЧЕСКАЧЕСТЬЧЕХОЛЧЕЧЕНЧЕЧЕТЧЕШИРЧЕШКАЧЕШУЯЧИБИСЧИЖИКЧИКЛИЧИЛИМЧИНАРЧИНКАЧИНУКЧИРЕЙЧИРОКЧИСЛОЧИТЕРЧИТКАЧИТТАЧИФИРЧОБОТЧОКЕРЧОКТОЧОМГАЧРЕВОЧРЕДАЧТИВОЧТИЦАЧУБУКЧУВАКЧУВАЛЧУВАШЧУВЯКЧУГУНЧУДАКЧУДИКЧУЖАКЧУЖОЕЧУЙКАЧУКЧАЧУЛАНЧУЛОКЧУМАКЧУМКАЧУРАКЧУРЕКЧУРКАЧУТЬЕЧУХНАЧУЧХЕЧУШКАШАБАШШАБЕРШАБЛИШАБОТШАВКАШАЖОКШАЙБАШАЙЕНШАЙКАШАКАЛШАКШАШАЛАШШАЛЛИШАЛОТШАЛУНШАМАНШАМОТШАНДИШАНЕЦШАНКРШАПКАШАРАПШАРИКШАРПИШАСЛАШАССЕШАССИШАТЕНШАТЕРШАТИЯШАТТЛШАТУНШАФЕРШАФФЛШАХИДШАХТАШАШКАШВАЛЬШВАНКШВАРАШВАРТШВЕРТШЕВЕРШЕВРОШЕИЩАШЕЙКАШЕКЕРШЕЛЕПШЕЛОМШЕЛЬФШЕМАЯШЕПОТШЕРИФШИБЕРШИЗИКШИИЗМШИММИШИНОКШИПИКШИПУНШИРМАШИТВОШИТИКШИТЬЕШИФЕРШИФОНШИХАНШИХТАШИШАКШИШКАШКАЛАШКАЛОШКВАЛШКЕРТШКОДАШКОЛАШКУРАШЛАНГШЛЕЙФШЛИФТШЛЮХАШЛЯПАШМАРАШМЕЛЬШНАПСШНЕКАШНЯВАШНЯГАШОБЛАШОДДИШОРЕЦШОРКАШОРНЯШОРОХШОССЕШОФЕРШОШОНШПАГАШПАЛАШПАНАШПЕНЬШПИЛЬШПИНЬШПИОНШПОНАШПОРАШПРИЦШПРОТШПУЛЯШПУНТШПЫНЬШРИМСШРИФТШТАМБШТАММШТАМПШТЕЙНШТЕРТШТИЛЬШТИФТШТОРАШТОРМШТРАФШТРЕКШТРИХШТУКАШТУРМШТЫРЬШУБКАШУГАЙШУДРАШУЙЦАШУЛЕРШУМЕРШУМОКШУРИНШУРПАШУРУПШУРЯКШУТКАШУХЕРШУШУНШХЕРАШХУНАЩЕБЕТЩЕГОЛЩЕКОТЩЕЛКАЩЕЛОКЩЕНОКЩЕПКАЩЕТКАЩЕЧКАЩИПЕЦЩИПКАЩИПОКЩИТИКЩИТОКЩУПИКЩУРОКЩУЧКАЭВЕНКЭГИДАЭГРЕТЭДИКТЭЙДОСЭКЗОНЭКЗОТЭКЛЕРЭКРАНЭКСОДЭКШЕНЭЛЕАТЭЛИНТЭЛИТАЭЛЛИНЭМАЛЬЭМБОЛЭММЕРЭНСИНЭОЗИНЭОЛИТЭОЦЕНЭПАРХЭПИКАЭПОНЖЭПОХАЭПЮРАЭРБИЙЭРЗАЦЭРИКАЭРКЕРЭСДЕКЭСКЕРЭСКИЗЭССИВЭСТЕТЭТВЕШЭТИКАЭТНОСЭФИОПЭШПАЙЮДОЛЬЮЗИНЬЮЗНЕТЮКОЛАЮЛИУСЮНИКСЮНИОРЮНИЦАЮНКЕРЮНКОРЮННАТЮНОШАЮРИСТЮФЕРСЯБЕДАЯГЕЛЬЯГОДАЯГУАРЯИЧКОЯКОРЬЯЛАПАЯМАЕЦЯМИНАЯМИЩАЯМЩИКЯРИЦАЯРЛЫКЯРУГАЯРЫГАЯСЕНЬЯСТВОЯСТЫКЯСЫРЬЯТВЯГЯТОВЬЯХОНТЯШМАК";
+let wdSet = null;
+function wdValid(w){ if (!wdSet){ wdSet = new Set(WD_ANS); for (let i = 0; i < WD_DICT.length; i += 5) wdSet.add(WD_DICT.slice(i, i + 5)); } return wdSet.has(w); }
+const wdDays = (a, b) => { const [y1, m1, d1] = a.split("-").map(Number), [y2, m2, d2] = b.split("-").map(Number); return Math.round((Date.UTC(y2, m2 - 1, d2) - Date.UTC(y1, m1 - 1, d1))/864e5); };
+function wdWordAt(i){
+  const n = WD_ANS.length, c = Math.floor(i/n), j = ((i % n) + n) % n; if (c <= 0) return WD_ANS[j];
+  /* второй круг и дальше: тот же список, перемешанный по номеру круга */
+  const a = WD_ANS.map((_, k) => k); let s = (c*2654435761) >>> 0;
+  for (let k = n - 1; k > 0; k--){ s = (Math.imul(s, 1664525) + 1013904223) >>> 0; const r = s % (k + 1); [a[k], a[r]] = [a[r], a[k]]; }
+  return WD_ANS[a[j]];
+}
+function wdToday(){
+  const today = dayKey(); let W = S.wd;
+  if (!W || typeof W !== "object") W = S.wd = {start: today};
+  if (W.d !== today){ Object.assign(W, {d: today, g: [], st: 0, h: -1, r: 0}); save(); }
+  W.ans = wdWordAt(Math.max(0, wdDays(W.start, today)));
+  return W;
+}
+function wdScore(g, a){
+  const res = [0, 0, 0, 0, 0], left = {};
+  for (let i = 0; i < 5; i++){ if (g[i] === a[i]) res[i] = 2; else left[a[i]] = (left[a[i]] || 0) + 1; }
+  for (let i = 0; i < 5; i++) if (!res[i] && left[g[i]] > 0){ res[i] = 1; left[g[i]]--; }
+  return res;
+}
+function renderWordCard(){
+  const box = $("#wordCard"); if (!box) return;
+  const W = wdToday(), last = W.g[W.g.length - 1], sc = last ? wdScore(last, W.ans) : null;
+  const tiles = document.createElement("span"); tiles.className = "wmini"; tiles.setAttribute("aria-hidden", "true");
+  for (let i = 0; i < 5; i++){ const t = document.createElement("i"); if (W.st === 1){ t.className = "s2"; t.textContent = W.ans[i]; } else if (sc) t.className = "s" + sc[i]; tiles.appendChild(t); }
+  const n = W.g.length, sub = W.st === 1 ? `с ${n}-й попытки · +${W.r} капель` : W.st === 2 ? "сегодня не далось · завтра новое слово" : n ? `попытка ${n + 1} из 6` : "пять букв · каждый день новое слово";
+  const g = group(), r = li("#i-grid:#f3d27a", "Загадка дня", sub, tiles);
+  if (!W.st && !n){ const dot = document.createElement("span"); dot.className = "ndot"; r.querySelector(".tx b").appendChild(dot); }
+  asButton(r, () => { snd.tap(); haptic(6); openWord(); }); g.appendChild(r);
+  box.innerHTML = ""; box.appendChild(g);
+}
+let wdKey = null;
+function openWord(){
+  const W = wdToday(), ans = W.ans; let cur = "", busy = false;
+  openSheet("Загадка дня", body => {
+    const intro = para(WD_NAMES.includes(ans) ? "Сегодня загадано имя. Пять букв, шесть попыток" : "Существительное, пять букв, шесть попыток");
+    intro.classList.add("wintro"); body.appendChild(intro);
+    const leg = document.createElement("div"); leg.className = "wleg"; leg.innerHTML = '<span><i class="s2"></i>на месте</span><span><i class="s1"></i>есть, но не тут</span><span><i class="s0"></i>нет</span>'; body.appendChild(leg);
+    const grid = document.createElement("div"); grid.className = "wgrid"; grid.setAttribute("role", "grid"); grid.setAttribute("aria-label", "Попытки");
+    const rows = []; for (let r = 0; r < 6; r++){ const row = document.createElement("div"); row.className = "wrow"; row.setAttribute("role", "row");
+      for (let c = 0; c < 5; c++){ const t = document.createElement("span"); t.className = "wt"; t.setAttribute("role", "gridcell"); row.appendChild(t); } grid.appendChild(row); rows.push(row); }
+    body.appendChild(grid);
+    /* строка под сеткой: сообщение или кнопка подсказки, по очереди, чтобы клавиатура не уезжала вниз */
+    const wbar = document.createElement("div"); wbar.className = "wbar"; body.appendChild(wbar);
+    const msg = document.createElement("div"); msg.className = "wmsg"; msg.setAttribute("aria-live", "polite"); wbar.appendChild(msg);
+    const hint = document.createElement("button"); hint.className = "whint"; hint.type = "button"; hint.textContent = "Подсказка от Лапули"; hint.hidden = true; wbar.appendChild(hint);
+    const bar = () => { const can = !W.st && W.g.length >= 3 && W.h < 0; hint.hidden = !can || !!msg.textContent; msg.hidden = !msg.textContent; };
+    const kb = document.createElement("div"); kb.className = "wkb"; const keys = {};
+    ["ЙЦУКЕНГШЩЗХЪ", "ФЫВАПРОЛДЖЭ", "<ЯЧСМИТЬБЮ>"].forEach(line => { const row = document.createElement("div"); row.className = "wkr";
+      [...line].forEach(ch => { const k = document.createElement("button"); k.type = "button"; k.className = "wk"; k.dataset.k = ch;
+        if (ch === "<"){ k.classList.add("wide"); k.textContent = "ввод"; k.dataset.k = "ENTER"; k.setAttribute("aria-label", "Проверить слово"); }
+        else if (ch === ">"){ k.classList.add("wide"); k.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 5.5h9.3a1.5 1.5 0 0 1 1.5 1.5v10a1.5 1.5 0 0 1-1.5 1.5H9.2L3.8 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M11.6 9.4l5 5M16.6 9.4l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'; k.dataset.k = "BACK"; k.setAttribute("aria-label", "Стереть букву"); }
+        else { k.textContent = ch; keys[ch] = k; }
+        k.addEventListener("click", () => press(k.dataset.k)); row.appendChild(k); });
+      kb.appendChild(row); });
+    body.appendChild(kb);
+    const say = (t, keep) => { msg.textContent = t; bar(); msg.classList.remove("on"); void msg.offsetWidth; msg.classList.add("on"); clearTimeout(msg._t);
+      if (!keep) msg._t = setTimeout(() => { msg.classList.remove("on"); setTimeout(() => { if (!msg.classList.contains("on")){ msg.textContent = hintText(); bar(); } }, 250); }, 2200); };
+    const hintText = () => W.h >= 0 ? `Лапуля подглядела: ${W.h + 1}-я буква «${ans[W.h]}»` : "";
+    const paintKeys = () => { const best = {}; W.g.forEach(g => wdScore(g, ans).forEach((s, i) => { best[g[i]] = Math.max(best[g[i]] ?? -1, s); }));
+      Object.entries(keys).forEach(([ch, k]) => { k.classList.remove("s0", "s1", "s2"); if (best[ch] !== undefined) k.classList.add("s" + best[ch]); }); };
+    const paintRow = (r, word, sc) => [...rows[r].children].forEach((t, i) => { t.textContent = word[i] || ""; t.className = "wt" + (word[i] ? " f" : "") + (sc ? " s" + sc[i] : ""); });
+    const paint = () => { W.g.forEach((g, r) => paintRow(r, g, wdScore(g, ans))); if (!W.st && W.g.length < 6) paintRow(W.g.length, cur);
+      for (let r = W.g.length + (W.st ? 0 : 1); r < 6; r++) paintRow(r, ""); paintKeys();
+      msg.textContent = W.st === 1 ? `Отгадано с ${W.g.length}-й попытки. +${W.r} капель` : W.st === 2 ? `Было слово «${ans}». Завтра будет новое` : hintText(); bar(); };
+    const finish = won => {
+      const n = W.g.length; W.st = won ? 1 : 2; W.r = won ? WD_PRIZE[n - 1] : 0;
+      if (won){ S.drops += W.r; S.wdWon = (S.wdWon || 0) + 1; }
+      dayNote().wd = {w: ans, n, ok: won ? 1 : 0, h: W.h >= 0 ? 1 : 0}; save();
+      if (won){ const tiles = [...rows[n - 1].children];
+        if (!reduced()) tiles.forEach((t, i) => t.animate([{transform: "none"}, {transform: "translateY(-14px)", offset: .4}, {transform: "none"}], {duration: 520, delay: i*90, easing: "ease-out"}));
+        if (ensureRunning()) [1046.5, 1318.5, 1568, 2093].forEach((f, i) => fmBell({f, t: ctx.currentTime + .1 + i*.09, dur: .6, peak: .09, send: .35}));
+        haptic([10, 40, 10]); setTimeout(() => { const [x, y] = centerOf(rows[n - 1]); FX.burst(x, y, {emojis: ["✨", "🩸", "⭐"], n: 16, size: [14, 22], grav: 160}); hud(true); }, 420);
+      } else snd.starMiss();
+      paint(); say(won ? `Отгадано с ${n}-й попытки. +${W.r} капель` : `Было слово «${ans}». Завтра будет новое`, true); renderWordCard();
+    };
+    function press(k){
+      if (busy || W.st) return;
+      if (k === "BACK"){ if (cur){ cur = cur.slice(0, -1); paintRow(W.g.length, cur); snd.back(); } return; }
+      if (k === "ENTER"){
+        if (cur.length < 5){ shake(rows[W.g.length], 5); snd.wrong(); say("нужно пять букв"); return; }
+        if (!wdValid(cur)){ shake(rows[W.g.length], 5); snd.wrong(); say("котики такого слова не знают"); return; }
+        if (W.g.includes(cur)){ shake(rows[W.g.length], 5); snd.wrong(); say("это слово уже было"); return; }
+        const r = W.g.length, sc = wdScore(cur, ans), word = cur; W.g.push(word); cur = ""; save(); busy = true;
+        [...rows[r].children].forEach((t, i) => {
+          if (reduced()){ t.className = "wt f s" + sc[i]; return; }
+          setTimeout(() => { t.classList.add("flip"); setTimeout(() => { t.className = "wt f flip s" + sc[i]; snd.tick(.15 + i*.12); }, 230); setTimeout(() => t.classList.remove("flip"), 480); }, i*230);
+        });
+        setTimeout(() => { busy = false; paintKeys();
+          if (word === ans) finish(true); else if (W.g.length >= 6) finish(false);
+          else { bar(); paintRow(W.g.length, ""); }
+          renderWordCard(); }, reduced() ? 0 : 5*230 + 300);
+        return;
+      }
+      if (cur.length >= 5) return;
+      cur += k; snd.tap(); haptic(3);
+      const t = rows[W.g.length].children[cur.length - 1]; paintRow(W.g.length, cur);
+      if (!reduced()) t.animate([{transform: "scale(1.12)"}, {transform: "none"}], {duration: 140, easing: "ease-out"});
+    }
+    hint.onclick = () => {
+      if (W.h >= 0 || W.st) return;
+      const known = new Set(); W.g.forEach(g => wdScore(g, ans).forEach((s, i) => { if (s === 2) known.add(i); }));
+      const free = [0, 1, 2, 3, 4].filter(i => !known.has(i)); if (!free.length) return;
+      W.h = free[Math.floor(Math.random()*free.length)]; save(); snd.collect(); haptic(8); say(hintText(), true);
+    };
+    wdKey = e => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === "Enter"){ e.preventDefault(); press("ENTER"); }
+      else if (e.key === "Backspace"){ e.preventDefault(); press("BACK"); }
+      else { const ch = e.key.toUpperCase().replace("Ё", "Е"); if (/^[А-ЯЁ]$/.test(ch)) press(ch); }
+    };
+    paint();
+  }, () => { wdKey = null; renderWordCard(); });
+}
+addEventListener("keydown", e => { if (wdKey && openSh) wdKey(e); });
+
 /* =================== ДВИЖОК УРОВНЕЙ =================== */
 let current = null, cleanup = null, gameTok = 0;
 function startLevel(L, fromEl){
-  stopLevel();
+  stopLevel(); rainSound(false);
   current = L;
   const P = POSTER[L.n], game = $("#game");
   game.style.setProperty("--lvbg", `linear-gradient(180deg,${P[0]},${P[1]} 70%,${P[2]})`);
@@ -3550,7 +4307,7 @@ function startLevel(L, fromEl){
 function stopLevel(){ if (cleanup){ try { cleanup(); } catch(e){} cleanup = null; } }
 function exitLevel(){
   stopLevel(); const game = $("#game"); gameTok++; app.classList.remove("game-on");
-  const fin = () => { game.classList.remove("on"); renderMap(); hud(true); applyLook(); applyEvent(); if (S.music){ Music.start(0); $("#miniPlayer").classList.remove("playing"); } eventFx(); };
+  const fin = () => { game.classList.remove("on"); renderMap(); hud(true); applyLook(); applyEvent(); rainSound($("#v-home").classList.contains("on") && app.classList.contains("rainy")); if (S.music){ Music.start(0); $("#miniPlayer").classList.remove("playing"); } eventFx(); };
   if (reduced() || !game.animate) return fin();
   game.animate([{opacity:1, transform:"none"}, {opacity:0, transform:"scale(.94)"}], {duration:300, easing:"cubic-bezier(.4,0,.6,1)"}).onfinish = fin;
 }
@@ -5235,7 +5992,7 @@ function bindDuo(root){
   root.querySelectorAll(".cat").forEach(blinkLoop);
 }
 ["pointerup", "pointercancel", "blur"].forEach(t => addEventListener(t, stopKnead));
-function renderAll(){ applyLook(); applyEvent(); applySeason(); hud(); applyMoon(); applyHouseTime(); showView(document.querySelector(".view.on").id); }
+function renderAll(){ applyLook(); applyEvent(); applySeason(); hud(); applyMoon(); applyHouseTime(); applyWeather(); applyGuest(); showView(document.querySelector(".view.on").id); }
 app.addEventListener("scroll", () => { if (app.scrollTop || app.scrollLeft){ app.scrollTop = 0; app.scrollLeft = 0; } });
 try { if (navigator.standalone || matchMedia("(display-mode: standalone)").matches) app.classList.add("pwa"); } catch(e){}
 (function worldFx(){
@@ -5264,6 +6021,7 @@ $("#btnStart").onclick = () => {
   const [x,y] = centerOf($("#btnStart")); FX.burst(x, y, {emojis:["✨","🌙","⭐"], n:14, size:[14,24]});
   $("#splash").classList.add("off"); setTimeout(() => $("#splash").remove(), 1000);
   dayNote(); save();
+  setTimeout(() => rainSound(app.classList.contains("rainy")), 900);
   setTimeout(() => { timeLines(); eventFx(); queueGift(5200); }, 1300);
 };
 addEventListener("keydown", e => {
