@@ -640,6 +640,20 @@ body.day .moon .shade{opacity:0}
 .pola .ph.dev img{filter:blur(12px) saturate(.5) brightness(1.08);transform:scale(1.18)}
 .pola .ph.dev .milk{position:absolute;inset:0;background:#efe6dc;opacity:var(--milk,.9)}
 .pola .ph.dev .need{position:absolute;left:0;right:0;bottom:8px;text-align:center;font:600 10px/1 var(--ui);color:#6b5a6e}
+/* проявочная */
+.pola.darkroom{position:relative;box-shadow:0 16px 34px rgba(0,0,0,.5),0 0 0 1px rgba(255,60,70,.18),0 0 38px rgba(255,40,60,.38)}
+.pola.darkroom .ph.dev img{filter:blur(var(--blur,12px)) saturate(.6) brightness(1.05)}
+.pola.darkroom .ph.dev .milk{opacity:var(--milk,.8);background:#f1e2dc}
+.pola.darkroom .ph.dev::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:multiply;background:radial-gradient(circle at 50% 28%,rgba(255,110,110,.38),rgba(170,10,30,.5))}
+.pola.darkroom .ph.dev::before{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:60%;z-index:2;pointer-events:none;
+  background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,230,230,.22),rgba(255,255,255,0));animation:trayWave 5.5s ease-in-out infinite}
+@keyframes trayWave{0%{transform:translateX(0)}60%,100%{transform:translateX(330%)}}
+.pola.darkroom .ph.dev .need{z-index:3;color:#ffe3e6;font-size:10.5px;text-shadow:0 1px 6px rgba(110,0,16,.8)}
+.pola .drtag{position:absolute;bottom:-9px;left:50%;z-index:4;transform:translateX(-50%);padding:4px 9px 4px 20px;border-radius:999px;white-space:nowrap;
+  font:600 8.5px/1 var(--ui);letter-spacing:.1em;text-transform:uppercase;color:#ffd9dc;background:rgba(60,8,16,.92);box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.pola .drtag::before{content:"";position:absolute;left:8px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:#ff3b4e;box-shadow:0 0 8px 2px rgba(255,40,60,.8);animation:drLamp 2.4s ease-in-out infinite}
+@keyframes drLamp{50%{opacity:.55;box-shadow:0 0 4px 1px rgba(255,40,60,.5)}}
+@media (prefers-reduced-motion:reduce){.pola.darkroom .ph.dev::before{display:none}}
 .pola.developing .ph img{animation:develop 2.6s cubic-bezier(.2,.7,.2,1) forwards}
 .pola.developing .ph .milk,.pola.developing .ph .need{animation:milkOff 2.2s ease forwards}
 @keyframes develop{from{filter:blur(12px) saturate(.5) brightness(1.08);transform:scale(1.18)}to{filter:blur(0) saturate(1) brightness(1);transform:scale(1)}}
@@ -1237,6 +1251,11 @@ html,body{background:#0f0a17}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 .5px rgba(255,255,255,.08),0 8px 18px rgba(0,0,0,.22)}
 .acard.got .front{background:linear-gradient(180deg,rgba(82,56,104,.95),rgba(42,28,58,.96))}
 .acard .back{transform:rotateY(180deg);justify-content:center;gap:5px;padding:10px 9px}
+/* Safari не прячет обратную сторону у слоёв с анимацией (блик, эмодзи, свечение): меняем стороны по видимости, ровно когда карточка встаёт ребром */
+.acard .front{transition:visibility 0s .09s}
+.acard.flip .front{visibility:hidden}
+.acard .back{visibility:hidden;transition:visibility 0s .09s}
+.acard.flip .back{visibility:visible}
 .acard .med{position:relative;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:26px;line-height:1;flex:none;overflow:visible}
 .acard.got .med{background:radial-gradient(circle at 35% 28%,#fff1c2,#f5c84c 56%,#a8771a);box-shadow:0 0 18px rgba(245,200,76,.32),inset 0 -3px 6px rgba(120,70,0,.35),inset 0 2px 3px rgba(255,255,255,.6)}
 .acard.lock .med,.acard.hid .med{background:radial-gradient(circle at 35% 28%,#3d2f4f,#1f1730);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 6px rgba(0,0,0,.35)}
@@ -1297,6 +1316,106 @@ html,body{background:#0f0a17}
 .gnext{text-align:center;margin:-4px 0 6px;color:var(--muted)}
 .app.rainy .moon{opacity:.6;transition:opacity 3s}
 .app.rainy .stars{opacity:.45;transition:opacity 3s}
+/* уровень 2: бокалы */
+.shell{position:absolute;inset:0;overflow:hidden}
+.sh-glow{position:absolute;left:50%;top:6%;width:120%;height:60%;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(ellipse at 50% 40%,rgba(255,190,120,.16),rgba(255,190,120,0) 62%)}
+.sh-table{position:absolute;left:-12%;right:-12%;top:52%;bottom:-10%;border-radius:50% 50% 0 0/26% 26% 0 0;
+  background:radial-gradient(ellipse at 50% 0%,#6b2f33 0%,#43191f 42%,#230b11 100%);box-shadow:inset 0 2px 0 rgba(255,214,170,.18),inset 0 30px 60px rgba(255,170,120,.08)}
+.sh-table::after{content:"";position:absolute;left:12%;right:12%;top:0;height:3px;border-radius:2px;background:linear-gradient(90deg,rgba(243,210,122,0),rgba(243,210,122,.35),rgba(243,210,122,0))}
+.gob{position:absolute;left:0;top:0;z-index:2;width:var(--gw);height:calc(var(--gw)*1.3);padding:0;border:0;background:none;will-change:transform;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.gob svg{position:relative;z-index:1;display:block;width:100%;height:100%;filter:drop-shadow(0 6px 6px rgba(0,0,0,.4))}
+.gob .gsh{position:absolute;left:8%;right:8%;bottom:-5%;height:14%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.5),rgba(0,0,0,0))}
+.shell.pick .gob svg{animation:gobAsk 1.6s ease-in-out infinite}
+.shell.pick .gob:nth-child(odd) svg{animation-delay:-.8s}
+@keyframes gobAsk{0%,100%{filter:drop-shadow(0 6px 6px rgba(0,0,0,.4))}50%{filter:drop-shadow(0 6px 6px rgba(0,0,0,.4)) drop-shadow(0 0 10px rgba(243,210,122,.55))}}
+.sh-candle{position:absolute;top:21%;font-size:34px;line-height:1;pointer-events:none;filter:drop-shadow(0 0 14px rgba(255,190,110,.7));animation:shFlick 2.6s ease-in-out infinite}
+.sh-candle.l{left:7%}.sh-candle.r{right:7%;animation-delay:-1.3s}
+@keyframes shFlick{50%{filter:drop-shadow(0 0 22px rgba(255,190,110,.95))}}
+.sh-ring{position:absolute;left:0;top:0;z-index:1;opacity:0;pointer-events:none;transition:opacity .18s}
+.sh-ring.on{opacity:1}
+.sh-ring svg{display:block;width:100%;filter:drop-shadow(0 0 8px rgba(245,200,76,.7))}
+.sh-paw{position:absolute;right:0;top:var(--py,60%);z-index:4;width:calc(var(--gw)*1.7);transform:translateX(110%);transition:transform .38s cubic-bezier(.2,.9,.3,1.1);pointer-events:none}
+.sh-paw.in{transform:translateX(18%)}
+.sh-paw svg{display:block;width:100%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+@media (prefers-reduced-motion:reduce){.shell.pick .gob svg{animation:none}}
+/* уровень 3: тёмный дом */
+.astral{position:absolute;inset:0;overflow:hidden;touch-action:none}
+.aroom{position:absolute;left:0;top:0;bottom:0;will-change:transform}
+.awall{position:absolute;inset:0 0 34% 0;background:linear-gradient(180deg,#2a2034,#3a2c40);
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 46px),linear-gradient(180deg,#2a2034,#3a2c40)}
+.afloor{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,#4a3634,#2c1f20);
+  background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 2px,transparent 2px 90px),linear-gradient(180deg,#4a3634,#2c1f20)}
+.amoon{position:absolute;left:calc(7% - 14px);top:calc(20% - 30px);width:26px;height:26px;border-radius:50%;background:#f3e3b0;box-shadow:0 0 30px 10px rgba(243,227,176,.25);opacity:.8}
+.aobj{position:absolute;z-index:2;display:grid;place-items:center;font-family:var(--emoji);line-height:1;pointer-events:none;width:1em;height:1em}
+.apeek{position:absolute;z-index:1;width:52px;height:40px;padding:0;border:0;background:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+.apeek svg{display:block;width:100%;height:100%;transform-origin:50% 100%;transition:transform .25s}
+.apeek.seen svg{transform:translateY(3px) scaleY(.9)}
+.apeek.pop svg{animation:apPop .5s var(--spring-pop)}
+@keyframes apPop{from{transform:translateY(16px) scale(.6)}}
+.apeek::before{content:"";position:absolute;inset:-14px}
+.aprints{position:absolute;inset:0;pointer-events:none}
+.apr{position:absolute;width:9px;height:11px;margin:-5px 0 0 -4px;border-radius:50% 50% 45% 45%;background:rgba(255,226,150,.5);box-shadow:0 0 6px rgba(255,214,120,.6);transform:rotate(var(--a)) translateX(-5px)}
+.apr.o{transform:rotate(var(--a)) translateX(5px)}
+.adark{position:absolute;inset:0;z-index:3;pointer-events:none;transition:opacity .12s;background:rgba(4,2,7,.97)}
+.astral.surge .adark{opacity:0}
+.astral.surge .aroom{filter:brightness(1.35) saturate(.6)}
+.aedge{position:absolute;top:0;bottom:0;z-index:4;width:22px;pointer-events:none;opacity:0;transition:opacity .4s}
+.aedge.l{left:0;background:linear-gradient(90deg,rgba(243,210,122,.16),rgba(243,210,122,0))}
+.aedge.r{right:0;background:linear-gradient(270deg,rgba(243,210,122,.16),rgba(243,210,122,0))}
+.aedge.on{opacity:1}
+.aglint{position:absolute;z-index:4;width:22px;height:8px;margin:-4px 0 0 -11px;pointer-events:none;animation:gl 1.2s both;opacity:0}
+.aglint b{position:absolute;top:0;width:6px;height:6px;border-radius:50%;background:var(--ge);box-shadow:0 0 9px var(--ge)}
+.aglint b:first-child{left:2px}.aglint b:last-child{right:2px}
+/* уровень 4: сортировка */
+.sorter{position:absolute;inset:0;overflow:hidden;touch-action:none}
+.so-lane{position:absolute;left:50%;top:0;bottom:130px;width:180px;margin-left:-90px;border-radius:0 0 40px 40px;
+  background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.04));box-shadow:inset 1px 0 0 rgba(255,255,255,.05),inset -1px 0 0 rgba(255,255,255,.05)}
+.so-card{position:absolute;left:0;top:0;z-index:2;width:150px;min-height:92px;justify-content:center;padding:12px 10px 11px;border-radius:20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,250,244,.96),rgba(236,222,214,.95));color:#2a1a2e;box-shadow:0 12px 26px rgba(0,0,0,.4);will-change:transform;transition:box-shadow .2s}
+.so-card .e{font-size:40px;line-height:1}
+.so-card b{font:600 12px/1.25 var(--ui)}
+.so-card.cur{box-shadow:0 12px 26px rgba(0,0,0,.4),0 0 0 2.5px rgba(243,210,122,.9),0 0 22px rgba(243,210,122,.45)}
+.so-chest{position:absolute;left:0;bottom:calc(14px + env(safe-area-inset-bottom)*.3);z-index:3;width:var(--cw,150px);height:96px;padding:0;border:0;border-radius:18px 18px 22px 22px;color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;padding-bottom:12px;transition:transform .55s var(--spring-soft);touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.2),inset 0 -6px 12px rgba(0,0,0,.3),0 12px 22px rgba(0,0,0,.4)}
+.so-chest b{font:600 13px/1 var(--ui);letter-spacing:.02em}
+.so-chest .so-ico{font:700 22px/1 var(--ui);opacity:.9}
+.so-chest .so-lid{position:absolute;left:-4px;right:-4px;top:-8px;height:22px;border-radius:14px 14px 6px 6px;background:inherit;box-shadow:inset 0 2px 0 rgba(255,255,255,.25),0 3px 6px rgba(0,0,0,.3);transform-origin:50% 100%}
+.so-chest.yes{background:linear-gradient(180deg,#d8566f,#8f1f38)}
+.so-chest.no{background:linear-gradient(180deg,#5d6a8c,#2b3150)}
+.so-chest.ok .so-lid{animation:lidOk .5s var(--spring-pop)}
+.so-chest.ok{animation:chestOk .5s ease-out}
+@keyframes lidOk{40%{transform:rotate(-16deg) translateY(-6px)}}
+@keyframes chestOk{40%{filter:brightness(1.35)}}
+.so-chest.bad{animation:chestBad .5s ease-out}
+@keyframes chestBad{30%{filter:brightness(1.2) saturate(1.6) hue-rotate(-20deg)}}
+.so-chest.hop .so-lid{animation:lidOk .6s var(--spring-pop)}
+.so-why{position:absolute;left:16px;right:16px;bottom:126px;z-index:4;text-align:center;font:500 11.5px/1.4 var(--ui);color:rgba(255,244,236,.9);opacity:0;transform:translateY(6px);transition:opacity .25s,transform .35s var(--spring-soft);pointer-events:none}
+.so-why.on{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.so-chest{transition:none}}
+/* уровень 6: новые розы */
+.bush .item.gold{filter:sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.15) drop-shadow(0 0 12px rgba(255,210,90,.9));animation:popIn .55s var(--spring-pop),goldBob 1s ease-in-out infinite alternate}
+@keyframes goldBob{to{transform:translateY(-5px) scale(1.06)}}
+.bush .item.hold{font-size:46px}
+.bush .item .hring{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);transform:rotate(-90deg);pointer-events:none}
+.bush .item .hring circle{fill:none;stroke:rgba(120,190,110,.35);stroke-width:3.2;stroke-dasharray:3 4}
+.bush .item .hring circle.v{stroke:#ffd27a;stroke-width:3.6;stroke-dasharray:106.8;stroke-dashoffset:106.8;stroke-linecap:round}
+.bush .item .hl{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);font:600 9px/1 var(--ui);color:rgba(255,236,200,.85);letter-spacing:.06em;white-space:nowrap;pointer-events:none}
+.bush .item.held{transform:scale(.92)}
+.gnight{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity 1.2s;border-radius:0}
+.bush .item{z-index:2}
+.gnight.on{opacity:1}
+.garden.night .item:not(.bat):not(.lit){filter:brightness(.4) drop-shadow(0 0 10px rgba(255,80,110,.9))}
+.garden.night .item.gold:not(.lit){filter:sepia(1) saturate(4) hue-rotate(-12deg) brightness(.6) drop-shadow(0 0 14px rgba(255,210,90,.95))}
+.garden.night .item.bat:not(.lit){color:transparent;text-shadow:0 0 0 rgba(14,10,24,.92)}
+.garden.night .item.bat.lit::after{display:none}
+.garden.night .item.bat::after{content:"";position:absolute;left:50%;top:44%;width:22px;height:6px;margin-left:-11px;pointer-events:none;
+  background:radial-gradient(circle 3px at 4px 3px,#ff3b55 99%,transparent),radial-gradient(circle 3px at 18px 3px,#ff3b55 99%,transparent);filter:drop-shadow(0 0 4px #ff3b55)}
+.thief{position:absolute;left:0;top:0;z-index:5;width:60px;height:60px;padding:0;border:0;background:none;font-size:40px;line-height:60px;text-align:center;touch-action:none;filter:drop-shadow(0 0 8px rgba(160,140,255,.6))}
+.thief::before{content:"";position:absolute;inset:-10px}
+.thief .loot{position:absolute;left:18px;top:34px;font-size:22px;opacity:0;transition:opacity .15s}
+.thief.has .loot{opacity:1}
 </style>
 </head>
 <body>
@@ -2901,11 +3020,11 @@ function showTicket(it){
 /* ---------- уровни: тропа ---------- */
 const LEVELS = [
   {n:1, e:"🌙",tag:"Дневники вампира",t:"Ночная охота",    s:"Алиса ловит лакомства. Вербену не трогать",           run:lvlHunt},
-  {n:2, e:"💍",tag:"Дневники вампира",t:"Кольцо",          s:"найди пары и забери кольцо дневного света",           run:lvlMemory},
-  {n:3, e:"🔦",tag:"Астрал",          t:"Свет погас",      s:"Алиса где-то в доме. Найди её фонариком",             run:lvlAstral},
-  {n:4, e:"📜",tag:"Дневники вампира",t:"Можно или нельзя",s:"правила вампирской жизни",                            run:lvlRules},
+  {n:2, e:"💍",tag:"Дневники вампира",t:"Кольцо",          s:"кольцо дневного света под бокалом. Следи, пока тасуют",run:lvlShell},
+  {n:3, e:"🔦",tag:"Астрал",          t:"Свет погас",      s:"Алиса прячется в тёмном доме. Найди её фонариком",   run:lvlAstral},
+  {n:4, e:"📜",tag:"Дневники вампира",t:"Можно или нельзя",s:"правила вампирской жизни падают сверху. Разложи",     run:lvlRules},
   {n:5, e:"🌲",tag:"Сумерки",         t:"Лес Форкса",      s:"Лапуля бежит через лес и прыгает через брёвна",       run:lvlForks},
-  {n:6, e:"🌹",tag:"Сумерки",         t:"Поляна",          s:"собирай распустившиеся розы, летучих мышей не трогай",run:lvlGarden},
+  {n:6, e:"🌹",tag:"Сумерки",         t:"Поляна",          s:"розы, колючие розы и ночные воришки",                run:lvlGarden},
   {n:7, e:"☀️",tag:"Дневники вампира",t:"Без кольца",      s:"ведёшь солнце, чтобы Лапуля шла в тени",              run:lvlSun},
   {n:8, e:"🎭",tag:"Дневники вампира",t:"Маскарад",        s:"слушай сердца гостей и найди, кто не дышит",          run:lvlMask},
   {n:9, e:"📷",tag:"Финал сезона",    t:"Длинная выдержка",s:"рисуй светом на ночной фотографии",                   run:lvlShot},
@@ -3000,6 +3119,23 @@ function polaroid(ph, state, have){
   const c = document.createElement("figcaption"); c.className = "c"; c.textContent = ph.nocap ? "" : ph.caption;
   f.append(d, c); return f;
 }
+/* проявочная: следующий закрытый снимок лежит под красным светом и проясняется с каждой звездой от прошлого порога до своего */
+const drBlur = k => 11 - 8.5*k, drMilk = k => .55 - .4*k;
+function darkroom(f, ph, idx, have){
+  const prev = idx ? CONFIG.photos[idx - 1].need : 0, span = Math.max(1, ph.need - prev), k = Math.max(0, Math.min(1, (have - prev)/span)), left = ph.need - have;
+  f.classList.add("darkroom"); f.style.setProperty("--blur", drBlur(k).toFixed(1) + "px"); f.style.setProperty("--milk", drMilk(k).toFixed(2));
+  const n = f.querySelector(".need"); if (n) n.textContent = `ещё ${left} ${plural(left, "звезда", "звезды", "звёзд")}`;
+  const tag = document.createElement("span"); tag.className = "drtag"; tag.textContent = "проявляется"; f.appendChild(tag);
+  /* если со времени прошлого взгляда добавились звёзды, снимок проявляется на глазах */
+  const seen = S.darkSeen && S.darkSeen.i === idx ? S.darkSeen.have : have;
+  if (seen < have && !reduced()){
+    const k0 = Math.max(0, Math.min(1, (seen - prev)/span)), im = f.querySelector(".ph img"), mk = f.querySelector(".milk");
+    setTimeout(() => { if (!f.isConnected) return; shutterSnd(true); haptic(10);
+      if (im) im.animate([{filter: `blur(${drBlur(k0).toFixed(1)}px) saturate(.6) brightness(1.05)`}, {filter: `blur(${drBlur(k).toFixed(1)}px) saturate(.6) brightness(1.05)`}], {duration: 2200, easing: "cubic-bezier(.3,.6,.2,1)"});
+      if (mk) mk.animate([{opacity: drMilk(k0)}, {opacity: drMilk(k)}], {duration: 2200, easing: "ease-out"}); }, 600);
+  }
+  S.darkSeen = {i: idx, have}; save();
+}
 function renderAlbum(){
   renderDiaryCard(); renderSnaps();
   const box = $("#polas"); box.innerHTML = ""; const have = totalStars();
@@ -3017,6 +3153,7 @@ function renderAlbum(){
       const t = (.04 + (j ? .745 : .255)*1.0)/1.08; hang.style.marginTop = (wireY(t) - 17).toFixed(1) + "px";
       hang.innerHTML = '<span class="pin"></span>';
       const f = polaroid(ph, open ? (isNew ? "dev" : "open") : "dev", have);
+      if (!open && idx === unlockedNow) darkroom(f, ph, idx, have);
       const backs = (ph.more || []).slice(0, 2).map((src, k) => { const b = polaroid({src, caption: "", nocap: true}, open && !isNew ? "open" : "dev", have); b.classList.add("behind", "b" + k); b.setAttribute("aria-hidden", "true"); return b; });
       f.tabIndex = 0; f.setAttribute("role","button"); f.setAttribute("aria-label", open ? ph.caption : "Снимок проявляется: " + have + " из " + ph.need + " звёзд");
       if (isNew) fresh.push({f, ph, backs});
@@ -4575,138 +4712,343 @@ function lvlHunt(area, done){
   return () => { cancelAnimationFrame(raf); removeEventListener("resize", C.fit); removeEventListener("keydown", kd); removeEventListener("keyup", ku); };
 }
 
-/* ---------- 2: пары ---------- */
-function lvlMemory(area, done){
-  const kinds = ["🌙","💍","🦇","🍎","🧶","🐾"];
-  const deck = kinds.concat(kinds).map(k => ({k, r:Math.random()})).sort((a,b) => a.r - b.r).map(o => o.k);
-  const grid = document.createElement("div"); grid.className = "mem"; area.appendChild(grid);
-  let open = [], moves = 0, pairs = 0, lock = false;
-  const upd = () => stat(chip("👆", moves) + chip("✨", pairs + "/6")); upd();
-  deck.forEach((k, i) => {
-    const c = document.createElement("button"); c.className = "mcard"; c.setAttribute("aria-label", "Карта " + (i+1)); c.dataset.k = k;
-    c.innerHTML = `<div class="in"><div class="b e">🦇</div><div class="f e">${k}</div></div>`;
-    c.style.animation = `popIn .7s var(--spring-pop) ${i*40}ms both`;
-    c.onclick = () => {
-      if (lock || c.classList.contains("up") || c.classList.contains("ok")) return;
-      c.classList.add("up"); snd.tap(); open.push({c,k});
-      if (open.length === 2){
-        moves++; upd();
-        const [a, b] = open;
-        if (a.k === b.k){
-          open = []; pairs++; upd();
-          setTimeout(() => { a.c.classList.add("ok"); b.c.classList.add("ok"); snd.collect(true); haptic(12);
-            [a.c,b.c].forEach(x => { const [cx,cy] = centerOf(x); FX.burst(cx,cy,{emojis:["✨","⭐"],n:6,size:[12,20],grav:150}); }); }, 300);
-          if (pairs === kinds.length) setTimeout(() => done(moves <= 10 ? 3 : moves <= 14 ? 2 : 1, "Ходов " + moves + ". Три звезды до 10."), 1000);
-        } else {
-          lock = true;
-          setTimeout(() => { snd.wrong(); shake(a.c, 4); shake(b.c, 4); }, 420);
-          setTimeout(() => { a.c.classList.remove("up"); b.c.classList.remove("up"); open = []; lock = false; }, 900);
-        }
-      }
-    };
-    grid.appendChild(c);
-  });
-  intro(area, LEVELS[1], "Открывай по две карты и ищи одинаковые. Чем меньше ходов, тем больше звёзд. За прохождение котики получат кольца дневного света.", () => {});
-  return null;
+/* ---------- 2: кольцо (напёрстки) ---------- */
+/* Деймон прячет кольцо дневного света под рубиновый бокал и тасует. Ки: 3 бокала медленно; Сё: 4 бокала, двойные обмены; Тэн: Лапуля лапой меняет два бокала сама; Кэцу: последний быстрый раунд */
+const SHELL_ROUNDS = [
+  {n: 3, swaps: 3, ms: 560}, {n: 3, swaps: 4, ms: 480}, {n: 3, swaps: 6, ms: 420},
+  {n: 4, swaps: 6, ms: 440}, {n: 4, swaps: 7, ms: 390, dbl: true}, {n: 4, swaps: 6, ms: 380, paw: true}, {n: 4, swaps: 9, ms: 340, dbl: true}
+];
+const GOBLET_SVG = '<svg viewBox="0 0 80 104" aria-hidden="true"><defs>'
+  + '<linearGradient id="gbRuby" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a0712"/><stop offset=".28" stop-color="#9c1a32"/><stop offset=".5" stop-color="#c8324d"/><stop offset=".78" stop-color="#7a1024"/><stop offset="1" stop-color="#2c050e"/></linearGradient>'
+  + '<linearGradient id="gbSilver" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6d6676"/><stop offset=".45" stop-color="#f1ebf4"/><stop offset="1" stop-color="#5d5667"/></linearGradient></defs>'
+  + '<ellipse cx="40" cy="9" rx="21" ry="5" fill="url(#gbSilver)"/><rect x="36.5" y="9" width="7" height="25" fill="url(#gbSilver)"/><ellipse cx="40" cy="35" rx="8" ry="4" fill="url(#gbSilver)"/>'
+  + '<path d="M11 97 C11 70 21 43 40 41 C59 43 69 70 69 97 Z" fill="url(#gbRuby)"/>'
+  + '<path d="M19 90 C19 70 25 54 34 47" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="3" stroke-linecap="round"/>'
+  + '<ellipse cx="40" cy="97" rx="29" ry="5.5" fill="#3a0a14"/><ellipse cx="40" cy="96" rx="29" ry="5" fill="none" stroke="#f3d27a" stroke-opacity=".55" stroke-width="1.4"/></svg>';
+const RING_SVG = '<svg viewBox="0 0 44 30" aria-hidden="true"><ellipse cx="22" cy="19" rx="15" ry="7.5" fill="none" stroke="#f5c84c" stroke-width="4.4"/><ellipse cx="22" cy="17.6" rx="15" ry="7.5" fill="none" stroke="#fff1c2" stroke-opacity=".6" stroke-width="1.2"/>'
+  + '<path d="M16 11 L22 3 L28 11 L22 15 Z" fill="#2f6fd8"/><path d="M22 3 L28 11 L22 9 Z" fill="#7fb2ff"/></svg>';
+const PAW_SVG = `<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M120 22 L48 18 C30 17 18 24 18 35 C18 46 30 53 48 52 L120 48 Z" fill="${CONFIG.lapula.fur}"/>`
+  + `<ellipse cx="30" cy="35" rx="16" ry="15" fill="${CONFIG.lapula.fur}"/><g fill="${CONFIG.lapula.shade}" opacity=".5"><ellipse cx="22" cy="25" rx="4.4" ry="3.6"/><ellipse cx="16" cy="34" rx="4.4" ry="3.6"/><ellipse cx="22" cy="44" rx="4.4" ry="3.6"/></g></svg>`;
+function lvlShell(area, done){
+  const wrap = document.createElement("div"); wrap.className = "shell"; area.appendChild(wrap);
+  wrap.innerHTML = '<div class="sh-glow"></div><div class="sh-table"></div><span class="sh-candle l e">🕯️</span><span class="sh-candle r e">🕯️</span><div class="sh-ring">' + RING_SVG + '</div><div class="sh-paw">' + PAW_SVG + '</div>';
+  const ringEl = wrap.querySelector(".sh-ring"), pawEl = wrap.querySelector(".sh-paw");
+  let gobs = [], round = -1, found = 0, state = "idle", alive = true, tok = 0, W = 0, H = 0, gw = 80;
+  const upd = () => stat(chip("💍", found + "/" + SHELL_ROUNDS.length) + chip("🍷", Math.max(1, round + 1) + "/" + SHELL_ROUNDS.length)); upd();
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const alivep = t => alive && t === tok;
+  const slotX = (i, n) => { const gap = Math.min(gw*1.32, (W - 24)/n); return W/2 + (i - (n - 1)/2)*gap; };
+  const baseY = () => H*.6;
+  const place = (g, x, lift = 0) => { g.x = x; g.el.style.transform = `translate(${(x - gw/2).toFixed(1)}px,${(baseY() - gw*1.3 - lift).toFixed(1)}px)`; };
+  function layout(){
+    W = wrap.clientWidth; H = wrap.clientHeight; gw = Math.max(66, Math.min(116, W/(gobs.length > 3 ? 4.5 : 3.5), H*.2));
+    wrap.style.setProperty("--gw", gw + "px");
+    gobs.forEach(g => place(g, slotX(g.slot, gobs.length)));
+  }
+  function build(n){
+    gobs.forEach(g => g.el.remove()); gobs = [];
+    for (let i = 0; i < n; i++){
+      const el = document.createElement("button"); el.className = "gob"; el.setAttribute("aria-label", "Бокал " + (i + 1)); el.innerHTML = GOBLET_SVG + '<i class="gsh"></i>';
+      const g = {el, slot: i, ring: false, x: 0}; el.onclick = () => pick(g); wrap.appendChild(el); gobs.push(g);
+    }
+    layout();
+  }
+  const whoosh = (k = 0) => { if (ensureRunning()) noise({type: "bandpass", freq: 900 + k*120, Q: 1.2, envOpts: {a: .02, d: .12, peak: .05}}); };
+  const clink = () => { if (ensureRunning()) fmBell({f: 1975*rnd(.02), ratio: 3.2, index: 1.2, dur: .5, peak: .06, send: .25}); };
+  /* поднять бокал: под ним видно кольцо или пусто */
+  async function lift(g, up, ms = 320){
+    const from = g.el.style.transform, x = g.x, y0 = baseY() - gw*1.3;
+    if (up){ if (g.ring) showRing(g); clink(); }
+    const a = g.el.animate([{transform: from}, {transform: `translate(${(x - gw/2).toFixed(1)}px,${(y0 - (up ? gw*.62 : 0)).toFixed(1)}px) rotate(${up ? -6 : 0}deg)`}], {duration: reduced() ? 1 : ms, easing: up ? "cubic-bezier(.2,.9,.3,1.2)" : "cubic-bezier(.5,0,.8,.4)", fill: "forwards"});
+    await a.finished.catch(() => {}); g.el.style.transform = `translate(${(x - gw/2).toFixed(1)}px,${(y0 - (up ? gw*.62 : 0)).toFixed(1)}px) rotate(${up ? -6 : 0}deg)`; a.cancel();
+    if (!up){ place(g, x); hideRing(); }
+  }
+  function showRing(g){ ringEl.style.width = (gw*.52) + "px"; ringEl.style.transform = `translate(${(g.x - gw*.26).toFixed(1)}px,${(baseY() - gw*.38).toFixed(1)}px)`; ringEl.classList.add("on"); }
+  function hideRing(){ ringEl.classList.remove("on"); }
+  /* обмен двух бокалов по дугам: один идёт перед другим */
+  function swap(a, b, ms){
+    const n = gobs.length, xa = slotX(a.slot, n), xb = slotX(b.slot, n), y0 = baseY() - gw*1.3, arc = Math.min(46, Math.abs(xb - xa)*.35 + 14);
+    const mk = (g, from, to, dy, front) => { g.el.style.zIndex = front ? 3 : 1;
+      return g.el.animate([{transform: `translate(${(from - gw/2).toFixed(1)}px,${y0}px)`}, {transform: `translate(${((from + to)/2 - gw/2).toFixed(1)}px,${(y0 + dy).toFixed(1)}px) scale(${front ? 1.07 : .93})`}, {transform: `translate(${(to - gw/2).toFixed(1)}px,${y0}px)`}],
+        {duration: ms, easing: "ease-in-out", fill: "forwards"}); };
+    const A = mk(a, xa, xb, arc*.55, true), B = mk(b, xb, xa, -arc, false);
+    [a.slot, b.slot] = [b.slot, a.slot];
+    return Promise.all([A.finished, B.finished]).catch(() => {}).then(() => { place(a, xb); place(b, xa); A.cancel(); B.cancel(); a.el.style.zIndex = b.el.style.zIndex = ""; });
+  }
+  const bySlot = s => gobs.find(g => g.slot === s);
+  function pairs(n, dbl, last){
+    let a, b;
+    do { a = Math.floor(Math.random()*n); b = Math.random() < .6 ? a + (Math.random() < .5 ? -1 : 1) : Math.floor(Math.random()*n); } while (b < 0 || b >= n || a === b || (last && ((a === last[0] && b === last[1]) || (a === last[1] && b === last[0]))));
+    const out = [[a, b]];
+    if (dbl && n === 4 && Math.random() < .45){ const rest = [0, 1, 2, 3].filter(i => i !== a && i !== b); out.push(rest); }
+    return out;
+  }
+  /* Лапуля: лапа заезжает справа и быстро меняет два бокала */
+  async function pawSwap(t){
+    flashBanner(area, "Лапуля решила помочь", 1600); snd.meow("lapula");
+    const n = gobs.length, a = bySlot(n - 1), b = bySlot(Math.random() < .5 ? n - 2 : n - 3);
+    pawEl.style.setProperty("--py", (baseY() - gw*.9) + "px"); pawEl.classList.add("in"); await wait(420); if (!alivep(t)) return;
+    snd.hmph(); haptic(10); await swap(a, b, 260); if (!alivep(t)) return;
+    pawEl.classList.remove("in"); await wait(300);
+  }
+  async function playRound(){
+    const t = ++tok; round++; upd();
+    if (round >= SHELL_ROUNDS.length) return end();
+    const R = SHELL_ROUNDS[round];
+    if (!gobs.length || gobs.length !== R.n) build(R.n);
+    gobs.forEach((g, i) => { g.ring = false; g.slot = i; place(g, slotX(i, R.n)); });
+    const ringG = gobs[Math.floor(R.n/2)]; ringG.ring = true;
+    state = "show"; wrap.classList.remove("pick");
+    flashBanner(area, round === SHELL_ROUNDS.length - 1 ? "Последний раунд. Самый быстрый" : R.n === 4 && SHELL_ROUNDS[round - 1].n === 3 ? "Теперь бокалов четыре" : R.dbl && !SHELL_ROUNDS[round - 1].dbl ? "Теперь меняются парами" : "Раунд " + (round + 1) + " из " + SHELL_ROUNDS.length + ". Следи за кольцом", 1900);
+    await wait(500); if (!alivep(t)) return;
+    await lift(ringG, true, 360); await wait(750); if (!alivep(t)) return;
+    await lift(ringG, false, 260); await wait(260); if (!alivep(t)) return;
+    state = "shuffle"; let last = null;
+    for (let s = 0; s < R.swaps; s++){
+      const P = pairs(R.n, R.dbl, last); last = P[0]; whoosh(s % 5);
+      await Promise.all(P.map(([x, y]) => swap(bySlot(x), bySlot(y), R.ms))); if (!alivep(t)) return;
+      await wait(40);
+    }
+    if (R.paw){ await wait(250); await pawSwap(t); if (!alivep(t)) return; }
+    state = "pick"; wrap.classList.add("pick"); haptic(6);
+    lvBanner(area, "Где кольцо?");
+  }
+  async function pick(g){
+    if (state !== "pick" || !alive) return;
+    state = "reveal"; wrap.classList.remove("pick"); const t = tok, ok = g.ring;
+    await lift(g, true, 300); if (!alivep(t)) return;
+    const [x, y] = centerOf(g.el);
+    if (ok){ found++; upd(); snd.collect(true); haptic(14); FX.burst(x, y + gw*.5, {emojis: ["✨", "💍"], n: 10, size: [12, 22], grav: 160}); flashBanner(area, pick.okLines[Math.floor(Math.random()*pick.okLines.length)], 1400); }
+    else { snd.wrong(); haptic(30); shake(g.el, 4); const r = gobs.find(x => x.ring); await wait(300); await lift(r, true, 280); flashBanner(area, "Кольцо было тут", 1400); await wait(650); if (!alivep(t)) return; await lift(r, false, 220); }
+    await wait(ok ? 900 : 300); if (!alivep(t)) return;
+    await lift(g, false, 240); await wait(250); if (!alivep(t)) return;
+    playRound();
+  }
+  pick.okLines = ["Нашла", "Глаз не обманешь", "Кольцо твоё", "Деймон в шоке"];
+  function end(){
+    alive = false; state = "end";
+    const N = SHELL_ROUNDS.length, st = found >= N - 1 ? 3 : found >= 4 ? 2 : 1;
+    setTimeout(() => done(st, `Кольцо найдено ${found} из ${N}. Три звезды за ${N - 1} из ${N}.`), 500);
+  }
+  addEventListener("resize", layout);
+  area.__shell = {get gobs(){ return gobs; }, get state(){ return state; }, get round(){ return round; }, get found(){ return found; }};
+  build(3);
+  intro(area, LEVELS[1], "Деймон прячет кольцо дневного света под бокал и перемешивает. Следи глазами и тапни бокал, под которым кольцо. Семь раундов, дальше быстрее.", () => { playRound(); });
+  return () => { alive = false; tok++; removeEventListener("resize", layout); };
 }
 
-/* ---------- 3: астрал ---------- */
+/* ---------- 3: астрал (тёмный дом) ---------- */
+/* Комната в два экрана шириной, светишь пальцем, у края экрана комната едет. Алиса выглядывает из-за мебели: ближе к ней луч теплеет и мурчание громче.
+   Если держать на ней свет больше секунды и не тапнуть, она перебегает. Лапуля прячется тоже, глаза у неё янтарные. После второй находки свет мигает и фонарик садится */
+const ASTRAL_OBJ = [
+  ["🪟", .07, .2, 88], ["🛋️", .14, .62, 96], ["🪴", .27, .58, 62], ["🖼️", .3, .2, 54], ["🕯️", .38, .44, 40], ["🧸", .06, .88, 52],
+  ["🛏️", .56, .8, 104], ["🗄️", .66, .54, 78], ["🪞", .76, .26, 60], ["📦", .8, .86, 64], ["📚", .9, .56, 54], ["🎹", .94, .84, 84], ["🕰️", .48, .18, 52]
+];
+/* укрытие: за каким предметом, со сдвигом по x в долях его размера; Алиса выглядывает над краем */
+const ASTRAL_SPOTS = [[1, -.25], [1, .3], [2, 0], [5, .1], [6, -.3], [6, .3], [7, 0], [9, 0], [10, 0], [11, -.2], [0, 0], [8, 0]];
+const peekSVG = c => `<svg viewBox="0 0 60 40" aria-hidden="true"><path d="M8 26 Q6 6 20 14 Z M52 26 Q54 6 40 14 Z" fill="${c.fur}"/><ellipse cx="30" cy="32" rx="24" ry="18" fill="${c.fur}"/>`
+  + `<circle cx="21" cy="29" r="5" fill="${c.eyes}"/><circle cx="39" cy="29" r="5" fill="${c.eyes}"/><ellipse cx="21" cy="29" rx="1.8" ry="3.8" fill="#141014"/><ellipse cx="39" cy="29" rx="1.8" ry="3.8" fill="#141014"/></svg>`;
 function lvlAstral(area, done){
-  const room = document.createElement("div"); room.className = "room"; area.appendChild(room);
-  [["🛋️",18,58,70],["🪟",72,20,60],["🖼️",30,18,44],["🪴",86,60,52],["🗄️",60,60,58],["🧸",12,84,40],["📦",74,82,46],["🕯️",48,36,34],["🛏️",40,82,64]]
-    .forEach(([e,l,t,s]) => { const d = document.createElement("div"); d.className = "obj"; d.textContent = e; Object.assign(d.style,{left:`calc(${l}% - ${s/2}px)`,top:`calc(${t}% - ${s/2}px)`,width:s+"px",height:s+"px",fontSize:s*.9+"px"}); room.appendChild(d); });
-  const spots = [[22,48],[77,34],[52,72],[84,74],[26,90],[50,48],[10,30],[64,90],[90,46],[36,66]];
-  const c = CONFIG.alisa;
-  const kit = document.createElement("button"); kit.className = "kitty"; kit.setAttribute("aria-label","Алиса");
-  kit.innerHTML = `<svg viewBox="0 0 60 50"><path d="M8 22 Q6 4 20 12 Z M52 22 Q54 4 40 12 Z" fill="${c.fur}"/><ellipse cx="30" cy="29" rx="24" ry="19" fill="${c.fur}"/><circle cx="21" cy="27" r="5" fill="${c.eyes}"/><circle cx="39" cy="27" r="5" fill="${c.eyes}"/><ellipse cx="21" cy="27" rx="1.8" ry="3.8" fill="#141014"/><ellipse cx="39" cy="27" rx="1.8" ry="3.8" fill="#141014"/></svg>`;
-  room.appendChild(kit);
-  const dark = document.createElement("div"); dark.className = "dark"; area.appendChild(dark);
-  const glint = document.createElement("div"); glint.className = "glint"; glint.style.setProperty("--ge", c.eyes); glint.innerHTML = "<i></i><i></i>"; area.appendChild(glint);
-  let found = 0, time = 40, lastSpot = -1, alive = false, tick;
-  function place(){
-    let i; do { i = Math.floor(Math.random()*spots.length); } while (i === lastSpot); lastSpot = i;
-    const [x,y] = spots[i]; kit.style.left = x + "%"; kit.style.top = y + "%"; glint.style.left = x + "%"; glint.style.top = (y - 1) + "%";
+  const view = document.createElement("div"); view.className = "astral"; area.appendChild(view);
+  const room = document.createElement("div"); room.className = "aroom"; view.appendChild(room);
+  room.innerHTML = '<div class="awall"></div><div class="afloor"></div><div class="amoon"></div>';
+  const objs = ASTRAL_OBJ.map(([e, x, y, s]) => { const d = document.createElement("div"); d.className = "aobj"; d.textContent = e; d.style.fontSize = s + "px"; room.appendChild(d); return {el: d, x, y, s}; });
+  const mkCat = (who, cls) => { const b = document.createElement("button"); b.className = "apeek " + cls; b.setAttribute("aria-label", who === "alisa" ? "Алиса" : "Лапуля"); b.innerHTML = peekSVG(CONFIG[who]); room.appendChild(b); return {el: b, spot: -1, x: 0, y: 0}; };
+  const ali = mkCat("alisa", "ali"), lap = mkCat("lapula", "lap");
+  const prints = document.createElement("div"); prints.className = "aprints"; room.appendChild(prints);
+  const dark = document.createElement("div"); dark.className = "adark"; view.appendChild(dark);
+  const edgeL = document.createElement("i"), edgeR = document.createElement("i"); edgeL.className = "aedge l"; edgeR.className = "aedge r"; view.append(edgeL, edgeR);
+  let W = 0, H = 0, RW = 0, pan = 0, fx = 0, fy = 0, down = false, found = 0, time = 60, alive = false, raf = 0, last = 0, litT = 0, flee = 0, dim = 0, purr = null, surge = false, lapCool = 0;
+  const NEED = 4, R0 = () => Math.min(W, H)*.3;
+  const upd = () => stat(chip("🐱", found + "/" + NEED) + chip("⏱️", Math.max(0, Math.ceil(time)))); upd();
+  function layout(){
+    W = view.clientWidth; H = view.clientHeight; RW = W*2.1; room.style.width = RW + "px";
+    objs.forEach(o => { o.el.style.left = (o.x*RW - o.s/2) + "px"; o.el.style.top = (o.y*H - o.s/2) + "px"; });
+    [ali, lap].forEach(c => c.spot >= 0 && setSpot(c, c.spot, true));
+    pan = Math.max(0, Math.min(RW - W, pan)); room.style.transform = `translateX(${-pan}px)`;
   }
-  place();
-  const light = e => { const r = area.getBoundingClientRect(); dark.style.setProperty("--x", (e.clientX - r.left) + "px"); dark.style.setProperty("--y", (e.clientY - r.top) + "px"); };
-  area.addEventListener("pointermove", light); area.addEventListener("pointerdown", light);
-  const upd = () => stat(chip("🐱", found + "/3") + chip("⏱️", Math.ceil(time))); upd();
-  kit.onclick = () => {
+  /* место у предмета: кошка выглядывает из-за верхнего края, её низ закрыт предметом */
+  function spotXY(i){ const [oi, dx] = ASTRAL_SPOTS[i], o = objs[oi]; return [o.x*RW + dx*o.s, o.y*H - o.s*.36]; }
+  function setSpot(c, i, quiet){
+    c.spot = i; const [x, y] = spotXY(i), o = objs[ASTRAL_SPOTS[i][0]]; c.x = x; c.y = y;
+    c.el.style.left = (x - 26) + "px"; c.el.style.top = (y - 20) + "px"; c.el.style.zIndex = 1; o.el.style.zIndex = 2;
+    if (!quiet){ c.el.classList.remove("pop"); void c.el.offsetWidth; c.el.classList.add("pop"); }
+  }
+  function freeSpot(avoid){ let i, k = 0; do { i = Math.floor(Math.random()*ASTRAL_SPOTS.length); k++; } while (k < 50 && (avoid.includes(i) || Math.abs(spotXY(i)[0] - (pan + fx)) < W*.35)); return i; }
+  /* светящиеся следы ведут от места, где Алиса была, к новому месту */
+  function trail(fromX, fromY, toX, toY){
+    prints.innerHTML = ""; const n = Math.max(3, Math.min(14, Math.round(Math.hypot(toX - fromX, toY - fromY)/34)));
+    for (let k = 1; k < n; k++){ const t = k/n, p = document.createElement("i"); p.className = "apr" + (k % 2 ? " o" : "");
+      p.style.left = (fromX + (toX - fromX)*t) + "px"; p.style.top = (fromY + (toY - fromY)*t + 30 + Math.sin(t*9)*6) + "px";
+      p.style.setProperty("--a", (Math.atan2(toY - fromY, toX - fromX)*57.3 + 90).toFixed(0) + "deg"); prints.appendChild(p); }
+  }
+  function hide(c, other, first){
+    const [ox, oy] = c.spot >= 0 ? [c.x, c.y] : [pan + W/2, H*.8];
+    const i = freeSpot([c.spot, other.spot]); setSpot(c, i, first);
+    if (c === ali) trail(ox, oy, c.x, c.y);
+  }
+  const light = e => { const r = view.getBoundingClientRect(); fx = e.clientX - r.left; fy = e.clientY - r.top; };
+  view.addEventListener("pointerdown", e => { down = true; light(e); }); view.addEventListener("pointermove", light);
+  const up = () => { down = false; }; addEventListener("pointerup", up); addEventListener("pointercancel", up);
+  const lit = c => Math.hypot(c.x - pan - fx, c.y + 6 - fy) < R0()*(dim > 0 ? .55 : .72);
+  ali.el.addEventListener("pointerdown", e => { e.stopPropagation(); light(e); if (!alive || !lit(ali)) return;
+    found++; upd(); snd.collect(true); haptic(20); const [x, y] = centerOf(ali.el); FX.burst(x, y, {emojis: ["✨", "💛"], n: 12, size: [12, 22], grav: 200});
+    if (found >= NEED) return end(true);
+    flashBanner(area, ["Нашлась. Прячется снова", "Ещё раз. Она уже убежала", "Почти всё"][Math.min(2, found - 1)], 1500);
+    if (found === 2){ surge = true; setTimeout(powerSurge, 700); } else hide(ali, lap);
+    litT = 0; });
+  lap.el.addEventListener("pointerdown", e => { e.stopPropagation(); light(e); if (!alive || !lit(lap) || lapCool > 0) return;
+    lapCool = 1.2; time = Math.max(0, time - 3); upd(); snd.hmph(); haptic(14); shake(lap.el, 4); flashBanner(area, "Это Лапуля. У неё глаза янтарные. −3 с", 1700); setTimeout(() => alive && hide(lap, ali), 600); });
+  /* скачок напряжения: всё видно полсекунды, потом темнее, луч меньше, и Алиса в другой половине дома */
+  function powerSurge(){
+    if (!alive) return; surge = true; snd.thunder(); haptic([20, 40, 20]); view.classList.add("surge");
+    flashBanner(area, "Свет мигнул. Фонарик садится", 2200);
+    setTimeout(() => { view.classList.remove("surge"); surge = false; dim = 9;
+      const far = ASTRAL_SPOTS.map((_, i) => i).filter(i => Math.abs(spotXY(i)[0] - (pan + W/2)) > RW*.35 && i !== lap.spot);
+      const [ox, oy] = [ali.x, ali.y]; setSpot(ali, far.length ? far[Math.floor(Math.random()*far.length)] : freeSpot([ali.spot, lap.spot])); trail(ox, oy, ali.x, ali.y); }, 520);
+  }
+  function end(ok){
+    if (!alive) return; alive = false; cancelAnimationFrame(raf); purr && purr.stop(); purr = null;
+    const st = !ok ? 0 : time >= 26 ? 3 : time >= 12 ? 2 : 1;
+    setTimeout(() => done(st, ok ? `Нашлась ${NEED} раза, осталось ${Math.ceil(time)} с. Три звезды с 26 с в запасе.` : "Алиса спряталась слишком хорошо. Попробуй ещё."), 500);
+  }
+  function frame(now){
     if (!alive) return;
-    found++; snd.collect(true); haptic(20); upd();
-    const [x,y] = centerOf(kit); FX.burst(x,y,{emojis:["✨","💛"],n:10,size:[12,22],grav:200});
-    if (found >= 3){ alive = false; const st = time >= 22 ? 3 : time >= 10 ? 2 : 1; setTimeout(() => done(st, "Нашлась трижды за " + Math.max(1, Math.round(40 - time)) + " с."), 400); return; }
-    place();
-  };
-  intro(area, LEVELS[2], "Свет погас. Где палец, там фонарик. Найди Алису и тапни по ней: так три раза, она каждый раз перепрятывается. Иногда в темноте блестят её глаза.", () => {
-    alive = true;
-    tick = setInterval(() => {
-      if (!alive) return;
-      time -= 1; upd();
-      if (Math.random() < .35){ glint.classList.remove("on"); void glint.offsetWidth; glint.classList.add("on"); }
-      if (Math.random() < .08){ room.classList.remove("flick"); void room.offsetWidth; room.classList.add("flick"); snd.thump(); }
-      if (time <= 0){ alive = false; done(0, "Алиса спряталась слишком хорошо. Попробуй ещё."); }
-    }, 1000);
+    const dt = Math.min(.05, (now - last)/1000); last = now; time -= dt; dim = Math.max(0, dim - dt); lapCool = Math.max(0, lapCool - dt);
+    /* у края экрана комната едет туда же, куда светишь */
+    const edge = W*.17; let v = 0; if (fx < edge) v = -(1 - fx/edge); else if (fx > W - edge) v = 1 - (W - fx)/edge;
+    if (v){ pan = Math.max(0, Math.min(RW - W, pan + v*W*.95*dt)); room.style.transform = `translateX(${(-pan).toFixed(1)}px)`; }
+    edgeL.classList.toggle("on", pan > 4); edgeR.classList.toggle("on", pan < RW - W - 4);
+    /* тепло-холодно: расстояние от луча до Алисы */
+    const d = Math.hypot(ali.x - pan - fx, ali.y - fy), warm = Math.max(0, 1 - d/(W*.9));
+    const r = R0()*(dim > 0 ? .72 : 1) + Math.sin(now/90)*(dim > 0 ? 2 : 0);
+    /* луч теплеет рядом с Алисой: без звука это главная подсказка */
+    dark.style.background = `radial-gradient(circle ${r.toFixed(1)}px at ${fx.toFixed(1)}px ${fy.toFixed(1)}px,rgba(255,${(232 - warm*50)|0},${(205 - warm*120)|0},${(.03 + warm*.2).toFixed(3)}) 0,rgba(10,6,16,.3) 62%,rgba(4,2,7,.97) 100%)`;
+    view.style.setProperty("--warm", warm.toFixed(3));
+    if (purr) purr.swell(.02 + warm*warm*.3, 260 + warm*420, .25);
+    /* долго светишь на неё и не трогаешь: перебегает */
+    if (lit(ali) && !surge){ litT += dt; ali.el.classList.add("seen"); if (litT > 1.15){ litT = 0; snd.jump(); flee++; hide(ali, lap); } }
+    else { litT = Math.max(0, litT - dt*2); ali.el.classList.remove("seen"); }
+    /* в темноте иногда блестят глаза: у Алисы жёлто-зелёные, у Лапули янтарные */
+    if (Math.random() < dt*.42){ const c = Math.random() < .65 ? ali : lap, gx = c.x - pan; if (gx > 10 && gx < W - 10){ const gl = document.createElement("i"); gl.className = "aglint"; gl.style.setProperty("--ge", CONFIG[c === ali ? "alisa" : "lapula"].eyes);
+      gl.style.left = gx + "px"; gl.style.top = (c.y + 9) + "px"; gl.innerHTML = "<b></b><b></b>"; view.appendChild(gl); setTimeout(() => gl.remove(), 1300); } }
+    if (Math.floor(time*4) % 2 === 0) upd();
+    if (time <= 0){ time = 0; upd(); return end(false); }
+    raf = requestAnimationFrame(frame);
+  }
+  area.__astral = {ali, lap, get pan(){ return pan; }, get W(){ return W; }, get H(){ return H; }, get alive(){ return alive; }, get found(){ return found; }, aim(x, y){ fx = x; fy = y; }, view};
+  addEventListener("resize", layout); layout();
+  pan = 0; fx = W/2; fy = H*.55; hide(ali, lap, true); hide(lap, ali, true); prints.innerHTML = "";
+  intro(area, LEVELS[2], "Свет погас. Где палец, там фонарик, у края экрана комната едет дальше. Ближе к Алисе луч теплеет и мурчание громче. Нашла — тапни. Долго светить нельзя: убежит. Глаза Лапули янтарные, её не трогай.", () => {
+    alive = true; purr = startPurr(.02); raf = requestAnimationFrame(t => { last = t; frame(t); });
   });
-  return () => { alive = false; clearInterval(tick); };
+  return () => { alive = false; cancelAnimationFrame(raf); purr && purr.stop(); removeEventListener("resize", layout); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); };
 }
 
-/* ---------- 4: можно или нельзя ---------- */
+/* ---------- 4: можно или нельзя (сортировка) ---------- */
+/* Карточки падают сверху, смахни нижнюю влево в «Нельзя» или вправо в «Можно» (или тапни сундук).
+   Ки: по одной и медленно. Сё: быстрее, по две. Тэн: Лапуля меняет сундуки местами на 10 секунд. Кэцу: последний залп */
+const RULES = [
+  ["🌿", "Вербена", false, "Жжётся. Вампирам нельзя."], ["☀️", "Солнце без кольца", false, "Без кольца дневного света больно."],
+  ["💍", "Кольцо дневного света", true, "Можно и нужно."], ["🪵", "Деревянный кол", false, "Без комментариев."],
+  ["🚪", "Войти без приглашения", false, "Сначала пусть позовут."], ["🧹", "Пылесос", false, "Абсолютное зло."],
+  ["📦", "Коробка от доставки", true, "Лучший дом в Мистик Фоллс."], ["🛁", "Ванна", false, "Ни за что."],
+  ["🛏️", "Спать на твоей подушке", true, "Это её подушка, ты там просто лежишь."], ["✨", "Блестеть на солнце", true, "Если ты из «Сумерек». Лапуля может."],
+  ["🪞", "Смотреться в зеркало", true, "В «Дневниках» вампиры отражаются."], ["⏰", "Будить в пять утра", true, "Кошкам можно. Вампирам тем более."],
+  ["🐟", "Рыбка со стола", true, "Охота есть охота."], ["🧄", "Чеснок", false, "Даже Лапуля ушла из кухни."],
+  ["🩸", "Кровь из пакета", true, "Как у Сальваторе в холодильнике."], ["🥒", "Огурец за спиной", false, "Такое кошки не прощают."],
+  ["💦", "Опрыскиватель", false, "Это не воспитание, это подлость."], ["📱", "Смахнуть телефон со стола", true, "Гравитацию надо проверять."],
+  ["🧶", "Клубок", true, "Это не игрушка, это тренировка."], ["🐶", "Собака в доме", false, "Здесь территория котиков."],
+  ["💤", "Спать 16 часов", true, "Это минимум."], ["🍋", "Лимон", false, "Кислое нельзя никому."],
+  ["🌙", "Гулять ночью", true, "Самое вампирское время."], ["🏹", "Охотник на вампиров", false, "Аларик, мы тебя видим."],
+  ["📖", "Читать дневник Алисы", false, "Лапуля уже пыталась."], ["🎧", "Лана Дель Рей на повторе", true, "Особенно «Salvatore»."],
+  ["☕", "Кофе с вербеной", false, "Классическая подстава из «Дневников»."], ["🥛", "Молоко", false, "Вкусно, но кошкам вредно."]
+];
+const SORT_DUR = 56;
 function lvlRules(area, done){
-  const ALL = [
-    ["🌿","Вербена", false, "Жжётся. Вампирам нельзя."],
-    ["☀️","Солнце без кольца", false, "Без кольца дневного света будет больно."],
-    ["💍","Кольцо дневного света", true, "Можно и нужно."],
-    ["🪵","Деревянный кол", false, "Без комментариев."],
-    ["🚪","Зайти в дом без приглашения", false, "Сначала пусть позовут."],
-    ["🧹","Пылесос", false, "Абсолютное зло."],
-    ["📦","Коробка от доставки", true, "Лучший дом в Мистик Фоллс."],
-    ["🛁","Ванна", false, "Ни за что."],
-    ["🛏️","Спать на твоей подушке", true, "Это её подушка, ты просто там лежишь."],
-    ["✨","Блестеть на солнце", true, "Если ты из «Сумерек». Лапуля может."],
-    ["🪞","Смотреться в зеркало", true, "В «Дневниках» вампиры отражаются. Кошки тоже, просто не верят."],
-    ["⏰","Будить в пять утра", true, "Кошкам можно. Вампирам тем более."],
-    ["🐟","Утащить рыбку со стола", true, "Охота есть охота."]
-  ];
-  const deck = ALL.map(x => ({x, r:Math.random()})).sort((a,b)=>a.r-b.r).slice(0,10).map(o=>o.x);
-  const wrap = document.createElement("div"); wrap.className = "quiz";
-  wrap.innerHTML = `<div class="qbar"><b></b></div><div class="qcard card"><span class="qe e"></span><b></b><span class="qs">вампиру можно?</span></div><div class="qfb" aria-live="polite"></div><div class="qbtns"><button class="btn ghost qno">Нельзя</button><button class="btn qyes">Можно</button></div>`;
-  area.appendChild(wrap);
-  const card = wrap.querySelector(".qcard"), bar = wrap.querySelector(".qbar b"), fb = wrap.querySelector(".qfb");
-  let i = 0, right = 0, t0 = 0, raf, busy = true, alive = false;
-  const LIMIT = 6000;
-  const upd = () => stat(chip("📜", Math.min(i+1,10) + "/10") + chip("✅", right));
-  function setCard(x){ card.querySelector(".qe").textContent = x[0]; card.querySelector("b").textContent = x[1]; }
-  function show(){
-    if (i >= deck.length){ alive = false; const st = right === 10 ? 3 : right >= 8 ? 2 : 1; setTimeout(()=>done(st, "Верно " + right + " из 10."), 400); return; }
-    card.className = "qcard card"; void card.offsetWidth; card.classList.add("enter"); setCard(deck[i]); upd(); busy = false; t0 = performance.now();
+  const wrap = document.createElement("div"); wrap.className = "sorter"; area.appendChild(wrap);
+  wrap.innerHTML = '<div class="so-lane"></div><div class="so-why" aria-live="polite"></div>'
+    + '<button class="so-chest no" type="button"><span class="so-lid"></span><span class="so-ico">✕</span><b>Нельзя</b></button>'
+    + '<button class="so-chest yes" type="button"><span class="so-lid"></span><span class="so-ico">♥</span><b>Можно</b></button>';
+  const why = wrap.querySelector(".so-why"), chNo = wrap.querySelector(".so-chest.no"), chYes = wrap.querySelector(".so-chest.yes");
+  let items = [], deck = [], right = 0, errs = 0, time = SORT_DUR, alive = false, raf = 0, last = 0, spawnT = 0, swapped = false, swapDone = false, W = 0, H = 0, combo = 0, whyT = 0;
+  const upd = () => stat(chip("✅", right) + chip("❌", errs) + chip("⏱️", Math.max(0, Math.ceil(time)))); upd();
+  const phase = () => { const e = SORT_DUR - time; return e < 14 ? 0 : e < 30 ? 1 : e < 44 ? 2 : 3; };
+  const fallMs = () => [6.4, 4.8, 4.4, 3.4][phase()], maxFly = () => [1, 2, 2, 3][phase()], gapS = () => [2.4, 1.7, 1.8, 1.15][phase()];
+  function layout(){
+    W = wrap.clientWidth; H = wrap.clientHeight; const cw = Math.min(150, (W - 48)/2);
+    wrap.style.setProperty("--cw", cw + "px");
+    const yes = swapped ? 16 : W - 16 - cw, no = swapped ? W - 16 - cw : 16;
+    chYes.style.transform = `translateX(${yes}px)`; chNo.style.transform = `translateX(${no}px)`;
   }
-  function answer(yes){
-    if (busy || !alive) return; busy = true;
-    const [, , ok, why] = deck[i]; const good = yes === ok;
-    if (good){ right++; snd.combo(); haptic(8); const [x,y] = centerOf(card); FX.burst(x,y,{emojis:["✨"],n:6,size:[12,18]}); }
-    else { snd.wrong(); snd.resetCombo(); haptic(30); shake(wrap, 6); }
-    fb.textContent = (good ? "Верно. " : yes === null ? "Время вышло. " : "Мимо. ") + why;
-    card.classList.remove("enter"); card.classList.add(yes === false ? "go-l" : "go-r");
-    i++; setTimeout(show, 700);
+  const floorY = () => H - 205;
+  function next(){ if (!deck.length) deck = RULES.map(x => ({x, r: Math.random()})).sort((a, b) => a.r - b.r).map(o => o.x); return deck.pop(); }
+  function spawn(){
+    const d = next(), el = document.createElement("div"); el.className = "so-card"; el.innerHTML = '<span class="e"></span><b></b>';
+    el.querySelector(".e").textContent = d[0]; el.querySelector("b").textContent = d[1]; wrap.appendChild(el);
+    const it = {el, d, y: -80, v: (floorY() + 80)/fallMs(), x: W/2 + (Math.random() - .5)*Math.min(60, W*.12), rot: (Math.random() - .5)*8};
+    items.push(it); draw(it);
   }
-  function loop(now){
+  const draw = it => { it.el.style.transform = `translate(${(it.x - 75).toFixed(1)}px,${it.y.toFixed(1)}px) rotate(${it.rot.toFixed(1)}deg)`; };
+  const target = () => items.filter(i => !i.gone).sort((a, b) => b.y - a.y)[0];
+  function say(t){ why.textContent = t; why.classList.remove("on"); void why.offsetWidth; why.classList.add("on"); clearTimeout(whyT); whyT = setTimeout(() => why.classList.remove("on"), 1700); }
+  /* бросок: карточка летит в сундук по дуге */
+  function toss(yes){
+    if (!alive) return; const it = target(); if (!it) return;
+    it.gone = true; const ok = it.d[2] === yes, ch = yes ? chYes : chNo, cr = ch.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+    const tx = cr.left - wr.left + cr.width/2 - 75, ty = cr.top - wr.top - 10;
+    const a = it.el.animate([{transform: it.el.style.transform, opacity: 1}, {transform: `translate(${((it.x - 75 + tx)/2).toFixed(1)}px,${(Math.min(it.y, ty) - 60).toFixed(1)}px) rotate(${yes ? 14 : -14}deg) scale(.8)`, opacity: 1, offset: .45},
+      {transform: `translate(${tx.toFixed(1)}px,${(ty + 20).toFixed(1)}px) rotate(${yes ? 24 : -24}deg) scale(.3)`, opacity: .2}], {duration: reduced() ? 1 : 380, easing: "cubic-bezier(.3,.6,.4,1)", fill: "forwards"});
+    a.onfinish = () => { it.el.remove(); items = items.filter(i => i !== it);
+      ch.classList.remove("ok", "bad"); void ch.offsetWidth; ch.classList.add(ok ? "ok" : "bad");
+      const [x, y] = centerOf(ch);
+      if (ok){ right++; combo++; snd.combo(); haptic(6); FX.burst(x, y - 20, {emojis: ["✨"], n: 5 + Math.min(6, combo), size: [10, 18], grav: 220}); if (combo % 5 === 0) popNum("×" + combo, x, y - 40); }
+      else { errs++; combo = 0; snd.wrong(); snd.resetCombo(); haptic(28); shake(ch, 5); say("Мимо. " + it.d[3]); }
+      upd(); };
+  }
+  function drop(it){
+    it.gone = true; errs++; combo = 0; snd.resetCombo(); snd.thump(); haptic(18); say("Не успела. " + it.d[3]); upd();
+    it.el.animate([{transform: it.el.style.transform, opacity: 1}, {transform: it.el.style.transform + " translateY(40px) scale(.7)", opacity: 0}], {duration: 360, fill: "forwards"}).onfinish = () => { it.el.remove(); items = items.filter(i => i !== it); };
+  }
+  /* Лапуля меняет сундуки: они переезжают крест-накрест, надписи и цвета едут вместе с сундуками */
+  function lapSwap(on){
+    swapped = on; snd.meow("lapula"); haptic(12);
+    flashBanner(area, on ? "Лапуля поменяла сундуки местами" : "Сундуки вернулись", 2000);
+    [chYes, chNo].forEach(c => { c.classList.remove("hop"); void c.offsetWidth; c.classList.add("hop"); }); layout();
+  }
+  chNo.onclick = () => toss(false); chYes.onclick = () => toss(true);
+  let sx = null, sy = 0;
+  wrap.addEventListener("pointerdown", e => { if (e.target.closest(".so-chest")) return; sx = e.clientX; sy = e.clientY; });
+  wrap.addEventListener("pointerup", e => { if (sx === null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 36){ const right = dx > 0; toss(swapped ? !right : right); } });
+  const kd = e => { if (e.key === "ArrowLeft") toss(swapped); if (e.key === "ArrowRight") toss(!swapped); };
+  addEventListener("keydown", kd); addEventListener("resize", layout);
+  function end(){
+    if (!alive) return; alive = false; cancelAnimationFrame(raf);
+    const st = errs === 0 && right >= 12 ? 3 : errs <= 3 ? 2 : 1;
+    setTimeout(() => done(st, `Разложено верно ${right}, ошибок ${errs}. Три звезды без единой ошибки.`), 600);
+  }
+  function frame(now){
     if (!alive) return;
-    if (!busy){ const p = 1 - (now - t0)/LIMIT; bar.style.width = Math.max(0,p*100) + "%"; if (p <= 0) answer(null); }
-    raf = requestAnimationFrame(loop);
+    const dt = Math.min(.05, (now - last)/1000); last = now; time -= dt;
+    const e = SORT_DUR - time;
+    if (!swapped && !swapDone && e >= 31){ swapDone = true; lapSwap(true); }
+    if (swapped && e >= 42) lapSwap(false);
+    if (e >= 44 && !wrap.classList.contains("fin")){ wrap.classList.add("fin"); flashBanner(area, "Последний залп", 1500); }
+    spawnT -= dt; const fly = items.filter(i => !i.gone).length;
+    if (time > 2.5 && spawnT <= 0 && fly < maxFly()){ spawn(); spawnT = gapS(); }
+    items.forEach(it => { if (it.gone) return; it.y += it.v*dt; draw(it); if (it.y >= floorY()) drop(it); });
+    const t = target(); items.forEach(i => i.el.classList.toggle("cur", i === t));
+    if (Math.floor(time*4) % 2 === 0) upd();
+    if (time <= 0 && !items.some(i => !i.gone)){ time = 0; upd(); return end(); }
+    if (time <= -6){ return end(); }
+    raf = requestAnimationFrame(frame);
   }
-  wrap.querySelector(".qno").onclick = () => answer(false);
-  wrap.querySelector(".qyes").onclick = () => answer(true);
-  let sx = null;
-  card.addEventListener("pointerdown", e => { sx = e.clientX; });
-  card.addEventListener("pointerup", e => { if (sx === null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 60) answer(dx > 0); });
-  const kd = e => { if (e.key === "ArrowLeft") answer(false); if (e.key === "ArrowRight") answer(true); };
-  addEventListener("keydown", kd);
-  setCard(deck[0]); upd();
-  intro(area, LEVELS[3], "Можно вампиру или нельзя? Жми кнопку или смахивай карточку: влево «нельзя», вправо «можно». На ответ 6 секунд.", () => {
-    alive = true; show(); raf = requestAnimationFrame(loop);
+  area.__sort = {get items(){ return items; }, get swapped(){ return swapped; }, get alive(){ return alive; }, toss, get right(){ return right; }, get errs(){ return errs; }};
+  layout();
+  intro(area, LEVELS[3], "Правила вампирской жизни падают сверху. Смахни нижнюю карточку влево в «Нельзя» или вправо в «Можно», можно тапнуть по сундуку. Дальше быстрее, и Лапуля обязательно что-нибудь устроит.", () => {
+    alive = true; spawnT = .3; raf = requestAnimationFrame(t => { last = t; frame(t); });
   });
-  return () => { alive = false; cancelAnimationFrame(raf); removeEventListener("keydown", kd); };
+  return () => { alive = false; cancelAnimationFrame(raf); clearTimeout(whyT); removeEventListener("keydown", kd); removeEventListener("resize", layout); };
 }
 
 /* ---------- 5: лес Форкса ---------- */
@@ -4896,59 +5238,109 @@ function lvlForks(area, done){
   return () => { running = false; cancelAnimationFrame(raf); removeEventListener("resize", C.fit); removeEventListener("keydown", kd); };
 }
 
-/* ---------- 6: поляна с розами ---------- */
+/* ---------- 6: поляна ---------- */
+/* Ки (0–10 с): розы и редкие спящие мыши. Сё (10–20): колючие розы, их держат, и золотая роза за три. Тэн (20–30): ночь, видно только под лунным лучом, мыши-воришки утаскивают розы.
+   Кэцу (30–40): рассвет и розопад */
+const GARDEN_DUR = 40;
+let GARDEN2 = 30, GARDEN3 = 48; /* пороги звёзд: стартовые, подобраны ботом */
 function lvlGarden(area, done){
   const wrap = document.createElement("div"); wrap.className = "garden"; area.appendChild(wrap);
   const bushes = [];
-  for (let i=0;i<9;i++){ const b = document.createElement("div"); b.className = "bush"; b.innerHTML = '<span class="leaf e">🌿</span>'; wrap.appendChild(b); bushes.push({el:b, item:null}); }
-  const hint = document.createElement("div"); hint.className = "ghint"; hint.textContent = "тапай по розам, пока не завяли"; area.appendChild(hint);
-  let picked = 0, lives = 3, time = 30, alive = false, spawnT = 0, raf, last = 0;
-  const upd = () => stat(chip("🌹", picked) + chip("❤️", Math.max(0,lives)) + chip("⏱️", Math.ceil(time)));
+  for (let i = 0; i < 9; i++){ const b = document.createElement("div"); b.className = "bush"; b.innerHTML = '<span class="leaf e">🌿</span>'; wrap.appendChild(b); bushes.push({el: b, item: null, i}); }
+  const night = document.createElement("div"); night.className = "gnight"; wrap.appendChild(night);
+  let picked = 0, lives = 3, time = GARDEN_DUR, alive = false, spawnT = 0, raf, last = 0, goldN = 0, thiefT = 0, thieves = [], moonA = 0, saidHold = false, saidThief = false, holding = null;
+  const upd = () => stat(chip("🌹", picked) + chip("❤️", Math.max(0, lives)) + chip("⏱️", Math.max(0, Math.ceil(time))));
   upd();
-  function spawn(k){
-    const free = bushes.filter(b => !b.item); if (!free.length) return;
-    const b = free[Math.floor(Math.random()*free.length)];
-    const bat = Math.random() < .2 + .1*k;
-    const it = document.createElement("button"); it.className = "item e"; it.textContent = bat ? "🦇" : "🌹"; it.setAttribute("aria-label", bat ? "Летучая мышь" : "Роза");
-    const life = (bat ? 1.1 : 1.4 - .5*k) * 1000;
-    const obj = {el:it, bat};
-    obj.t = setTimeout(() => {
-      if (b.item !== obj) return; b.item = null;
-      if (!bat) snd.resetCombo();
-      it.classList.add(bat ? "gone" : "wilt"); setTimeout(() => it.remove(), 380);
-    }, life);
-    it.addEventListener("pointerdown", e => {
-      e.preventDefault(); e.stopPropagation(); if (!alive || b.item !== obj) return;
+  const el = () => GARDEN_DUR - time, isNight = () => el() >= 20 && el() < 30;
+  const gain = (n, x, y, emo = "🌹") => { picked += n; S.roses = (S.roses || 0) + n; snd.combo(); haptic(6); FX.burst(x, y, {emojis: [emo, "✨"], n: 4 + n*2, size: [12, 20], grav: 350}); popNum("+" + n, x, y - 24); upd(); };
+  function spawn(kind){
+    const free = bushes.filter(b => !b.item); if (!free.length) return null;
+    const b = free[Math.floor(Math.random()*free.length)], e = el();
+    const it = document.createElement("button"); it.className = "item e " + kind; it.setAttribute("aria-label", {rose: "Роза", bat: "Спящая мышь", gold: "Золотая роза", hold: "Колючая роза"}[kind]);
+    it.textContent = kind === "bat" ? "🦇" : "🌹";
+    if (kind === "hold") it.insertAdjacentHTML("beforeend", '<svg class="hring" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17"/><circle class="v" cx="20" cy="20" r="17"/></svg><span class="hl">держи</span>');
+    const life = {rose: (e >= 30 ? .95 : 1.45 - Math.min(.35, e*.012)), bat: 1.25, gold: .95, hold: 2.3}[kind]*1000;
+    const obj = {el: it, kind, b};
+    obj.t = setTimeout(() => { if (b.item !== obj) return; b.item = null; if (kind !== "bat") snd.resetCombo(); it.classList.add(kind === "bat" ? "gone" : "wilt"); setTimeout(() => it.remove(), 380); }, life);
+    it.addEventListener("pointerdown", ev => {
+      ev.preventDefault(); ev.stopPropagation(); if (!alive || b.item !== obj) return;
+      const [x, y] = centerOf(it);
+      if (kind === "hold"){ startHold(obj, x, y); return; }
       b.item = null; clearTimeout(obj.t);
-      const [x,y] = centerOf(it);
-      if (bat){ lives--; snd.wrong(); snd.resetCombo(); haptic(40); shake(area, 9); FX.burst(x,y,{emojis:["💢"],n:3}); }
-      else { picked++; S.roses = (S.roses||0) + 1; snd.combo(); haptic(6); FX.burst(x,y,{emojis:["🌹","✨"],n:6,size:[12,20],grav:350}); popNum("+1", x, y-24); }
+      if (kind === "bat"){ lives--; snd.wrong(); snd.resetCombo(); haptic(40); shake(area, 9); FX.burst(x, y, {emojis: ["💢"], n: 3}); upd(); if (lives <= 0) end(); }
+      else if (kind === "gold"){ gain(3, x, y, "⭐"); snd.collect(true); }
+      else gain(1, x, y);
       it.classList.add("gone"); setTimeout(() => it.remove(), 260);
-      upd();
-      if (lives <= 0) end();
     });
-    b.item = obj; b.el.appendChild(it);
+    b.item = obj; b.el.appendChild(it); return obj;
+  }
+  /* колючую розу держат, пока не заполнится кольцо; отпустила раньше — роза остаётся, можно ещё раз */
+  function startHold(obj, x, y){
+    if (holding) return; const ring = obj.el.querySelector(".v"), t0 = performance.now(), NEED = 600; holding = obj; obj.el.classList.add("held"); haptic(4);
+    const step = now => { if (holding !== obj) return; const k = Math.min(1, (now - t0)/NEED); ring.style.strokeDashoffset = (106.8*(1 - k)).toFixed(1);
+      if (k >= 1){ holding = null; if (obj.b.item !== obj) return; obj.b.item = null; clearTimeout(obj.t); gain(2, x, y); obj.el.classList.add("gone"); setTimeout(() => obj.el.remove(), 260); return; }
+      requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  const release = () => { if (!holding) return; const o = holding; holding = null; o.el.classList.remove("held"); const v = o.el.querySelector(".v"); if (v) v.style.strokeDashoffset = 106.8; };
+  addEventListener("pointerup", release); addEventListener("pointercancel", release);
+  /* воришка прилетает с края к распустившейся розе и уносит её; тапни по нему, и он отдаст розу */
+  function thief(){
+    const roses = bushes.filter(b => b.item && (b.item.kind === "rose" || b.item.kind === "gold")); if (!roses.length) return;
+    const b = roses[Math.floor(Math.random()*roses.length)], ar = area.getBoundingClientRect(), br = b.item.el.getBoundingClientRect();
+    const fromL = Math.random() < .5, sx = fromL ? -50 : ar.width + 50, sy = 40 + Math.random()*60, tx = br.left - ar.left + br.width/2, ty = br.top - ar.top + br.height/2;
+    const t = document.createElement("button"); t.className = "thief e"; t.setAttribute("aria-label", "Мышь-воришка"); t.innerHTML = '🦇<span class="loot e">🌹</span>'; area.appendChild(t);
+    const th = {el: t, done: false}; thieves.push(th);
+    const pos = (x, y) => { t.style.transform = `translate(${(x - 30).toFixed(1)}px,${(y - 30).toFixed(1)}px)`; };
+    pos(sx, sy); if (!saidThief){ saidThief = true; flashBanner(area, "Мышь-воришка! Тапни, и роза твоя", 2000); }
+    const t0 = performance.now(), T1 = 1000, T2 = 1300; let grabbed = false;
+    const fly = now => { if (th.done || !alive) return; const k = (now - t0)/T1;
+      if (k < 1){ const e = k*k*(3 - 2*k); pos(sx + (tx - sx)*e, sy + (ty - sy)*e + Math.sin(k*12)*8); }
+      else { if (!grabbed){ grabbed = true; if (b.item && (b.item.kind === "rose" || b.item.kind === "gold")){ const o = b.item; b.item = null; clearTimeout(o.t); o.el.remove(); t.classList.add("has"); snd.chatter(); } }
+        const k2 = (now - t0 - T1)/T2; if (k2 >= 1){ th.done = true; t.remove(); if (t.classList.contains("has")) snd.resetCombo(); return; }
+        pos(tx + ((fromL ? ar.width + 60 : -60) - tx)*k2, ty - k2*160 + Math.sin(k2*14)*6); }
+      requestAnimationFrame(fly); };
+    requestAnimationFrame(fly);
+    t.addEventListener("pointerdown", ev => { ev.preventDefault(); ev.stopPropagation(); if (th.done || !alive) return; th.done = true;
+      const [x, y] = centerOf(t); gain(t.classList.contains("has") ? 2 : 1, x, y); snd.jump();
+      t.animate([{opacity: 1, transform: t.style.transform}, {opacity: 0, transform: t.style.transform + " translateY(-60px) scale(.5)"}], {duration: 360, fill: "forwards"}).onfinish = () => t.remove(); });
   }
   function end(){
-    if (!alive) return; alive = false; cancelAnimationFrame(raf); save();
-    bushes.forEach(b => { if (b.item){ clearTimeout(b.item.t); b.item = null; } });
-    const st = lives <= 0 ? 0 : picked >= 26 ? 3 : picked >= 18 ? 2 : 1;
-    setTimeout(() => done(st, lives <= 0 ? "Летучие мыши победили. Роз собрано: " + picked + "." : "Роз собрано: " + picked + ". Три звезды с 26."), 300);
+    if (!alive) return; alive = false; cancelAnimationFrame(raf); save(); release();
+    bushes.forEach(b => { if (b.item){ clearTimeout(b.item.t); b.item = null; } }); thieves.forEach(t => { t.done = true; t.el.remove(); });
+    wrap.classList.remove("night"); night.classList.remove("on");
+    const st = lives <= 0 ? 0 : picked >= GARDEN3 ? 3 : picked >= GARDEN2 ? 2 : 1;
+    setTimeout(() => done(st, lives <= 0 ? "Летучие мыши победили. Роз собрано: " + picked + "." : `Роз собрано: ${picked}. Три звезды с ${GARDEN3}.`), 300);
   }
   function frame(now){
     if (!alive) return;
-    const dt = Math.min(.05, (now - last)/1000); last = now;
-    time -= dt; const k = Math.min(1, 1 - time/30);
+    const dt = Math.min(.05, (now - last)/1000); last = now; time -= dt; const e = el();
+    /* ночь: лунный луч ходит по поляне, вне его видно только свечение роз и глаза мышей */
+    const nt = isNight(); if (nt !== wrap.classList.contains("night")){ wrap.classList.toggle("night", nt); night.classList.toggle("on", nt); if (nt){ snd.wind(); flashBanner(area, "Ночь. Розы видно под луной", 2000); } else flashBanner(area, "Рассвет. Розопад!", 1600); }
+    if (nt){ moonA += dt*1.15; const ar = area.getBoundingClientRect(); const mx = ar.width*(.5 + .32*Math.sin(moonA)), my = ar.height*(.5 + .22*Math.sin(moonA*1.7 + 1));
+      const wr = wrap.getBoundingClientRect(), R = Math.min(ar.width, ar.height)*.3, cx = mx + ar.left - wr.left, cy = my + ar.top - wr.top;
+      night.style.background = `radial-gradient(circle ${R.toFixed(0)}px at ${cx.toFixed(0)}px ${cy.toFixed(0)}px,rgba(200,215,255,.06) 0,rgba(8,6,20,.55) 60%,rgba(6,4,14,.92) 100%)`;
+      /* под лучом предмет виден целиком, вне луча — только свечение розы или глаза мыши */
+      bushes.forEach(b => { if (!b.item) return; const r = b.item.el.getBoundingClientRect(); b.item.el.classList.toggle("lit", Math.hypot(r.left + r.width/2 - ar.left - mx, r.top + r.height/2 - ar.top - my) < R*.8); }); }
+    if (e >= 10 && !saidHold){ saidHold = true; flashBanner(area, "Колючие розы: держи палец, пока не замкнётся круг", 2400); }
     spawnT -= dt;
-    if (spawnT <= 0){ spawn(k); spawnT = .62 - .26*k; }
+    if (spawnT <= 0){
+      const r = Math.random(), batP = e < 10 ? .14 : e < 30 ? .22 : .16;
+      let kind = r < batP ? "bat" : "rose";
+      if (kind === "rose" && e >= 10 && e < 30 && Math.random() < .2) kind = "hold";
+      if ((goldN === 0 && e >= 15) || (goldN === 1 && e >= 34)){ kind = "gold"; goldN++; }
+      spawn(kind); spawnT = e >= 30 ? .34 : e >= 20 ? .55 : .62 - e*.012;
+    }
+    if (nt){ thiefT -= dt; if (thiefT <= 0){ thief(); thiefT = 2.6 + Math.random()*1.2; } }
     if (Math.floor(time*10) % 5 === 0) upd();
     if (time <= 0){ time = 0; upd(); end(); return; }
     raf = requestAnimationFrame(frame);
   }
-  intro(area, LEVELS[5], "На поляне распускаются розы 🌹. Тапай по ним, пока не завяли: каждая следующая подряд звучит выше. Летучих мышей 🦇 не трогай, они отнимают сердце. 30 секунд.", () => {
-    alive = true; snd.resetCombo(); raf = requestAnimationFrame(t => { last = t; frame(t); });
+  area.__garden = {bushes, get thieves(){ return thieves; }, get alive(){ return alive; }, get picked(){ return picked; }, get lives(){ return lives; }};
+  intro(area, LEVELS[5], "Тапай по розам 🌹, пока не завяли. Спящих мышей 🦇 не трогай, они отнимают сердце. Колючие розы нужно подержать, золотая стоит трёх. Ночью прилетают воришки: тапни, и они отдадут розу. 40 секунд.", () => {
+    alive = true; snd.resetCombo(); thiefT = 1; raf = requestAnimationFrame(t => { last = t; frame(t); });
   });
-  return () => { alive = false; cancelAnimationFrame(raf); bushes.forEach(b => b.item && clearTimeout(b.item.t)); };
+  return () => { alive = false; cancelAnimationFrame(raf); release(); bushes.forEach(b => b.item && clearTimeout(b.item.t)); thieves.forEach(t => { t.done = true; }); removeEventListener("pointerup", release); removeEventListener("pointercancel", release); };
 }
 
 /* ================= ОБЩЕЕ ДЛЯ НОВЫХ УРОВНЕЙ ================= */
