@@ -2495,7 +2495,7 @@ function pet(el, e, soft){
     bar.style.width = "100%"; $("#purrN").textContent = D + "/" + D; m.style.setProperty("--dt", "11%"); m.classList.remove("near");
     m.classList.remove("full"); void m.offsetWidth; m.classList.add("full");
     setTimeout(() => { flyDrops(m.querySelector(".dropl"), 1); setTimeout(() => hud(true), 800); }, 380);
-    setTimeout(() => { dropFlash(); snd.meow(who); }, 300);
+    setTimeout(() => { dropFlash(); }, 300);
     setTimeout(() => { bar.style.transition = "none"; renderPurr(); void bar.offsetWidth; bar.style.transition = ""; }, 900);
   } else renderPurr();
   checkAch(); save();
