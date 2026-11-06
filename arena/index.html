@@ -58,19 +58,21 @@ button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent;touch-
 .screen.on{display:flex}
 #menu{background:radial-gradient(circle at 78% 10%,rgba(243,227,176,.22) 0 3%,rgba(243,227,176,.06) 9%,transparent 22%),linear-gradient(180deg,#1b1330,#2a1636 48%,#3a1630)}
 .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.back{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:var(--ink);text-decoration:none;font:600 12px/1 var(--ui)}
-.cups{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;background:rgba(243,210,122,.14);box-shadow:inset 0 0 0 1px rgba(243,210,122,.4);font:600 14px/1 var(--ui);color:var(--gold);font-variant-numeric:tabular-nums}
-.snd{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);display:grid;place-items:center}
+.back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:var(--ink);text-decoration:none;font:600 12px/1 var(--ui)}
+.cups{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:rgba(243,210,122,.14);box-shadow:inset 0 0 0 1px rgba(243,210,122,.4);font:600 14px/1 var(--ui);color:var(--gold);font-variant-numeric:tabular-nums}
+.tgl{display:flex;gap:8px}
+.snd{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);display:grid;place-items:center}
 .snd svg{width:18px;height:18px}
 h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--script);text-shadow:0 0 24px rgba(216,86,111,.55)}
-.tag{text-align:center;color:var(--muted);font-size:12px;margin-top:6px}
+.tag{text-align:center;color:var(--muted);font-size:13px;margin-top:6px}
 .lbl{margin:22px 4px 10px;font:600 11px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .cats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .catc{position:relative;border:0;border-radius:22px;padding:12px 10px 14px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);text-align:center;transition:transform .5s var(--spring-pop),background .2s,box-shadow .2s}
 .catc canvas{display:block;width:96px;height:96px;margin:0 auto}
 .catc b{display:block;font:400 30px/1 var(--script);margin-top:2px}
-.catc small{display:block;color:var(--muted);font-size:10.5px;line-height:1.35;margin-top:4px;min-height:42px}
-.catc .st{display:flex;justify-content:center;gap:10px;margin-top:8px;font:600 10px/1 var(--ui);color:var(--ink);opacity:.85}
+.catc .st span{white-space:nowrap}
+.catc small{display:block;color:var(--muted);font-size:11.5px;line-height:1.35;margin-top:4px;min-height:42px}
+.catc .st{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 10px;margin-top:8px;font:600 11px/1 var(--ui);color:var(--ink);opacity:.85}
 .catc.on{background:rgba(216,86,111,.18);box-shadow:inset 0 0 0 2px var(--rose),0 10px 26px rgba(143,31,56,.35)}
 .catc.press,.mode.press,.btn.press{transform:scale(.95);transition-duration:.08s}
 .modes{display:flex;flex-direction:column;gap:10px}
@@ -80,9 +82,9 @@ h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--scri
 .mode:nth-child(2) .ic{background:linear-gradient(180deg,#6a4fb0,#33236a)}
 .mode:nth-child(3) .ic{background:linear-gradient(180deg,#b0763a,#5f3713)}
 .mode b{display:block;font:600 15px/1.2 var(--ui)}
-.mode small{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:3px}
-.mode .rec{display:block;margin-top:5px;font:600 10px/1 var(--ui);color:var(--gold)}
-.foot{margin-top:auto;padding-top:20px;text-align:center;color:rgba(255,244,236,.35);font-size:10px}
+.mode small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:3px}
+.mode .rec{display:block;margin-top:5px;font:600 11px/1 var(--ui);color:var(--gold)}
+.foot{margin-top:auto;padding-top:20px;text-align:center;color:rgba(255,244,236,.45);font-size:11px}
 
 /* оверлеи */
 .ovl{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,6,16,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
@@ -90,18 +92,18 @@ h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--scri
 .card{width:min(360px,100%);border-radius:28px;padding:22px 20px 18px;text-align:center;background:linear-gradient(180deg,#2c1a3a,#1d1228);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 60px rgba(0,0,0,.5);animation:cardIn .7s var(--spring-soft)}
 @keyframes cardIn{from{transform:translateY(30px) scale(.94);opacity:0}}
 .card h2{margin:0;font:400 46px/1.05 var(--script)}
-.card p{margin:10px 0 0;color:var(--muted);font-size:12.5px;line-height:1.5}
+.card p{margin:10px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
 .card .big{font:800 34px/1 var(--ui);margin-top:12px;font-variant-numeric:tabular-nums}
 .card .big.up{color:var(--gold)}.card .big.down{color:#ff9db0}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
 .stats div{padding:10px 4px;border-radius:14px;background:rgba(255,255,255,.06)}
 .stats b{display:block;font:600 16px/1 var(--ui);font-variant-numeric:tabular-nums}
-.stats small{display:block;margin-top:5px;color:var(--muted);font-size:9.5px}
+.stats small{display:block;margin-top:5px;color:var(--muted);font-size:11px}
 .btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
 .btn{min-height:52px;border:0;border-radius:999px;font:600 15px/1 var(--ui);color:#fff;background:linear-gradient(180deg,#d8566f,#8f1f38);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 20px rgba(143,31,56,.4);transition:transform .5s var(--spring-pop)}
 .btn.ghost{background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 .how{display:flex;flex-direction:column;gap:12px;margin-top:14px;text-align:left}
-.how div{display:flex;gap:12px;align-items:center;font-size:12px;line-height:1.4;color:var(--ink)}
+.how div{display:flex;gap:12px;align-items:center;font-size:13px;line-height:1.4;color:var(--ink)}
 .how i{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
@@ -122,7 +124,7 @@ h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--scri
     <div class="top">
       <a class="back" href="../">← Дневники</a>
       <span class="cups" id="cups">🏆 0</span>
-      <button class="snd" id="sndBtn" aria-label="Звук"></button>
+      <span class="tgl"><button class="snd" id="hapBtn" aria-label="Вибрация"></button><button class="snd" id="sndBtn" aria-label="Звук"></button></span>
     </div>
     <h1>Ночная арена</h1>
     <div class="tag">Алиса и Лапуля против охотников</div>
@@ -137,7 +139,7 @@ h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--scri
     <h2>Как играть</h2>
     <div class="how">
       <div><i>🕹️</i><span>Левый палец в любом месте слева: бег.</span></div>
-      <div><i>🎯</i><span>Правый палец: потяни, прицелься и отпусти. Короткий тап выстрелит в ближайшего врага.</span></div>
+      <div><i>🎯</i><span>Правый палец: потяни, прицелься и отпусти. Передумала — верни палец в центр. Короткий тап стреляет в ближайшего врага.</span></div>
       <div><i>⚡</i><span>Круглая кнопка справа заряжается, когда попадаешь. Потяни от неё, чтобы прицелить суперудар.</span></div>
       <div><i>🌿</i><span>В кустах тебя не видно, пока не выстрелишь. Без урона пару секунд — здоровье восстанавливается.</span></div>
     </div>
@@ -173,7 +175,7 @@ const AUTO = /[?&]auto=1/.test(location.search);           /* тест: игро
 
 const KEY = "night-arena-v1";
 const S = (() => { let s = {}; try { s = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){}
-  return Object.assign({cat: "alisa", cups: 0, sfx: true, how: false, rec: {gems: {w: 0, l: 0, d: 0}, surv: {best: 0, wins: 0}, waves: {best: 0, wins: 0}}}, s); })();
+  return Object.assign({cat: "alisa", cups: 0, sfx: true, hap: true, how: false, rec: {gems: {w: 0, l: 0, d: 0}, surv: {best: 0, wins: 0}, waves: {best: 0, wins: 0}}}, s); })();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} };
 
 /* цвета кошек как в «Дневниках» */
@@ -251,6 +253,8 @@ const snd = {
   superGo(){ if (!can("sgo", 200)) return; const t = ctx.currentTime; noise({t, type: "bandpass", freq: 400, f2: 4000, Q: 2, e: {a: .02, d: .3, peak: .18}}); bell({f: 1568, t: t + .12, dur: .7, peak: .14, send: .4}); },
   gem(){ if (!can("gem", 50)) return; const t = ctx.currentTime, k = rv(.02); [1046.5, 1318.5, 1568].forEach((f, i) => bell({f: f*k, t: t + i*.035, index: 1.5, dur: .25, peak: .12, send: .15})); },
   power(){ if (!can("pow", 100)) return; const t = ctx.currentTime; [523.25, 784, 1046.5, 1568].forEach((f, i) => voice({type: "triangle", f, t: t + i*.05, lp: 5000, send: .2, e: {a: .003, d: .12, peak: .1}})); },
+  /* выстрел без патронов: сухой щелчок, чтобы было понятно, почему ничего не вылетело */
+  empty(){ if (!can("empty", 120)) return; const t = ctx.currentTime; noise({t, type: "highpass", freq: 3800, Q: .7, e: {a: .001, d: .025, peak: .09}}); voice({type: "square", f: 140, f2: 110, glide: .03, t, lp: 900, e: {a: .001, d: .04, peak: .05}}); },
   box(){ if (!can("box", 60)) return; noise({type: "lowpass", freq: 900, Q: .8, e: {a: .002, d: .12, peak: .22}}); },
   tick(hi){ if (!can("tick", 200)) return; voice({f: hi ? 1318.5 : 880, e: {a: .002, d: .08, peak: .12}}); },
   wave(){ if (!can("wave", 500)) return; const t = ctx.currentTime; [392, 523.25, 659.25].forEach((f, i) => voice({type: "triangle", f, t: t + i*.1, lp: 3000, send: .25, e: {a: .01, d: .25, peak: .1}})); },
@@ -264,6 +268,7 @@ const snd = {
 /* на iPhone navigator.vibrate нет; единственный путь — клик по скрытому <input switch> (Safari 17.4+), только из жеста */
 let hapLabel = null;
 function haptic(ms = 10){
+  if (S.hap === false) return;
   if (navigator.vibrate){ try { navigator.vibrate(ms); } catch(e){} return; }
   if (!hapLabel){ const i = document.createElement("input"); i.type = "checkbox"; i.id = "hx"; i.setAttribute("switch", "");
     hapLabel = document.createElement("label"); hapLabel.htmlFor = "hx";
@@ -358,7 +363,7 @@ function makeFighter(kind, team, x, y, extra = {}){
   const C = KINDS[kind];
   return Object.assign({id: ++uid, kind, C, team, x, y, sx: x, sy: y, vx: 0, vy: 0, r: C.r, hp: C.hp, maxHp: C.hp, ammo: C.ammo, ammoT: 0, cd: 0,
     sup: 0, face: team === 2 ? Math.PI/2 : -Math.PI/2, lastHurt: -9, lastAtk: -9, reveal: 0, stun: 0, dash: null, dead: false, respawn: 0,
-    gems: 0, power: 0, flash: 0, walk: 0, dmgOut: 0, kos: 0, ai: {t: 0, path: null, pathT: 0, strafe: Math.random() < .5 ? 1 : -1, wobble: Math.random()*9}}, extra);
+    gems: 0, power: 0, flash: 0, walk: 0, dmgOut: 0, kos: 0, born: G ? G.t : 0, hpG: C.hp, run: 0, lean: 0, dirS: 0, sq: 0, sqv: 0, kx: 0, ky: 0, step: 0, emptyT: -9, popT: -9, healT: -9, ai: {t: 0, path: null, pathT: 0, strafe: Math.random() < .5 ? 1 : -1, wobble: Math.random()*9}}, extra);
 }
 const isCat = f => !!f.C.cat;
 
@@ -376,8 +381,13 @@ function hitsSolid(x, y, r, test){
 /* шаг с проскальзыванием вдоль стен */
 function moveBody(f, dx, dy){
   const test = f.C.fly ? (c => c === "#" && false) : solidWalk, r = f.r*.8;
-  if (!hitsSolid(f.x + dx, f.y, r, test)) f.x += dx;
-  if (!hitsSolid(f.x, f.y + dy, r, test)) f.y += dy;
+  const bx = hitsSolid(f.x + dx, f.y, r, test), by = hitsSolid(f.x, f.y + dy, r, test);
+  if (!bx) f.x += dx;
+  if (!by) f.y += dy;
+  /* упёрся в угол краем: если чуть в сторону свободно, съезжаем туда, а не стоим */
+  if (!f.C.fly && (bx || by)){ const len = Math.hypot(dx, dy) || 1, nudge = r*.75, step = len*.9;
+    if (bx && Math.abs(dy) < len*.3) for (const s of [1, -1]) if (!hitsSolid(f.x + dx, f.y + s*nudge, r, test) && !hitsSolid(f.x, f.y + s*step, r, test)){ f.y += s*step; break; }
+    if (by && Math.abs(dx) < len*.3) for (const s of [1, -1]) if (!hitsSolid(f.x + s*nudge, f.y + dy, r, test) && !hitsSolid(f.x + s*step, f.y, r, test)){ f.x += s*step; break; } }
   f.x = clamp(f.x, r, G.map.pw - r); f.y = clamp(f.y, r, G.map.ph - r);
 }
 function freeSpot(x, y, r){
@@ -421,6 +431,8 @@ function fire(f, ang, aimPt){
   if (f.dead || f.stun > 0 || f.dash || f.ammo < 1 || f.cd > 0) return false;
   f.ammo -= 1; f.cd = f.C.atk === "claw" ? .38 : .3; f.face = ang; revealAtk(f);
   const C = f.C, mine = f === G.me, vol = mine ? 1 : .45, R = C.range*T;
+  kick(f, ang, C.atk === "claw" ? 6 : -4);   /* когти: выпад вперёд, выстрел: отдача назад */ f.sqv += C.atk === "claw" ? -1.6 : 1.8;
+  if (C.atk !== "claw") G.fx.push({k: "muzzle", x: f.x + Math.cos(ang)*f.r*.9, y: f.y + Math.sin(ang)*f.r*.9 - 4, ang, t: 0, T: .09, col: C.atk === "fan" ? "#ff8fa3" : C.atk === "lob" ? "#e9f2d0" : "#fff3c4"});
   if (C.atk === "fan"){ [-.17, 0, .17].forEach(d => shoot(f, ang + d, C.dmg, R, C.ps, "drop")); snd.drop(vol); }
   else if (C.atk === "shot"){ shoot(f, ang, C.dmg, R, C.ps, f.kind === "black" ? "spark" : "bolt"); snd.bolt(vol); }
   else if (C.atk === "claw"){ slash(f, ang, C.dmg, R); snd.claw(vol); }
@@ -469,26 +481,31 @@ function dashEnd(f){
   const D = f.dash; f.dash = null;
   if (D.k === "bite"){ G.fx.push({k: "ring", x: f.x, y: f.y, R: T*1.35, t: 0, T: .35, col: "#ff5d7a"}); let any = false;
     for (const o of G.fighters) if (!o.dead && o.team !== f.team && dist(o, f) < T*1.35 + o.r){ hurt(o, 1300, f); any = true; }
-    heal(f, 1300); burst(f.x, f.y - 10, "#ff4d6d", 16); if (f === G.me || any) snd.hit(); }
-  if (D.k === "pounce"){ const p = freeSpot(f.x, f.y, f.r*.8); f.x = p.x; f.y = p.y; shakeAt(f, .35);
+    heal(f, 1300); burst(f.x, f.y - 10, "#ff4d6d", 16); f.sq = -.2; if (f === G.me || any) snd.hit(); }
+  if (D.k === "pounce"){ const p = freeSpot(f.x, f.y, f.r*.8); f.x = p.x; f.y = p.y; shakeAt(f, .35); f.sq = -.26; f.sqv = 0;
     G.fx.push({k: "ring", x: f.x, y: f.y, R: T*1.8, t: 0, T: .4, col: "#ffd27a"});
     for (const o of G.fighters) if (!o.dead && o.team !== f.team && dist(o, f) < T*1.8 + o.r){ hurt(o, 1000, f); o.stun = Math.max(o.stun, 1.3); }
     puff(f.x, f.y + 10, "#cdb9d8", 12); snd.boom(f === G.me ? 1 : .5); }
 }
-function heal(f, n){ if (f.dead) return; const h = Math.min(n, f.maxHp - f.hp); if (h <= 0) return; f.hp += h; G.nums.push({x: f.x, y: f.y - f.r*1.6, s: "+" + Math.round(h), t: 0, col: "#7dff9a"}); }
+function heal(f, n){ if (f.dead) return; const h = Math.min(n, f.maxHp - f.hp); if (h <= 0) return; f.hp += h; f.hpG = Math.max(f.hpG, f.hp); f.healT = G.t; G.nums.push({x: f.x, y: f.y - f.r*1.6, s: "+" + Math.round(h), t: 0, col: "#7dff9a"}); }
 
 /* =================== УРОН =================== */
 function hurt(o, dmg, src){
   if (o.dead || G.over) return;
   dmg = Math.round(dmg*(1 + .1*(src.power || 0))*(src.dmgMul || 1)*(o.armor || 1));
   o.hp -= dmg; o.lastHurt = G.t; o.flash = .1; o.reveal = Math.max(o.reveal, .6);
-  if (src && src !== o){ src.dmgOut += dmg; if (src.C.charge && src.sup < 1){ src.sup = Math.min(1, src.sup + dmg/src.C.charge); if (src.sup >= 1 && src === G.me){ snd.superReady(); haptic(12); } } }
-  G.nums.push({x: o.x + rand(-8, 8), y: o.y - o.r*1.5, s: String(dmg), t: 0, col: o === G.me ? "#ff8a9e" : src === G.me ? "#fff" : "rgba(255,255,255,.7)"});
+  if (src && src !== o){ kick(o, angTo(src, o), Math.min(7, 3 + dmg/300)); o.sqv -= 2.2;
+    src.dmgOut += dmg; if (src.C.charge && src.sup < 1){ src.sup = Math.min(1, src.sup + dmg/src.C.charge); if (src.sup >= 1 && src === G.me){ snd.superReady(); G.supFullT = G.t; } } }
+  /* три капли веера по одной цели дают одно число, а не три */
+  const same = G.nums.find(n => n.o === o && n.src === src && n.t < .16 && n.v);
+  if (same){ same.v += dmg; same.s = String(same.v); same.t = 0; same.pop = 1; }
+  else G.nums.push({x: o.x + rand(-8, 8), y: o.y - o.r*1.5, s: String(dmg), v: dmg, o, src, t: 0, pop: 1, col: o === G.me ? "#ff8a9e" : src === G.me ? "#fff" : "rgba(255,255,255,.7)"});
   if (o === G.me){ snd.hurt(); shakeAt(o, .3); hurtFlash(); } else if (src === G.me) snd.hit();
   if (o.hp <= 0) ko(o, src);
 }
 function ko(o, src){
   o.hp = 0; o.dead = true; o.dash = null; if (src && src !== o) src.kos++;
+  G.fx.push({k: "ghost", f: Object.assign({}, o, {dead: false, flash: 0, sq: 0, kx: 0, ky: 0, hop: 0}), x: o.x, y: o.y, t: 0, T: .5});
   burst(o.x, o.y, o.C.cat ? "#c9c3d6" : o.kind === "bat" ? "#5b3a6e" : "#a07a5a", 22);
   if (o.team === G.me.team) { if (o === G.me) snd.ko(); } else snd.koEnemy();
   /* капли и сила высыпаются */
@@ -497,11 +514,12 @@ function ko(o, src){
   if (G.mode === "surv"){ for (let i = 0; i < 1 + Math.floor(o.power/2); i++){ const p = freeSpot(o.x + rand(-T*.6, T*.6), o.y + rand(-T*.6, T*.6), 10); G.picks.push({k: "power", x: p.x, y: p.y, t: 0}); } }
   MODES[G.mode].onKo && MODES[G.mode].onKo(o, src);
 }
-function respawnAt(f, p){ const q = freeSpot(p.x, p.y, f.r*.8); Object.assign(f, {x: q.x, y: q.y, hp: f.maxHp, dead: false, ammo: f.C.ammo, stun: 0, dash: null, reveal: 0, lastHurt: -9}); f.spawnShield = 1.6; G.fx.push({k: "ring", x: f.x, y: f.y, R: T*.9, t: 0, T: .5, col: f.team === G.me.team ? "#8fd0ff" : "#ff9db0"}); }
+function respawnAt(f, p){ const q = freeSpot(p.x, p.y, f.r*.8); Object.assign(f, {x: q.x, y: q.y, hp: f.maxHp, dead: false, ammo: f.C.ammo, stun: 0, dash: null, reveal: 0, lastHurt: -9}); f.spawnShield = 1.6; f.born = G.t; f.hpG = f.hp; f.kx = f.ky = f.sq = f.sqv = 0; G.fx.push({k: "ring", x: f.x, y: f.y, R: T*.9, t: 0, T: .5, col: f.team === G.me.team ? "#8fd0ff" : "#ff9db0"}); }
 
 /* =================== ЭФФЕКТЫ =================== */
 function burst(x, y, col, n){ if (reduced()) n = Math.min(n, 5); for (let i = 0; i < n; i++){ const a = rand(0, 6.28), v = rand(60, 260); G.parts.push({x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v, t: 0, T: rand(.35, .8), col, s: rand(2, 5)}); } }
 function puff(x, y, col, n){ for (let i = 0; i < n; i++){ const a = rand(0, 6.28), v = rand(30, 120); G.parts.push({x, y, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 30, t: 0, T: rand(.4, .9), col, s: rand(4, 9), puff: true}); } }
+function kick(f, ang, px){ if (reduced()) px *= .4; f.kx += Math.cos(ang)*px; f.ky += Math.sin(ang)*px; }
 function shakeAt(f, k){ if (f === G.me || dist(f, G.me) < T*5) G.shake = Math.min(1, G.shake + k*(f === G.me ? 1 : .5)); }
 let hurtT = 0; function hurtFlash(){ const h = $("#hurt"); h.style.opacity = 1; clearTimeout(hurtT); hurtT = setTimeout(() => h.style.opacity = 0, 140); }
 function banner(big, small, ms){ const b = $("#banner"); b.querySelector("b").textContent = big; b.querySelector("span").textContent = small || ""; b.classList.remove("on"); void b.offsetWidth; b.classList.add("on"); }
@@ -551,7 +569,8 @@ function aiAct(f, dt){
 }
 /* ближайший враг для автоприцела игрока; в одиночном режиме можно бить и коробки */
 function autoTarget(f){
-  const foes = enemiesOf(f).filter(o => dist(f, o) < f.C.range*T*1.15 + o.r); const t = nearest(f, foes); if (t) return t;
+  const foes = enemiesOf(f).filter(o => dist(f, o) < f.C.range*T*1.15 + o.r);
+  const t = nearest(f, f.C.atk === "lob" ? foes : foes.filter(o => los(f, o))) || nearest(f, foes); if (t) return t;
   if (G.mode === "surv"){ let best = null, bd = f.C.range*T*1.1; for (const k in G.map.boxHp){ const [cx, cy] = k.split(",").map(Number), b = {x: (cx + .5)*T, y: (cy + .5)*T}, dd = dist(f, b); if (dd < bd){ bd = dd; best = b; } } return best; }
   return null;
 }
@@ -560,9 +579,15 @@ function autoTarget(f){
 function stepFighter(f, dt){
   if (f.dead) return;
   f.cd = Math.max(0, f.cd - dt); f.reveal = Math.max(0, f.reveal - dt); f.flash = Math.max(0, f.flash - dt); f.stun = Math.max(0, f.stun - dt); f.spawnShield = Math.max(0, (f.spawnShield || 0) - dt);
-  if (f.ammo < f.C.ammo){ f.ammoT += dt/f.C.reload; if (f.ammoT >= 1){ f.ammoT = 0; f.ammo++; } } else f.ammoT = 0;
+  if (f.ammo < f.C.ammo){ f.ammoT += dt/f.C.reload; if (f.ammoT >= 1){ f.ammoT = 0; f.ammo++; f.popT = G.t; } } else f.ammoT = 0;
   /* восстановление: 3 с без урона и 2,5 с без атак */
-  if (G.t - f.lastHurt > 3 && G.t - f.lastAtk > 2.5 && f.hp < f.maxHp && f.kind !== "boss") f.hp = Math.min(f.maxHp, f.hp + f.maxHp*.14*dt);
+  if (G.t - f.lastHurt > 3 && G.t - f.lastAtk > 2.5 && f.hp < f.maxHp && f.kind !== "boss"){ f.hp = Math.min(f.maxHp, f.hp + f.maxHp*.14*dt);
+    f.regT = (f.regT || 0) - dt; if (f.regT <= 0 && onScreen(f)){ f.regT = .35; G.parts.push({x: f.x + rand(-f.r*.6, f.r*.6), y: f.y - f.r*.4, vx: 0, vy: -55, t: 0, T: .6, col: "#7dff9a", s: 2.6, plus: true}); } }
+  /* белая полоска на месте потерянного здоровья тает через 0,35 с */
+  if (f.hpG < f.hp) f.hpG = f.hp; else if (G.t - f.lastHurt > .35) f.hpG = Math.max(f.hp, f.hpG - f.maxHp*1.1*dt);
+  /* пружина сплющивания и отдача */
+  f.sqv += (-300*f.sq - 17*f.sqv)*dt; f.sq = clamp(f.sq + f.sqv*dt, -.3, .3);
+  const kd = Math.exp(-16*dt); f.kx *= kd; f.ky *= kd;
   const ox = f.x, oy = f.y;
   if (f.dash){ const D = f.dash;
     if (D.k === "pounce"){ D.t += dt; const k = Math.min(1, D.t/D.T); f.x = lerp(D.x0, D.x1, k); f.y = lerp(D.y0, D.y1, k); f.x = clamp(f.x, f.r, G.map.pw - f.r); f.y = clamp(f.y, f.r, G.map.ph - f.r); f.hop = Math.sin(k*Math.PI)*28; if (k >= 1){ f.hop = 0; dashEnd(f); } }
@@ -573,20 +598,31 @@ function stepFighter(f, dt){
     let mx, my;
     if (f === G.me && !AUTO){ mx = G.input.mx; my = G.input.my; } else { aiAct(f, dt); mx = f.ai.mx || 0; my = f.ai.my || 0; }
     const sp = f.C.speed*(f.slow ? .6 : 1); moveBody(f, mx*sp*dt, my*sp*dt);
-    if (mx || my){ f.walk += dt*9; if (f !== G.me || !G.input.aiming) f.moveFace = Math.atan2(my, mx); }
+    if (mx || my){ if (f !== G.me || !G.input.aiming) f.moveFace = Math.atan2(my, mx); }
   }
   f.vx = (f.x - ox)/Math.max(dt, .001); f.vy = (f.y - oy)/Math.max(dt, .001);
+  /* шаг: скорость анимации от реальной скорости, наклон в сторону бега, плавный разворот хвоста */
+  const spd = Math.hypot(f.vx, f.vy), runTo = f.dash ? 0 : clamp(spd/f.C.speed, 0, 1);
+  f.run = lerp(f.run, runTo, 1 - Math.exp(-14*dt)); f.walk += dt*spd*.075;
+  f.lean = lerp(f.lean, reduced() || f.dash ? 0 : clamp(f.vx/f.C.speed, -1, 1)*.11, 1 - Math.exp(-12*dt));
+  const dirTo = Math.cos(f.moveFace ?? f.face) < 0 ? -1 : 1; f.dirS = f.dirS ? lerp(f.dirS, dirTo, 1 - Math.exp(-18*dt)) : dirTo;
+  if (!f.C.fly && !f.dash && spd > 40){ f.step += spd*dt; if (f.step > 34){ f.step = 0; if (!reduced() && onScreen(f)) G.parts.push({x: f.x - f.vx*.04 + rand(-4, 4), y: f.y + f.r*.55, vx: -f.vx*.08, vy: -12, t: 0, T: .38, col: "rgba(214,198,232,.5)", s: rand(2.5, 4), puff: true}); }
+    if (inBush(f) && seenByMe(f)) G.rustle[Math.floor(f.x/T) + "," + Math.floor(f.y/T)] = G.t; }
   /* подбор */
   for (let i = G.picks.length - 1; i >= 0; i--){ const p = G.picks[i]; if (p.tx !== undefined || p.t < .25) continue; if (Math.hypot(p.x - f.x, p.y - f.y) > f.r + 16) continue;
     if (p.k === "gem" && isTeamFighter(f)){ f.gems++; if (f === G.me) G.myGems = (G.myGems || 0) + 1; G.picks.splice(i, 1); if (f === G.me) snd.gem(); else if (f.team === G.me.team) snd.gem(); G.nums.push({x: f.x, y: f.y - f.r*2, s: "+1 🩸", t: 0, col: "#ff8a9e"}); }
     else if (p.k === "power" && G.mode === "surv" && f.kind !== "bat"){ f.power++; f.maxHp += 400; f.hp += 400; G.picks.splice(i, 1); if (f === G.me){ snd.power(); haptic(10); } G.nums.push({x: f.x, y: f.y - f.r*2, s: "сила +1", t: 0, col: "#d6a8ff"}); } }
 }
 const isTeamFighter = f => f.kind !== "bat" && f.kind !== "boss";
+/* видит ли игрок этого бойца прямо сейчас: от этого зависят шорох куста и подсказки */
+const seenByMe = f => f === G.me || (G.mode !== "surv" && f.team === G.me.team) || visibleTo(f, G.me.team);
+const onScreen = f => Math.abs(f.x - G.me.x) < T*6 && Math.abs(f.y - G.me.y) < T*9;
 function stepShots(dt){
-  for (let i = G.shots.length - 1; i >= 0; i--){ const s = G.shots[i], step = Math.hypot(s.vx, s.vy)*dt;
-    s.x += s.vx*dt; s.y += s.vy*dt; s.left -= step; let dead = s.left <= 0;
-    const c = cellAt(s.x, s.y); if (!dead && solidShot(c)){ dead = true; if (c === "x") hurtBox(Math.floor(s.x/T), Math.floor(s.y/T), s.dmg, s.owner); G.fx.push({k: "spark", x: s.x - s.vx*dt, y: s.y - s.vy*dt, t: 0, T: .2}); }
-    if (!dead) for (const o of G.fighters){ if (o.dead || o.team === s.team || (o.dash && o.dash.k === "pounce")) continue; if (Math.hypot(o.x - s.x, o.y - s.y) < o.r + s.r){ if (!o.spawnShield) hurt(o, s.dmg, s.owner); dead = true; G.fx.push({k: "spark", x: s.x, y: s.y, t: 0, T: .2}); break; } }
+  for (let i = G.shots.length - 1; i >= 0; i--){ const s = G.shots[i], step = Math.hypot(s.vx, s.vy)*dt, n = Math.max(1, Math.ceil(step/12)); let dead = false;
+    for (let j = 0; j < n && !dead; j++){
+      s.x += s.vx*dt/n; s.y += s.vy*dt/n; s.left -= step/n; if (s.left <= 0){ dead = true; G.fx.push({k: "fizz", x: s.x, y: s.y, t: 0, T: .18, col: s.look === "drop" ? "#ff8fa3" : "#e9dcc4"}); break; }
+      const c = cellAt(s.x, s.y); if (solidShot(c)){ dead = true; if (c === "x") hurtBox(Math.floor(s.x/T), Math.floor(s.y/T), s.dmg, s.owner); G.fx.push({k: "spark", x: s.x - s.vx*dt/n, y: s.y - s.vy*dt/n, t: 0, T: .2}); break; }
+      for (const o of G.fighters){ if (o.dead || o.team === s.team || (o.dash && o.dash.k === "pounce")) continue; if (Math.hypot(o.x - s.x, o.y - s.y) < o.r + s.r){ if (!o.spawnShield) hurt(o, s.dmg, s.owner); dead = true; G.fx.push({k: "spark", x: s.x, y: s.y, t: 0, T: .2, hit: true}); break; } } }
     if (dead) G.shots.splice(i, 1); }
   for (let i = G.lobs.length - 1; i >= 0; i--){ const L = G.lobs[i]; L.t += dt; if (L.t < L.T) continue;
     G.lobs.splice(i, 1); G.fx.push({k: "ring", x: L.x1, y: L.y1, R: L.rad, t: 0, T: .35, col: L.look === "bomb" ? "#f3f0d8" : "#e8f0c8"}); puff(L.x1, L.y1, "#e9f2d0", L.look === "bomb" ? 16 : 8);
@@ -597,7 +633,10 @@ function stepShots(dt){
 function stepFx(dt){
   for (const arr of [G.fx, G.nums]) for (let i = arr.length - 1; i >= 0; i--){ arr[i].t += dt; if (arr[i].t > (arr[i].T || .8)) arr.splice(i, 1); }
   for (let i = G.parts.length - 1; i >= 0; i--){ const p = G.parts[i]; p.t += dt; if (p.t > p.T){ G.parts.splice(i, 1); continue; } const dr = Math.pow(.9, dt*60); p.vx *= dr; p.vy *= dr; p.x += p.vx*dt; p.y += p.vy*dt; }
-  for (const p of G.picks){ p.t += dt; if (p.tx !== undefined){ const k = Math.min(1, p.t/.45); p.x = lerp(p.x, p.tx, k*.35); p.y = lerp(p.y, p.ty, k*.35); if (k >= 1){ p.x = p.tx; p.y = p.ty; delete p.tx; delete p.ty; p.t = .3; } } }
+  for (const p of G.picks){ p.t += dt;
+    if (p.tx === undefined && p.t > .25){ let best = null, bd = 1e9; for (const f of G.fighters){ if (f.dead || !isTeamFighter(f) || (p.k === "power" && G.mode !== "surv")) continue; const d = Math.hypot(p.x - f.x, p.y - f.y); if (d < f.r + 40 && d < bd){ bd = d; best = f; } }
+      if (best){ const k = Math.min(1, 520*dt/Math.max(bd, 1)); p.x = lerp(p.x, best.x, k); p.y = lerp(p.y, best.y, k); } }
+    if (p.tx !== undefined){ const k = Math.min(1, p.t/.45); p.x = lerp(p.x, p.tx, k*.35); p.y = lerp(p.y, p.ty, k*.35); if (k >= 1){ p.x = p.tx; p.y = p.ty; delete p.tx; delete p.ty; p.t = .3; } } }
   G.shake = Math.max(0, G.shake - dt*1.6);
 }
 
@@ -761,14 +800,15 @@ function bossAct(b, dt){
 }
 
 /* =================== РИСОВАНИЕ =================== */
-const cv = $("#cv"), g = cv.getContext("2d");
+const cv = $("#cv"), g = cv.getContext("2d", {alpha: false, desynchronized: true});
 let VW = 0, VH = 0, DPR = 1, SC = 1;                     /* размер экрана и масштаб мира */
 let SAB = 0;                          /* нижний вырез экрана (полоса «домой»), px */
+const spriteCache = new Map();         /* капли, нарисованные заранее под текущий масштаб */
 function resize(){
   DPR = Math.min(2, devicePixelRatio || 1); VW = innerWidth; VH = innerHeight;
   const sb = document.getElementById("sab"); SAB = sb ? Math.min(40, parseFloat(getComputedStyle(sb).paddingBottom) || 0) : 0;
   cv.width = Math.round(VW*DPR); cv.height = Math.round(VH*DPR);
-  SC = Math.min(VW/(T*8.4), VH/(T*13)); if (G) G.mapDirty = true;
+  SC = Math.min(VW/(T*8.4), VH/(T*13)); if (G) G.mapDirty = true; spriteCache.clear();
 }
 addEventListener("resize", resize); resize();
 
@@ -794,7 +834,7 @@ function paintMap(){
 
 /* ---------- персонажи ---------- */
 function drawCat(c, f, x, y, r, t){
-  const P = CATS[f.C.cat], face = f.moveFace ?? f.face, dir = Math.cos(face) < 0 ? -1 : 1, bob = Math.sin(f.walk)*1.6, ang = f.face;
+  const P = CATS[f.C.cat], face = f.moveFace ?? f.face, dir = f.dirS || (Math.cos(face) < 0 ? -1 : 1), bob = Math.sin(f.walk)*1.2*(f.run ?? 1), ang = f.face;
   /* хвост */
   c.strokeStyle = P.fur; c.lineWidth = r*.28; c.lineCap = "round"; c.beginPath();
   const tx = x - dir*r*.7, ty = y + r*.35, w = Math.sin(t*3 + f.id)*r*.25;
@@ -847,6 +887,27 @@ function drawBat(c, f, x, y, r, t){
   c.beginPath(); c.moveTo(x - r*.4, y - r*.4); c.lineTo(x - r*.3, y - r*.95); c.lineTo(x - r*.05, y - r*.5); c.moveTo(x + r*.4, y - r*.4); c.lineTo(x + r*.3, y - r*.95); c.lineTo(x + r*.05, y - r*.5); c.fill();
   c.fillStyle = "#ff3b55"; c.beginPath(); c.arc(x - r*.2, y - r*.2, r*.11, 0, 6.283); c.arc(x + r*.2, y - r*.2, r*.11, 0, 6.283); c.fill();
 }
+/* вспышка попадания: боец рисуется в маленький холст и заливается белым только по своим пикселям.
+   canvas filter давал рывки кадра по 100 мс, а в части версий Safari не работает вовсе */
+const tintCv = document.createElement("canvas"), tintC = tintCv.getContext("2d");
+function drawTinted(c, draw, x, y, R, col, a){
+  const M = c.getTransform(), s = M.a, S = Math.ceil(R*2*s) + 4;
+  if (tintCv.width < S){ tintCv.width = tintCv.height = S; }
+  tintC.setTransform(1, 0, 0, 1, 0, 0); tintC.clearRect(0, 0, S, S); tintC.globalAlpha = 1; tintC.globalCompositeOperation = "source-over";
+  tintC.setTransform(s, 0, 0, s, S/2 - s*x, S/2 - s*y); draw(tintC);
+  tintC.setTransform(1, 0, 0, 1, 0, 0); tintC.globalCompositeOperation = "source-atop"; tintC.globalAlpha = a; tintC.fillStyle = col; tintC.fillRect(0, 0, S, S);
+  tintC.globalCompositeOperation = "source-over"; tintC.globalAlpha = 1;
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(tintCv, 0, 0, S, S, Math.round(M.a*x + M.e - S/2), Math.round(M.d*y + M.f - S/2), S, S); c.restore();
+}
+const popEase = k => k >= 1 ? 1 : 1 + 2.2*Math.pow(k - 1, 3) + 1.2*Math.pow(k - 1, 2);   /* выскакивает с перелётом ~10 % */
+function bodyDraw(c, f, x, y, r, t, extra = 1){
+  const run = f.run || 0, gait = f.C.fly ? 0 : Math.abs(Math.sin(f.walk || 0))*3.2*run, fy = y + r*.7;
+  const sp = (f.born !== undefined && G ? popEase(clamp((G.t - f.born)/.42, 0, 1)) : 1)*extra;
+  const sx = (1 + (f.sq || 0) - .03*gait/3.2)*sp, sy = (1 - (f.sq || 0) + .05*gait/3.2)*sp;
+  c.save(); c.translate(x + (f.kx || 0), fy + (f.ky || 0)*.6 - gait); c.rotate(f.lean || 0); c.scale(sx, sy); c.translate(-x, -fy);
+  if (f.C.cat) drawCat(c, f, x, y, r, t); else if (f.kind === "bat") drawBat(c, f, x, y, r, t); else drawHunter(c, f, x, y, r, t);
+  c.restore();
+}
 function drawFighter(c, f, t){
   if (f.dead) return;
   const hidden = inBush(f) && f.reveal <= 0, mine = f.team === G.me.team || (G.mode === "surv" && f === G.me);
@@ -858,22 +919,28 @@ function drawFighter(c, f, t){
   const team = f === G.me ? "#f3d27a" : (G.mode === "surv" ? "#ff4d6d" : f.team === G.me.team ? "#5aa9ff" : "#ff4d6d");
   c.strokeStyle = team; c.lineWidth = f === G.me ? 3.5 : 2.5; c.beginPath(); c.ellipse(f.x, f.y + r*.62, r*1.05, r*.45, 0, 0, 6.283); c.stroke();
   if (f.spawnShield > 0){ c.strokeStyle = "rgba(160,220,255,.6)"; c.lineWidth = 2; c.beginPath(); c.arc(x, y, r*1.35, 0, 6.283); c.stroke(); }
-  if (f.flash > 0) c.filter = "brightness(2.2)";
-  if (f.C.cat) drawCat(c, f, x, y, r, t); else if (f.kind === "bat") drawBat(c, f, x, y, r, t); else drawHunter(c, f, x, y, r, t);
-  c.filter = "none";
+  /* готовый супер: золотое кольцо под ногами пульсирует */
+  if (f === G.me && f.sup >= 1){ c.strokeStyle = `rgba(243,210,122,${.35 + .3*Math.sin(t*6)})`; c.lineWidth = 5; c.beginPath(); c.ellipse(f.x, f.y + r*.62, r*1.3, r*.58, 0, 0, 6.283); c.stroke(); }
+  if (f.flash > 0) drawTinted(c, cc => bodyDraw(cc, f, x, y, r, t), x, y, r*2.4, "#fff", .55 + f.flash*3.5);
+  else bodyDraw(c, f, x, y, r, t);
   if (f.stun > 0){ c.fillStyle = "#ffe08a"; for (let i = 0; i < 3; i++){ const a = t*5 + i*2.1; c.beginPath(); c.arc(x + Math.cos(a)*r*.7, y - r*1.25 + Math.sin(a)*r*.2, 3, 0, 6.283); c.fill(); } }
   c.globalAlpha = 1;
   /* полоска здоровья */
   const bw = f.kind === "boss" ? 84 : 50, by = y - r*1.55 - (f.C.cat ? 6 : 0);
   c.fillStyle = "rgba(10,6,16,.75)"; rr(c, x - bw/2 - 2, by - 2, bw + 4, 10, 5); c.fill();
-  c.fillStyle = f === G.me ? "#7dde72" : team === "#5aa9ff" ? "#5aa9ff" : "#ff4d6d"; rr(c, x - bw/2, by, bw*clamp(f.hp/f.maxHp, 0, 1), 6, 3); c.fill();
+  const hk = clamp(f.hp/f.maxHp, 0, 1), gk = clamp((f.hpG ?? f.hp)/f.maxHp, 0, 1);
+  if (gk > hk + .002){ c.fillStyle = "rgba(255,240,230,.85)"; rr(c, x - bw/2, by, bw*gk, 6, 3); c.fill(); }
+  c.fillStyle = f === G.me ? "#7dde72" : team === "#5aa9ff" ? "#5aa9ff" : "#ff4d6d"; if (hk > 0){ rr(c, x - bw/2, by, Math.max(6, bw*hk), 6, 3); c.fill(); }
+  const hl = G.t - (f.healT ?? -9); if (hl < .35){ c.strokeStyle = `rgba(125,255,154,${1 - hl/.35})`; c.lineWidth = 2; rr(c, x - bw/2 - 2, by - 2, bw + 4, 10, 5); c.stroke(); }
   if (f === G.me){ c.font = "600 11px Unbounded, sans-serif"; c.textAlign = "center"; c.fillStyle = "#fff"; c.fillText(Math.ceil(f.hp), x, by - 5); }
   if (f.gems > 0){ c.font = "600 12px Unbounded, sans-serif"; c.textAlign = "center"; c.fillStyle = "#ff8a9e"; c.fillText("🩸" + f.gems, x, by - (f === G.me ? 19 : 5)); }
   if (G.mode === "surv" && f.power > 0 && f !== G.me){ c.font = "600 10px Unbounded, sans-serif"; c.fillStyle = "#d6a8ff"; c.textAlign = "center"; c.fillText("⚡" + f.power, x, by - 5); }
   /* патроны игрока под ногами */
-  if (f === G.me){ const sw = 15; for (let i = 0; i < f.C.ammo; i++){ const sx = x - (sw*f.C.ammo + 3*(f.C.ammo - 1))/2 + i*(sw + 3), sy = f.y + r*1.15;
-      c.fillStyle = "rgba(10,6,16,.7)"; rr(c, sx, sy, sw, 5, 2.5); c.fill(); const k = i < f.ammo ? 1 : i === Math.floor(f.ammo) ? f.ammoT : 0;
-      c.fillStyle = i < f.ammo ? "#ffb347" : "rgba(255,179,71,.5)"; if (k > 0){ rr(c, sx, sy, sw*k, 5, 2.5); c.fill(); } } }
+  if (f === G.me){ const sw = 15, et = G.t - f.emptyT, shake = et < .28 && !reduced() ? Math.sin(et*70)*3*(1 - et/.28) : 0, pt = G.t - f.popT;
+    for (let i = 0; i < f.C.ammo; i++){ const sx = x - (sw*f.C.ammo + 3*(f.C.ammo - 1))/2 + i*(sw + 3) + shake, sy = f.y + r*1.15;
+      const popI = pt < .18 && i === f.ammo - 1, gr = popI ? 1 + .5*Math.sin(pt/.18*Math.PI) : 1;
+      c.fillStyle = et < .28 ? "rgba(255,77,109,.55)" : "rgba(10,6,16,.7)"; rr(c, sx, sy - (gr - 1)*2.5, sw, 5*gr, 2.5*gr); c.fill(); const k = i < f.ammo ? 1 : i === Math.floor(f.ammo) ? f.ammoT : 0;
+      c.fillStyle = popI ? "#fff1c9" : i < f.ammo ? "#ffb347" : "rgba(255,179,71,.5)"; if (k > 0){ rr(c, sx, sy - (gr - 1)*2.5, sw*k, 5*gr, 2.5*gr); c.fill(); } } }
 }
 function rr(c, x, y, w, h, r){ c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
 
@@ -889,9 +956,9 @@ function drawBlock(c, cx, cy, kind){
     if (k < .66){ c.strokeStyle = "#5e3f22"; c.lineWidth = 2; c.beginPath(); c.moveTo(x + 10, y - WH + 10); c.lineTo(x + 18, y - WH + 20); c.lineTo(x + 14, y - WH + 28); c.stroke(); }
     if (k < .33){ c.beginPath(); c.moveTo(x + T - 10, y - WH + 12); c.lineTo(x + T - 20, y - WH + 22); c.stroke(); } }
 }
-function drawBush(c, cx, cy, t, near){
+function drawBush(c, cx, cy, t, near, rus){
   const x = cx*T, y = cy*T; c.globalAlpha = near ? .5 : 1;
-  for (let i = 0; i < 5; i++){ const ox = [12, 34, 22, 8, 38][i], oy = [14, 12, 28, 34, 34][i], rr2 = [13, 12, 15, 11, 11][i], sw = Math.sin(t*1.6 + cx + cy*1.7 + i)*1.2;
+  for (let i = 0; i < 5; i++){ const ox = [12, 34, 22, 8, 38][i], oy = [14, 12, 28, 34, 34][i], rr2 = [13, 12, 15, 11, 11][i], sw = Math.sin(t*1.6 + cx + cy*1.7 + i)*1.2 + (rus ? Math.sin(t*28 + i*1.9)*3.2*rus : 0);
     c.fillStyle = i % 2 ? "#3c5a3a" : "#456b42"; c.beginPath(); c.arc(x + ox + sw, y + oy - 6, rr2, 0, 6.283); c.fill(); }
   c.fillStyle = "rgba(216,86,111,.55)"; c.beginPath(); c.arc(x + 30, y + 10, 2.2, 0, 6.283); c.arc(x + 14, y + 26, 2, 0, 6.283); c.fill();
   c.globalAlpha = 1;
@@ -904,15 +971,23 @@ function render(t){
   if (!G) return;
   if (G.mapDirty || !mapCv) paintMap();
   const m = G.map, me = G.me, viewW = VW/SC, viewH = VH/SC;
-  const tx = clamp(me.x, viewW/2 - T*1.5, m.pw - viewW/2 + T*1.5), ty = clamp(me.y + T*.6, viewH/2 - T*1.5, m.ph - viewH/2 + T*1.6);
-  cam.x = lerp(cam.x || tx, tx, .14); cam.y = lerp(cam.y || ty, ty, .14);
+  const dt = clamp(t - (cam.t || t), 0, .05); cam.t = t;
+  const red = reduced() ? .35 : 1, aiming = G.input && G.input.aiming && !me.dead;
+  const lx = me.dead ? 0 : (clamp(me.vx*.14, -T, T) + (aiming ? Math.cos(me.face)*T*.9 : 0))*red, ly = me.dead ? 0 : (clamp(me.vy*.14, -T, T) + (aiming ? Math.sin(me.face)*T*.9 : 0))*red;
+  if (cam.reset){ cam.reset = false; cam.bx = me.x; cam.by = me.y; cam.lx = cam.ly = 0; cam.x = cam.y = 0; }
+  const kb = 1 - Math.exp(-24*dt), kl = 1 - Math.exp(-5*dt);
+  cam.bx = lerp(cam.bx ?? me.x, me.x, kb); cam.by = lerp(cam.by ?? me.y, me.y, kb); cam.lx = lerp(cam.lx || 0, lx, kl); cam.ly = lerp(cam.ly || 0, ly, kl);
+  cam.x = clamp(cam.bx + cam.lx, viewW/2 - T*1.5, m.pw - viewW/2 + T*1.5); cam.y = clamp(cam.by + cam.ly + T*.6, viewH/2 - T*1.5, m.ph - viewH/2 + T*2.4);   /* внизу запас под пальцы: кошка не прячется под джойстиком */
   if (m.pw < viewW) cam.x = m.pw/2;
+  const vx0 = cam.x - viewW/2 - T, vx1 = cam.x + viewW/2 + T, vy0 = cam.y - viewH/2 - T*1.5, vy1 = cam.y + viewH/2 + T*1.5;   /* что видно: остальное не рисуем */
+  const inView = (x, y) => x > vx0 && x < vx1 && y > vy0 && y < vy1;
   const sh = reduced() ? 0 : G.shake*G.shake*9, shx = Math.sin(t*47.3)*sh, shy = Math.sin(t*41.1)*sh;
   const ox = VW/2 - cam.x*SC + shx, oy = VH/2 - cam.y*SC + shy;
   c.setTransform(DPR, 0, 0, DPR, 0, 0);
   /* снаружи арены: тёмная ночь со звёздами */
   c.fillStyle = "rgba(243,227,176,.35)"; for (let i = 0; i < 40; i++){ const sx = ((i*97.3 + cam.x*.2*SC) % VW + VW) % VW, sy = ((i*53.1 + cam.y*.2*SC) % VH + VH) % VH; c.fillRect(sx, sy, 1.5, 1.5); }
-  c.drawImage(mapCv, ox, oy, m.pw*SC, m.ph*SC);
+  { const k = SC*DPR, wx0 = clamp(-ox/SC, 0, m.pw), wy0 = clamp(-oy/SC, 0, m.ph), wx1 = clamp((VW - ox)/SC, 0, m.pw), wy1 = clamp((VH - oy)/SC, 0, m.ph);
+    if (wx1 > wx0 && wy1 > wy0) c.drawImage(mapCv, wx0*k, wy0*k, (wx1 - wx0)*k, (wy1 - wy0)*k, ox + wx0*SC, oy + wy0*SC, (wx1 - wx0)*SC, (wy1 - wy0)*SC); }
   c.setTransform(DPR*SC, 0, 0, DPR*SC, ox*DPR, oy*DPR);
   /* подсказки на полу: фонтан, предупреждения о появлении, цели навесных снарядов */
   if (m.spots.G.length){ const f = m.spots.G[0], p = .5 + .5*Math.sin(t*3); c.fillStyle = `rgba(255,60,90,${.25 + p*.25})`; c.beginPath(); c.arc(f.x, f.y, T*.42, 0, 6.283); c.fill(); }
@@ -920,20 +995,22 @@ function render(t){
   for (const L of G.lobs){ c.fillStyle = L.team === me.team ? "rgba(90,169,255,.18)" : "rgba(255,77,109,.2)"; c.beginPath(); c.arc(L.x1, L.y1, L.rad, 0, 6.283); c.fill(); }
   aimPreview(c, t);
   /* подбираемое */
-  for (const p of G.picks){ const b = Math.sin(t*4 + p.x)*3;
+  for (const p of G.picks){ if (!inView(p.x, p.y)) continue; const b = Math.sin(t*4 + p.x)*3;
     if (p.k === "gem"){ c.fillStyle = "rgba(255,60,90,.25)"; c.beginPath(); c.arc(p.x, p.y + 8, 10, 0, 6.283); c.fill(); drawDrop(c, p.x, p.y - 4 + b, 11); }
     else { c.fillStyle = "rgba(190,140,255,.3)"; c.beginPath(); c.arc(p.x, p.y, 15 + b, 0, 6.283); c.fill(); c.fillStyle = "#b98aff"; rr(c, p.x - 9, p.y - 12 + b, 18, 20, 6); c.fill(); c.fillStyle = "#fff"; c.font = "700 13px Unbounded, sans-serif"; c.textAlign = "center"; c.fillText("⚡", p.x, p.y + 4 + b); } }
   /* стены, коробки и бойцы по глубине */
   const list = [];
-  for (let y = 0; y < m.H; y++) for (let x = 0; x < m.W; x++){ const ch = m.g[y][x]; if (ch === "#" || ch === "x") list.push({y: (y + 1)*T - 1, k: 0, x, cy: y, ch}); }
-  for (const f of G.fighters) if (!f.dead) list.push({y: f.y + f.r*.6, k: 1, f});
+  const cx0 = Math.max(0, Math.floor(vx0/T)), cx1 = Math.min(m.W - 1, Math.ceil(vx1/T)), cy0 = Math.max(0, Math.floor(vy0/T)), cy1 = Math.min(m.H - 1, Math.ceil(vy1/T));
+  for (let y = cy0; y <= cy1; y++) for (let x = cx0; x <= cx1; x++){ const ch = m.g[y][x]; if (ch === "#" || ch === "x") list.push({y: (y + 1)*T - 1, k: 0, x, cy: y, ch}); }
+  for (const f of G.fighters) if (!f.dead && inView(f.x, f.y)) list.push({y: f.y + f.r*.6, k: 1, f});
   list.sort((a, b) => a.y - b.y);
   for (const it of list){ if (it.k === 0) drawBlock(c, it.x, it.cy, it.ch); else drawFighter(c, it.f, t); }
   /* кусты поверх: бойцы в них спрятаны */
-  for (let y = 0; y < m.H; y++) for (let x = 0; x < m.W; x++) if (m.g[y][x] === "b"){ const near = Math.abs((x + .5)*T - me.x) < T*1.3 && Math.abs((y + .5)*T - me.y) < T*1.3; drawBush(c, x, y, t, near); }
+  for (let y = cy0; y <= cy1; y++) for (let x = cx0; x <= cx1; x++) if (m.g[y][x] === "b"){ const near = Math.abs((x + .5)*T - me.x) < T*1.3 && Math.abs((y + .5)*T - me.y) < T*1.3, ru = G.t - (G.rustle[x + "," + y] ?? -9);
+    drawBush(c, x, y, t, near, ru < .45 && !reduced() ? 1 - ru/.45 : 0); }
   /* снаряды */
-  for (const s of G.shots){
-    if (s.look === "drop"){ drawDrop(c, s.x, s.y, 8, Math.atan2(s.vy, s.vx) + Math.PI/2); }
+  for (const s of G.shots){ if (!inView(s.x, s.y)) continue;
+    if (s.look === "drop"){ c.strokeStyle = "rgba(216,30,69,.32)"; c.lineWidth = 6; c.lineCap = "round"; c.beginPath(); c.moveTo(s.x - s.vx*.045, s.y - s.vy*.045); c.lineTo(s.x, s.y); c.stroke(); drawDrop(c, s.x, s.y, 8, Math.atan2(s.vy, s.vx) + Math.PI/2); }
     else if (s.look === "spark"){ c.fillStyle = "#8fd0ff"; c.beginPath(); c.arc(s.x, s.y, 6, 0, 6.283); c.fill(); c.fillStyle = "rgba(143,208,255,.3)"; c.beginPath(); c.arc(s.x - s.vx*.02, s.y - s.vy*.02, 9, 0, 6.283); c.fill(); }
     else { const a = Math.atan2(s.vy, s.vx), L = s.look === "stake" ? 22 : 18; c.strokeStyle = s.look === "stake" ? "#b8875a" : "#e9dcc4"; c.lineWidth = s.look === "stake" ? 5 : 3; c.beginPath(); c.moveTo(s.x - Math.cos(a)*L, s.y - Math.sin(a)*L); c.lineTo(s.x, s.y); c.stroke();
       c.fillStyle = s.team === me.team ? "#8fd0ff" : "#ff6b7f"; c.beginPath(); c.arc(s.x, s.y, 3.5, 0, 6.283); c.fill(); } }
@@ -943,8 +1020,14 @@ function render(t){
   for (const e of G.fx){ const k = e.t/e.T;
     if (e.k === "slash"){ c.strokeStyle = e.col; c.globalAlpha = 1 - k; c.lineWidth = 7*(1 - k) + 1; c.beginPath(); c.arc(e.x, e.y, e.R*(.6 + k*.4), e.ang - .8, e.ang + .8); c.stroke(); c.globalAlpha = 1; }
     else if (e.k === "ring"){ c.strokeStyle = e.col; c.globalAlpha = 1 - k; c.lineWidth = 5*(1 - k) + 1; c.beginPath(); c.arc(e.x, e.y, e.R*(.3 + k*.7), 0, 6.283); c.stroke(); c.globalAlpha = 1; }
-    else if (e.k === "spark" || e.k === "chip"){ c.fillStyle = e.k === "chip" ? "#d8b98a" : "#fff3c4"; c.globalAlpha = 1 - k; c.beginPath(); c.arc(e.x, e.y, 3 + k*8, 0, 6.283); c.fill(); c.globalAlpha = 1; } }
-  for (const p of G.parts){ const k = p.t/p.T; c.globalAlpha = (1 - k)*(p.puff ? .5 : 1); c.fillStyle = p.col; c.beginPath(); c.arc(p.x, p.y, p.s*(p.puff ? 1 + k : 1 - k*.5), 0, 6.283); c.fill(); }
+    else if (e.k === "spark" || e.k === "chip"){ c.fillStyle = e.k === "chip" ? "#d8b98a" : "#fff3c4"; c.globalAlpha = 1 - k; c.beginPath(); c.arc(e.x, e.y, (e.hit ? 5 : 3) + k*(e.hit ? 12 : 8), 0, 6.283); c.fill(); c.globalAlpha = 1; }
+    else if (e.k === "muzzle"){ c.fillStyle = e.col; c.globalAlpha = 1 - k; c.beginPath(); c.arc(e.x, e.y, 9*(1 - k*.5), 0, 6.283); c.fill(); c.globalAlpha = 1; }
+    else if (e.k === "fizz"){ c.strokeStyle = e.col; c.globalAlpha = .7*(1 - k); c.lineWidth = 2; c.beginPath(); c.arc(e.x, e.y, 3 + k*7, 0, 6.283); c.stroke(); c.globalAlpha = 1; }
+    else if (e.k === "ghost" && inView(e.x, e.y)){ const f = e.f, e2 = 1 - Math.pow(1 - k, 2); c.globalAlpha = 1 - k;
+      drawTinted(c, cc => { cc.save(); cc.translate(0, -e2*22); bodyDraw(cc, f, e.x, e.y, f.r, t, 1 + e2*.3); cc.restore(); }, e.x, e.y - 11, f.r*2.8, "#fff", .4 + k*.5); c.globalAlpha = 1; } }
+  for (const p of G.parts){ if (!inView(p.x, p.y)) continue; const k = p.t/p.T; c.globalAlpha = (1 - k)*(p.puff ? .5 : 1); c.fillStyle = p.col;
+    if (p.plus){ const a = p.s; c.fillRect(p.x - a*1.6, p.y - a*.5, a*3.2, a); c.fillRect(p.x - a*.5, p.y - a*1.6, a, a*3.2); }
+    else { c.beginPath(); c.arc(p.x, p.y, p.s*(p.puff ? 1 + k : 1 - k*.5), 0, 6.283); c.fill(); } }
   c.globalAlpha = 1;
   /* туман в одиночном режиме */
   if (G.safeR && G.safeR.k > 0){ const s = G.safeR; c.fillStyle = `rgba(90,200,120,${.22 + .05*Math.sin(t*2)})`;
@@ -952,8 +1035,10 @@ function render(t){
     c.strokeStyle = "rgba(140,255,170,.5)"; c.lineWidth = 3; c.strokeRect(s.x0, s.y0, s.x1 - s.x0, s.y1 - s.y0); }
   /* числа урона */
   c.textAlign = "center";
-  for (const n of G.nums){ const k = n.t/.8; c.globalAlpha = k > .7 ? (1 - k)/.3 : 1; c.font = `700 ${n.s.length > 4 ? 13 : 15}px Unbounded, sans-serif`;
-    c.lineWidth = 3; c.strokeStyle = "rgba(10,6,16,.8)"; c.strokeText(n.s, n.x, n.y - k*26); c.fillStyle = n.col; c.fillText(n.s, n.x, n.y - k*26); }
+  for (const n of G.nums){ if (!inView(n.x, n.y)) continue; const k = n.t/.8, pk = clamp(n.t/.14, 0, 1), sc = n.pop && !reduced() ? 1 + .45*(1 - pk)*(1 - pk) : 1;
+    c.globalAlpha = k > .7 ? (1 - k)/.3 : 1; c.font = `700 ${n.s.length > 4 ? 13 : 15}px Unbounded, sans-serif`;
+    c.save(); c.translate(n.x, n.y - k*26); c.scale(sc, sc);
+    c.lineWidth = 3; c.strokeStyle = "rgba(10,6,16,.8)"; c.strokeText(n.s, 0, 0); c.fillStyle = n.col; c.fillText(n.s, 0, 0); c.restore(); }
   c.globalAlpha = 1;
   /* стрелки к невидимым на экране союзникам и врагам */
   c.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -961,10 +1046,22 @@ function render(t){
     const sx = ox + f.x*SC, sy = oy + f.y*SC; if (sx > 0 && sx < VW && sy > 70 && sy < VH) continue;
     const a = Math.atan2(sy - VH/2, sx - VW/2), px = clamp(sx, 18, VW - 18), py = clamp(sy, 84, VH - 18);
     c.save(); c.translate(px, py); c.rotate(a); c.fillStyle = G.mode !== "surv" && f.team === me.team ? "#5aa9ff" : "#ff4d6d"; c.globalAlpha = .8; c.beginPath(); c.moveTo(9, 0); c.lineTo(-6, -7); c.lineTo(-6, 7); c.fill(); c.restore(); }
-  drawControls(c, t);
+  /* игрок выбыл: экран чуть темнеет, по центру обратный отсчёт до возвращения */
+  if (me.dead && !G.over && me.respawn > 0){ const n = Math.ceil(me.respawn), fr = me.respawn - Math.floor(me.respawn), cx = VW/2, cy = VH*.4;
+    c.fillStyle = "rgba(10,6,16,.38)"; c.fillRect(0, 0, VW, VH);
+    c.fillStyle = "rgba(20,14,28,.8)"; c.beginPath(); c.arc(cx, cy, 44, 0, 6.283); c.fill();
+    c.strokeStyle = "#f3d27a"; c.lineWidth = 4; c.beginPath(); c.arc(cx, cy, 40, -Math.PI/2, -Math.PI/2 + fr*6.283); c.stroke();
+    c.textAlign = "center"; c.fillStyle = "#fff4ec"; c.font = "800 34px Unbounded, sans-serif"; c.fillText(String(n), cx, cy + 12);
+    c.font = "600 13px Unbounded, sans-serif"; c.fillStyle = "rgba(255,244,236,.75)"; c.fillText("Вернёшься через", cx, cy - 58); }
+  if (!me.dead) drawControls(c, t);
   G.cam = {ox, oy};
 }
 function drawDrop(c, x, y, s, rot = 0){
+  const k = c.getTransform().a, key = s + "|" + k.toFixed(3); let spr = spriteCache.get(key);
+  if (!spr){ const n = Math.ceil(s*2.8*k); spr = document.createElement("canvas"); spr.width = spr.height = n; const sc = spr.getContext("2d"); sc.setTransform(k, 0, 0, k, n/2, n/2); dropShape(sc, 0, 0, s, 0); spriteCache.set(key, spr); }
+  c.save(); c.translate(x, y); c.rotate(rot); c.drawImage(spr, -s*1.4, -s*1.4, s*2.8, s*2.8); c.restore();
+}
+function dropShape(c, x, y, s, rot){
   c.save(); c.translate(x, y); c.rotate(rot); const gr = c.createRadialGradient(-s*.25, s*.1, 1, 0, s*.3, s*1.1); gr.addColorStop(0, "#ff8fa3"); gr.addColorStop(.5, "#d81e45"); gr.addColorStop(1, "#7a0a22");
   c.fillStyle = gr; c.beginPath(); c.moveTo(0, -s*1.1); c.bezierCurveTo(s*.2, -s*.6, s*.85, -s*.05, s*.85, s*.35); c.arc(0, s*.35, s*.85, 0, Math.PI); c.bezierCurveTo(-s*.85, -s*.05, -s*.2, -s*.6, 0, -s*1.1); c.fill();
   c.fillStyle = "rgba(255,255,255,.55)"; c.beginPath(); c.ellipse(-s*.3, s*.2, s*.15, s*.25, -.4, 0, 6.283); c.fill(); c.restore();
@@ -972,17 +1069,18 @@ function drawDrop(c, x, y, s, rot = 0){
 
 /* =================== УПРАВЛЕНИЕ =================== */
 /* левая половина: бег; правая: потянуть и отпустить — выстрел, тап — в ближайшего; круглая кнопка: супер */
-const IN = {move: null, aim: null, sup: null, keys: {}, mouse: null, buf: null};
+const IN = {move: null, aim: null, sup: null, keys: {}, mouse: null, buf: null, fades: [], used: {}};
 const SUPER_BTN = () => ({x: VW - 70, y: VH - 200 - SAB*.6, r: 36});
 const DEAD = 16, MAXD = 70;
 function stickVec(p){ const dx = p.x - p.bx, dy = p.y - p.by, d = Math.hypot(dx, dy); return {dx, dy, d, a: Math.atan2(dy, dx)}; }
 cv.addEventListener("pointerdown", e => {
   if (!G || G.over || G.paused) return; e.preventDefault();
   const p = {id: e.pointerId, bx: e.clientX, by: e.clientY, x: e.clientX, y: e.clientY, t0: performance.now(), max: 0};
+  try { cv.setPointerCapture(e.pointerId); } catch(_){}
   const sb = SUPER_BTN();
   if (Math.hypot(e.clientX - sb.x, e.clientY - sb.y) < sb.r + 14 && !IN.sup){ p.bx = sb.x; p.by = sb.y; IN.sup = p; if (G.me.sup >= 1) haptic(6); return; }
-  if (e.clientX < VW/2){ if (!IN.move){ IN.move = p; } return; }
-  if (!IN.aim) IN.aim = p;
+  if (e.clientX < VW/2){ if (!IN.move){ IN.move = p; IN.used.move = true; } return; }
+  if (!IN.aim){ IN.aim = p; IN.used.aim = true; }
 }, {passive: false});
 addEventListener("pointermove", e => {
   for (const k of ["move", "aim", "sup"]){ const p = IN[k]; if (!p || p.id !== e.pointerId) continue; p.x = e.clientX; p.y = e.clientY;
@@ -991,7 +1089,9 @@ addEventListener("pointermove", e => {
     if (k === "move" && v.d > MAXD){ p.bx = p.x - Math.cos(v.a)*MAXD; p.by = p.y - Math.sin(v.a)*MAXD; } }
 }, {passive: true});
 function releasePtr(e){
-  for (const k of ["move", "aim", "sup"]){ const p = IN[k]; if (!p || p.id !== e.pointerId) continue; IN[k] = null; if (!G || G.over || G.paused || G.me.dead) continue;
+  for (const k of ["move", "aim", "sup"]){ const p = IN[k]; if (!p || p.id !== e.pointerId) continue; IN[k] = null;
+    if (k !== "sup"){ const v0 = stickVec(p), d0 = Math.min(MAXD*.8, v0.d); IN.fades.push({k, bx: p.bx, by: p.by, kx: p.bx + Math.cos(v0.a)*d0, ky: p.by + Math.sin(v0.a)*d0, t0: performance.now()}); }
+    if (e.type === "pointercancel" || !G || G.over || G.paused || G.me.dead) continue;
     const v = stickVec(p), me = G.me;
     if (k === "aim"){
       if (v.d >= DEAD){ const k2 = me.C.range*T*Math.min(1, v.d/MAXD), a = v.a; tryFire(() => fire(G.me, a, {x: G.me.x + Math.cos(a)*k2, y: G.me.y + Math.sin(a)*k2})); }
@@ -1012,7 +1112,18 @@ function tapFire(){
   return fire(me, me.moveFace ?? me.face, null);
 }
 /* выстрел во время перезарядки удара не теряется: ждёт до 0,3 с */
-function tryFire(fn){ if (fn()) { IN.buf = null; return; } const me = G.me; if (!me.dead && me.ammo >= 1 && me.cd > 0 && me.cd < .3) IN.buf = {fn, t: G.t + me.cd + .01}; }
+function tryFire(fn){ if (fn()) { IN.buf = null; return; } const me = G.me; if (me.dead || me.stun > 0 || me.dash) return;
+  if (me.ammo >= 1 && me.cd > 0 && me.cd < .3) IN.buf = {fn, t: G.t + me.cd + .01};
+  else if (me.ammo < 1){ me.emptyT = G.t; snd.empty(); haptic(4); }
+}
+/* все пальцы отпущены: при сворачивании, звонке, системном жесте */
+function dropInputs(){ IN.move = IN.aim = IN.sup = null; IN.buf = null; IN.keys = {}; }
+addEventListener("blur", dropInputs); addEventListener("pagehide", dropInputs);
+/* iOS не слушает user-scalable=no: щипок и двойной тап гасим сами, пока идёт матч */
+["gesturestart", "gesturechange", "gestureend"].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), {passive: false}));
+cv.addEventListener("touchstart", e => { if (G && !G.over) e.preventDefault(); }, {passive: false});
+cv.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+cv.addEventListener("contextmenu", e => e.preventDefault());
 /* клавиатура и мышь для проверки на компьютере */
 addEventListener("keydown", e => { IN.keys[e.code] = true; if (!G || G.over) return;
   if (e.code === "Space") tryFire(tapFire);
@@ -1023,7 +1134,7 @@ cv.addEventListener("mousemove", e => { IN.mouse = {x: e.clientX, y: e.clientY};
 const toWorld = p => ({x: (p.x - G.cam.ox)/SC, y: (p.y - G.cam.oy)/SC});
 function readInput(){
   let mx = 0, my = 0;
-  if (IN.move){ const v = stickVec(IN.move); if (v.d > 6){ const k = Math.min(1, v.d/MAXD); mx = Math.cos(v.a)*k; my = Math.sin(v.a)*k; } }
+  if (IN.move){ const v = stickVec(IN.move); if (v.d > 4){ const k0 = Math.min(1, (v.d - 4)/22), k = k0*(2 - k0); mx = Math.cos(v.a)*k; my = Math.sin(v.a)*k; } }
   const K = IN.keys; if (K.KeyA || K.ArrowLeft) mx -= 1; if (K.KeyD || K.ArrowRight) mx += 1; if (K.KeyW || K.ArrowUp) my -= 1; if (K.KeyS || K.ArrowDown) my += 1;
   const d = Math.hypot(mx, my); if (d > 1){ mx /= d; my /= d; }
   G.input.mx = mx; G.input.my = my;
@@ -1041,39 +1152,58 @@ function aimPreview(c, t){
     c.beginPath(); c.arc(x, y, C.sup === "pounce" ? T*1.8 : C.sup === "bite" ? T*1.35 : T*.6, 0, 6.283); c.fill(); c.stroke(); }
   else if (C.atk === "claw"){ c.fillStyle = "rgba(255,255,255,.16)"; c.beginPath(); c.moveTo(me.x, me.y); c.arc(me.x, me.y, C.range*T, a - .75, a + .75); c.closePath(); c.fill(); }
   else if (C.atk === "lob"){ const d = C.range*T*k; c.fillStyle = "rgba(255,255,255,.16)"; c.beginPath(); c.arc(me.x + Math.cos(a)*d, me.y + Math.sin(a)*d, T*1.25, 0, 6.283); c.fill(); }
-  else { const R = C.range*T, sp = C.atk === "fan" ? .17 : 0; c.fillStyle = "rgba(255,255,255,.14)";
-    c.beginPath(); c.moveTo(me.x + Math.cos(a - Math.PI/2)*10, me.y + Math.sin(a - Math.PI/2)*10); c.lineTo(me.x + Math.cos(a - sp)*R + Math.cos(a - Math.PI/2)*10, me.y + Math.sin(a - sp)*R + Math.sin(a - Math.PI/2)*10);
-    c.lineTo(me.x + Math.cos(a + sp)*R + Math.cos(a + Math.PI/2)*10, me.y + Math.sin(a + sp)*R + Math.sin(a + Math.PI/2)*10); c.lineTo(me.x + Math.cos(a + Math.PI/2)*10, me.y + Math.sin(a + Math.PI/2)*10); c.closePath(); c.fill(); }
+  else { /* дорожка каждого снаряда обрывается у стены или коробки: видно, куда долетит */
+    const R = C.range*T, offs = C.atk === "fan" ? [-.17, 0, .17] : [0], w = C.atk === "fan" ? 4.5 : 6;
+    for (const d of offs){ const aa = a + d, L = rayLen(me.x, me.y, aa, R), nx = -Math.sin(aa)*w, ny = Math.cos(aa)*w, ex = me.x + Math.cos(aa)*L, ey = me.y + Math.sin(aa)*L;
+      c.fillStyle = "rgba(255,255,255,.17)"; c.beginPath(); c.moveTo(me.x + nx, me.y + ny); c.lineTo(ex + nx, ey + ny); c.lineTo(ex - nx, ey - ny); c.lineTo(me.x - nx, me.y - ny); c.closePath(); c.fill();
+      if (L < R - 2){ c.fillStyle = "rgba(255,120,140,.55)"; c.beginPath(); c.arc(ex, ey, w + 1.5, 0, 6.283); c.fill(); } } }
   c.restore();
 }
+/* сколько пролетит снаряд до первой стены или коробки */
+function rayLen(x, y, a, R){ const st = T/6, cx = Math.cos(a), cy = Math.sin(a); for (let d = st; d < R; d += st) if (solidShot(cellAt(x + cx*d, y + cy*d))) return Math.max(0, d - st*.5); return R; }
 function drawControls(c, t){
   if (G.over || AUTO) return;
   const me = G.me;
   /* джойстики: подсказка в покое, кольцо и шар под пальцем */
-  const ghost = [[IN.move, 92, VH - 150 - SAB*.6], [IN.aim, VW - 150, VH - 112 - SAB*.6]];
-  ghost.forEach(([p, gx, gy], i) => { const bx = p ? p.bx : gx, by = p ? p.by : gy; c.globalAlpha = p ? .9 : .28;
+  /* подсказки в покое видны, пока игрок не попробовал оба пальца */
+  const ghost = [[IN.move, 92, VH - 150 - SAB*.6, "move"], [IN.aim, VW - 150, VH - 112 - SAB*.6, "aim"]], now = performance.now();
+  ghost.forEach(([p, gx, gy, k], i) => {
+    if (!p && IN.fades.some(f => f.k === k)) return;
+    const bx = p ? p.bx : gx, by = p ? p.by : gy, v = p ? stickVec(p) : null, cancel = p && i && p.max >= DEAD && v.d < DEAD;
+    c.globalAlpha = p ? .9 : IN.used.move && IN.used.aim ? .12 : .28;
     c.strokeStyle = "rgba(255,255,255,.5)"; c.fillStyle = "rgba(20,14,28,.35)"; c.lineWidth = 2; c.beginPath(); c.arc(bx, by, 56, 0, 6.283); c.fill(); c.stroke();
-    let kx = bx, ky = by; if (p){ const v = stickVec(p), d = Math.min(MAXD*.8, v.d); kx = bx + Math.cos(v.a)*d; ky = by + Math.sin(v.a)*d; }
-    c.fillStyle = i ? "rgba(255,179,71,.9)" : "rgba(255,255,255,.85)"; c.beginPath(); c.arc(kx, ky, 24, 0, 6.283); c.fill(); });
+    if (p && i && !cancel && v.d >= DEAD){ c.strokeStyle = "rgba(255,179,71,.55)"; c.lineWidth = 4; c.beginPath(); c.arc(bx, by, 56, v.a - .5, v.a + .5); c.stroke(); }
+    let kx = bx, ky = by; if (p){ const d = Math.min(MAXD*.8, v.d); kx = bx + Math.cos(v.a)*d; ky = by + Math.sin(v.a)*d; }
+    c.fillStyle = cancel ? "rgba(160,150,170,.9)" : i ? "rgba(255,179,71,.9)" : "rgba(255,255,255,.85)"; c.beginPath(); c.arc(kx, ky, p ? 26 : 24, 0, 6.283); c.fill();
+    if (cancel){ c.strokeStyle = "#2a1f33"; c.lineWidth = 3.5; c.lineCap = "round"; c.beginPath(); c.moveTo(kx - 7, ky - 7); c.lineTo(kx + 7, ky + 7); c.moveTo(kx + 7, ky - 7); c.lineTo(kx - 7, ky + 7); c.stroke(); } });
+  /* отпущенный джойстик: шар пружиной возвращается в центр, кольцо гаснет за 0,16 с */
+  IN.fades = IN.fades.filter(f => now - f.t0 < 160);
+  for (const f of IN.fades){ const k = (now - f.t0)/160, e = 1 - (1 - k)*(1 - k), kx = lerp(f.kx, f.bx, e), ky = lerp(f.ky, f.by, e);
+    c.globalAlpha = .9*(1 - k); c.strokeStyle = "rgba(255,255,255,.5)"; c.fillStyle = "rgba(20,14,28,.35)"; c.lineWidth = 2; c.beginPath(); c.arc(f.bx, f.by, 56, 0, 6.283); c.fill(); c.stroke();
+    c.fillStyle = f.k === "aim" ? "rgba(255,179,71,.9)" : "rgba(255,255,255,.85)"; c.beginPath(); c.arc(kx, ky, 26 - k*2, 0, 6.283); c.fill(); }
   c.globalAlpha = 1;
-  /* кнопка супера: кольцо заряда, при полном заряде светится */
+  /* кнопка супера: кольцо заряда; при полном заряде выскакивает и светится; под пальцем вдавлена */
   const sb = SUPER_BTN(), full = me.sup >= 1, sx = IN.sup ? IN.sup.x : sb.x, sy = IN.sup ? IN.sup.y : sb.y;
-  c.fillStyle = full ? "rgba(243,210,122,.95)" : "rgba(20,14,28,.6)"; c.beginPath(); c.arc(sb.x, sb.y, sb.r, 0, 6.283); c.fill();
-  if (full){ c.strokeStyle = `rgba(243,210,122,${.4 + .4*Math.sin(t*6)})`; c.lineWidth = 6; c.beginPath(); c.arc(sb.x, sb.y, sb.r + 7, 0, 6.283); c.stroke(); }
-  c.strokeStyle = "#f3d27a"; c.lineWidth = 5; c.beginPath(); c.arc(sb.x, sb.y, sb.r - 3, -Math.PI/2, -Math.PI/2 + me.sup*6.283); c.stroke();
-  c.fillStyle = full ? "#3a1630" : "rgba(243,210,122,.7)"; c.beginPath(); c.moveTo(sb.x + 3, sb.y - 16); c.lineTo(sb.x - 9, sb.y + 3); c.lineTo(sb.x - 1, sb.y + 3); c.lineTo(sb.x - 4, sb.y + 16); c.lineTo(sb.x + 9, sb.y - 3); c.lineTo(sb.x + 1, sb.y - 3); c.closePath(); c.fill();
-  if (IN.sup && full){ c.fillStyle = "rgba(243,210,122,.9)"; c.beginPath(); c.arc(sx, sy, 16, 0, 6.283); c.fill(); }
+  const pk = clamp((G.t - (G.supFullT ?? -9))/.5, 0, 1), pop = full && pk < 1 && !reduced() ? Math.sin(pk*Math.PI)*.28*(1 - pk*.5) : 0, sc = (IN.sup ? .9 : 1) + pop;
+  c.save(); c.translate(sb.x, sb.y); c.scale(sc, sc);
+  if (IN.sup){ c.fillStyle = full ? "rgba(255,236,170,.35)" : "rgba(255,255,255,.12)"; c.beginPath(); c.arc(0, 0, sb.r + 14, 0, 6.283); c.fill(); }
+  c.fillStyle = full ? "rgba(243,210,122,.95)" : "rgba(20,14,28,.6)"; c.beginPath(); c.arc(0, 0, sb.r, 0, 6.283); c.fill();
+  if (full){ c.strokeStyle = `rgba(243,210,122,${.4 + .4*Math.sin(t*6)})`; c.lineWidth = 6; c.beginPath(); c.arc(0, 0, sb.r + 7, 0, 6.283); c.stroke(); }
+  c.strokeStyle = "#f3d27a"; c.lineWidth = 5; c.beginPath(); c.arc(0, 0, sb.r - 3, -Math.PI/2, -Math.PI/2 + me.sup*6.283); c.stroke();
+  c.fillStyle = full ? "#3a1630" : "rgba(243,210,122,.7)"; c.beginPath(); c.moveTo(3, -16); c.lineTo(-9, 3); c.lineTo(-1, 3); c.lineTo(-4, 16); c.lineTo(9, -3); c.lineTo(1, -3); c.closePath(); c.fill();
+  c.restore();
+  if (IN.sup && full){ const v = stickVec(IN.sup), cancel = IN.sup.max >= DEAD && v.d < DEAD; c.fillStyle = cancel ? "rgba(160,150,170,.9)" : "rgba(243,210,122,.9)"; c.beginPath(); c.arc(sx, sy, 16, 0, 6.283); c.fill(); }
 }
 
 /* =================== МАТЧ =================== */
 function startMatch(mode){
   uid = 0;
   G = {mode, map: loadMap(MODES[mode].map), fighters: [], shots: [], lobs: [], picks: [], fx: [], parts: [], nums: [], t: 0, el: 0, left: MODES[mode].time, shake: 0,
-    input: {mx: 0, my: 0}, aggrAlly: .55, errAlly: .1, aggrFoe: .4 + Math.min(.15, S.cups/1500), errFoe: .2 - Math.min(.08, S.cups/1250), mapDirty: true, over: false, paused: false, myGems: 0};
+    input: {mx: 0, my: 0}, aggrAlly: .55, errAlly: .1, aggrFoe: .4 + Math.min(.15, S.cups/1500), errFoe: .2 - Math.min(.08, S.cups/1250), mapDirty: true, over: false, paused: false, myGems: 0, rustle: {}, supFullT: -9};
   MODES[mode].setup();
   G.fighters.forEach(f => { f.ai.t = 1 + Math.random()*.4; });
   cam.x = G.me.x; cam.y = G.me.y;
-  IN.move = IN.aim = IN.sup = null;
+  dropInputs(); IN.fades = []; IN.used = {}; cam.reset = true;
   document.querySelectorAll(".screen,.ovl").forEach(s => s.classList.remove("on")); $("#stage").classList.add("playing");
   hudT = 0;
 }
@@ -1084,18 +1214,21 @@ function endMatch(r, place){
   setTimeout(() => { good ? snd.win() : snd.lose(); haptic(good ? [12, 40, 18] : 20); }, 300);
   setTimeout(() => {
     $("#resT").textContent = res.title; $("#resP").textContent = res.text;
-    const c = $("#resCups"); c.textContent = "🏆 " + (res.cups >= 0 ? "+" : "") + res.cups; c.className = "big " + (res.cups >= 0 ? "up" : "down");
+    const c = $("#resCups"), fmt = v => "🏆 " + (v === 0 ? "" : res.cups >= 0 ? "+" : "−") + Math.abs(v); c.className = "big " + (res.cups >= 0 ? "up" : "down");
+    if (reduced() || !res.cups) c.textContent = fmt(res.cups); else { const t0 = performance.now() + 250, D = 650; c.textContent = fmt(0);
+      const tick = () => { const k = clamp((performance.now() - t0)/D, 0, 1), e = 1 - Math.pow(1 - k, 3); c.textContent = fmt(Math.round(res.cups*e)); if (k < 1 && $("#resOv").classList.contains("on")) requestAnimationFrame(tick); else c.textContent = fmt(res.cups); };
+      requestAnimationFrame(tick); }
     $("#resStats").innerHTML = res.stats.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join("");
     $("#resOv").classList.add("on"); $("#stage").classList.remove("lowhp");
   }, 1300);
 }
-function togglePause(on){ if (!G || G.over) return; G.paused = on; $("#pauseOv").classList.toggle("on", on); }
+function togglePause(on){ if (!G || G.over) return; G.paused = on; if (on) dropInputs(); $("#pauseOv").classList.toggle("on", on); }
 $("#pauseBtn").addEventListener("click", () => { snd.tap(); togglePause(true); });
 $("#resume").addEventListener("click", () => { snd.tap(); togglePause(false); });
 $("#quit").addEventListener("click", () => { snd.tap(); $("#pauseOv").classList.remove("on"); G.paused = false; endMatch(G.mode === "surv" ? "place" : "lose", G.fighters.filter(f => !f.dead).length); });
 $("#again").addEventListener("click", () => { snd.tap(); startMatch(G.mode); });
 $("#toMenu").addEventListener("click", () => { snd.tap(); showMenu(); });
-document.addEventListener("visibilitychange", () => { if (document.hidden && G && !G.over) togglePause(true); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) return; dropInputs(); if (G && !G.over) togglePause(true); });
 
 /* =================== ЦИКЛ =================== */
 let last = performance.now(), hudT = 0;
@@ -1128,6 +1261,8 @@ const MODE_INFO = [
   ["waves", "🦇", "Волны и босс", "Вдвоём против шести волн летучих мышей и охотников. В конце Старый охотник.", () => S.rec.waves.best ? `рекорд: ${S.rec.waves.best} из 6 волн` : ""]
 ];
 const SND_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="#fff"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
+const HAP_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4.5 9v6M19.5 9v6"/></svg>';
+const HAP_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4 4l16 16"/></svg>';
 const SND_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="#fff"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
 function portrait(cnv, kind){
   const k = 2, c = cnv.getContext("2d"); cnv.width = 96*k; cnv.height = 96*k; c.scale(k, k);
@@ -1137,7 +1272,7 @@ function portrait(cnv, kind){
 }
 function showMenu(){
   G = null; $("#stage").classList.remove("playing", "lowhp"); document.querySelectorAll(".ovl").forEach(o => o.classList.remove("on")); $("#menu").classList.add("on");
-  $("#cups").textContent = "🏆 " + S.cups; $("#sndBtn").innerHTML = S.sfx ? SND_ON : SND_OFF;
+  $("#cups").textContent = "🏆 " + S.cups; $("#sndBtn").innerHTML = S.sfx ? SND_ON : SND_OFF; $("#hapBtn").innerHTML = S.hap ? HAP_ON : HAP_OFF;
   const cats = $("#cats"); cats.innerHTML = "";
   for (const k of ["alisa", "lapula"]){ const I = CAT_INFO[k], b = document.createElement("button"); b.className = "catc" + (S.cat === k ? " on" : ""); b.setAttribute("aria-pressed", S.cat === k);
     b.innerHTML = `<canvas></canvas><b>${I.t}</b><small>${I.s}</small><div class="st">${I.st.map(s => `<span>${s}</span>`).join("")}</div>`;
@@ -1147,7 +1282,8 @@ function showMenu(){
     b.innerHTML = `<span class="ic">${ic}</span><span><b>${t}</b><small>${s}</small>${r ? `<span class="rec">${r}</span>` : ""}</span>`;
     b.onclick = () => { snd.tap(); haptic(8); if (!S.how && !AUTO){ $("#howOv").classList.add("on"); $("#howGo").onclick = () => { S.how = true; save(); startMatch(id); }; } else startMatch(id); }; ms.appendChild(b); }
 }
-$("#sndBtn").addEventListener("click", () => { S.sfx = !S.sfx; save(); $("#sndBtn").innerHTML = S.sfx ? SND_ON : SND_OFF; snd.tap(); });
+$("#sndBtn").addEventListener("click", () => { S.sfx = !S.sfx; save(); $("#sndBtn").innerHTML = S.sfx ? SND_ON : SND_OFF; $("#sndBtn").setAttribute("aria-pressed", S.sfx); snd.tap(); });
+$("#hapBtn").addEventListener("click", () => { S.hap = !S.hap; save(); $("#hapBtn").innerHTML = S.hap ? HAP_ON : HAP_OFF; $("#hapBtn").setAttribute("aria-pressed", S.hap); snd.tap(); haptic(10); });
 /* лёгкое нажатие на карточки и кнопки */
 document.addEventListener("pointerdown", e => { const b = e.target.closest(".catc,.mode,.btn"); if (b) b.classList.add("press"); }, {passive: true});
 ["pointerup", "pointercancel", "pointerleave"].forEach(ev => document.addEventListener(ev, () => document.querySelectorAll(".press").forEach(b => b.classList.remove("press")), {passive: true}));
