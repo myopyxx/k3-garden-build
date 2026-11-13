@@ -16,27 +16,19 @@ module.exports.open = async function(file, opts={}){
   await p.goto('file://'+file); await p.evaluate(()=>document.fonts.ready); await p.waitForTimeout(600);
   return {b,p,errs};
 };
+// Запущенный сам по себе, обходит главные экраны и листы, снимает каждый и печатает ошибки консоли.
+// Аргументы: ширина и высота экрана, по умолчанию 393 на 852.
 if (require.main === module) (async()=>{
-  const {b,p,errs} = await module.exports.open(ROOT + '/index.html');
-  const S = n => p.screenshot({path:SP+'g-'+n+'.png'});
-  await p.waitForTimeout(1600); await S('01-splash');
-  await p.click('#btnStart'); await p.waitForTimeout(1300);
-  for (let i=0;i<5;i++){ await p.click('#duo .pet >> nth='+(i%2)); await p.waitForTimeout(60); }
-  await p.waitForTimeout(700); await S('02-home');
-  await p.evaluate(()=>{ for(let i=1;i<=6;i++) S.stars[i]=2; S.drops=500; save(); hud(); });
-  await p.click('.tab >> nth=1'); await p.waitForTimeout(1300); await S('03-map');
-  await p.evaluate(()=>{ const v=document.querySelector('#v-map'); v.scrollTop=600; }); await p.waitForTimeout(500); await S('04-map-scrolled');
-  await p.click('.ep >> nth=6'); await p.waitForTimeout(260); await S('05-zoom-mid'); await p.waitForTimeout(900); await S('06-intro7');
-  await p.click('.overlay .go'); await p.waitForTimeout(1500); await S('07-sun');
-  await p.mouse.move(60,500); await p.mouse.down(); await p.mouse.move(40,500,{steps:5}); await p.waitForTimeout(1500); await S('08-sun-left'); await p.mouse.up();
-  await p.click('#gClose'); await p.waitForTimeout(800);
-  await p.click('.tab >> nth=0'); await p.waitForTimeout(800);
-  await p.click('#btnShop'); await p.waitForTimeout(900); await S('09-shop');
-  await p.click('#sheetDone'); await p.waitForTimeout(700);
-  await p.click('#btnSettings'); await p.waitForTimeout(900); await S('10-settings');
-  await p.click('#sheetDone'); await p.waitForTimeout(700);
-  await p.click('.tab >> nth=2'); await p.waitForTimeout(1200); await S('11-album');
-  await p.click('.tab >> nth=3'); await p.waitForTimeout(3500); await S('12-awards');
-  console.log('ERRORS', errs.length ? errs.join('\n') : 'none');
+  const W = +(process.argv[2] || 393), H = +(process.argv[3] || 852), today = new Date().toDateString();
+  const st = {v4:1, v5:1, v9:1, lastDay: today, lastSeen: Date.now(), songSeen: 1, salvJoke: 1, giftDay: today, teamPicked: 1, pets: 60, drops: 500, stars: {1:3, 2:3, 3:2, 4:2, 5:2, 6:2}, seenPh: 9};
+  const {b,p,errs} = await module.exports.open(ROOT + '/index.html', {state: JSON.stringify(st)});
+  await p.setViewportSize({width: W, height: H});
+  const S = n => p.screenshot({path: SP + 'g-' + W + '-' + n + '.png'});
+  await p.waitForTimeout(1200); await S('01-splash');
+  await p.click('#btnStart'); await p.waitForTimeout(1500); await S('02-home');
+  for (const [v, n] of [['v-map', '03-map'], ['v-album', '04-album'], ['v-awards', '05-awards'], ['v-home', '06-home']]){ await p.evaluate(v => showView(v), v); await p.waitForTimeout(1300); await S(n); }
+  for (const [btn, n] of [['#btnWardrobe', '07-wardrobe'], ['#btnShop', '08-shop'], ['#btnSettings', '09-settings']]){
+    await p.click(btn); await p.waitForTimeout(1000); await S(n); await p.click('#sheetDone'); await p.waitForTimeout(800); }
+  console.log(W + '×' + H, 'ERRORS', errs.length ? errs.join('\n') : 'none');
   await b.close();
 })();
