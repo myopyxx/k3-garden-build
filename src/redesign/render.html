@@ -1,0 +1,202 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#1a1630">
+<canvas id="gl"></canvas><canvas id="out"></canvas>
+<script id="fs" type="x-shader">#version 300 es
+precision highp float;
+/* Котики по формулам: тела собраны из сглаженных шаров и капсул, свет считается честно —
+   мягкие тени, затенение в складках, бархатный отблеск по краю. Рендер идёт один раз, в игру попадают картинки. */
+uniform vec2 uRes; uniform int uCat; uniform int uShow; uniform float uLid; uniform float uGround; uniform int uOcc;
+out vec4 o;
+const vec3 CAM = vec3(.15, 1.25, 9.), TGT = vec3(.15, .98, 0.);
+
+float hash(vec3 p){ p = fract(p*.3183099 + .1); p *= 17.; return fract(p.x*p.y*p.z*(p.x + p.y + p.z)); }
+float noise(vec3 x){ vec3 i = floor(x), f = fract(x); f = f*f*(3. - 2.*f);
+  return mix(mix(mix(hash(i), hash(i + vec3(1,0,0)), f.x), mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x), mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y), f.z); }
+float smin(float a, float b, float k){ float h = clamp(.5 + .5*(b - a)/k, 0., 1.); return mix(b, a, h) - k*h*(1. - h); }
+float smax(float a, float b, float k){ return -smin(-a, -b, k); }
+float sdEll(vec3 p, vec3 r){ float k0 = length(p/r), k1 = length(p/(r*r)); return k0*(k0 - 1.)/k1; }
+float sdCap(vec3 p, vec3 a, vec3 b, float r){ vec3 pa = p - a, ba = b - a; float h = clamp(dot(pa, ba)/dot(ba, ba), 0., 1.); return length(pa - ba*h) - r; }
+float sdRC(vec3 p, vec3 a, vec3 b, float r1, float r2){ vec3 ba = b - a; float l2 = dot(ba, ba), rr = r1 - r2, a2 = l2 - rr*rr, il2 = 1./l2; vec3 pa = p - a; float y = dot(pa, ba), z = y - l2;
+  vec3 xv = pa*l2 - ba*y; float x2 = dot(xv, xv), y2 = y*y*l2, z2 = z*z*l2, k = sign(rr)*rr*rr*x2;
+  if (sign(z)*a2*z2 > k) return sqrt(x2 + z2)*il2 - r2; if (sign(y)*a2*y2 < k) return sqrt(x2 + y2)*il2 - r1; return (sqrt(x2*a2*il2) + y*rr)*il2 - r1; }
+vec2 un(vec2 a, vec2 b){ return a.x < b.x ? a : b; }
+float seg2(vec2 p, vec2 a, vec2 b){ vec2 pa = p - a, ba = b - a; return length(pa - ba*clamp(dot(pa, ba)/dot(ba, ba), 0., 1.)); }
+
+/* где у кого голова и какая поза */
+vec3 headC(){ return uCat == 0 ? vec3(0., 1.31, .12) : vec3(-.27, .86, .36); }
+const vec3 EYE = vec3(.205, .0, .365); const float ER = .152;
+bool gWhisk = true;   /* усы видны, но тени от них не считаются: иначе на щеках полосы */
+
+/* материалы: 1 шерсть, 2 ухо внутри, 3 нос, 4 глаз, 5 ошейник, 6 золото, 7 клык, 8 ус */
+vec2 dHead(vec3 pw){
+  if (uCat == 2) return vec2(1e9, 1.);
+  vec3 p = pw - headC(); if (uCat == 1){ float a = .07; p.xy = mat2(cos(a), -sin(a), sin(a), cos(a))*p.xy; }
+  vec3 q = vec3(abs(p.x), p.yz);
+  float d = sdEll(p, vec3(.55, .51, .5));
+  d = smin(d, length(q - vec3(.3, -.19, .2)) - .26, .2);
+  d = smin(d, length(q - vec3(.085, -.175, .44)) - .12, .07);
+  d = smin(d, length(p - vec3(0., -.285, .37)) - .1, .09);
+  /* уши: маленькие, круглые, широко поставлены — как у британцев */
+  vec3 pe = q - vec3(.33, .32, -.02); pe.z *= 2.1;
+  float ear = sdRC(pe, vec3(0.), vec3(.1, .2, -.05), .2, .085);
+  float inner = sdRC(pe, vec3(.0, .04, .26), vec3(.085, .17, .2), .12, .04);
+  ear = smax(ear, -inner, .05)/2.1; d = smin(d, ear, .08);
+  float mat = inner < .02 && q.y > .3 ? 2. : 1.;
+  /* глазницы: веко закрывает верх глаза, при uLid = 1 глаз закрыт совсем */
+  if (uLid < .99){
+    float carve = length(q - EYE) - (ER + .006);
+    float lidY = EYE.y + ER*(1.15 - 2.2*uLid) - 1.6*(q.x - EYE.x)*(q.x - EYE.x);
+    carve = max(carve, q.y - lidY);
+    d = smax(d, -carve, .022);
+    d = smin(d, max(length(q - EYE) - (ER + .016), lidY - q.y), .015);
+  } else d = smin(d, length(q - EYE) - (ER + .004), .05);
+  vec2 r = vec2(d, mat);
+  if (uLid < .99) r = un(r, vec2(length(q - EYE) - ER, 4.));
+  r = un(r, vec2(sdEll(p - vec3(0., -.1, .538), vec3(.054, .037, .036)), 3.));
+  if (uCat == 0) r = un(r, vec2(sdRC(q, vec3(.052, -.262, .505), vec3(.052, -.318, .498), .017, .004), 7.));
+  /* усы */
+  float w = sdCap(q, vec3(.15, -.165, .52), vec3(.7, -.07, .5), .004);
+  w = min(w, sdCap(q, vec3(.155, -.19, .52), vec3(.73, -.2, .5), .004)); w = min(w, sdCap(q, vec3(.15, -.215, .52), vec3(.68, -.32, .5), .004));
+  if (gWhisk) r = un(r, vec2(w, 8.));
+  return r;
+}
+vec2 dBody(vec3 p){
+  vec3 q = vec3(abs(p.x), p.yz); vec2 r;
+  if (uCat == 2){ vec3 c = p - vec3(.15, .78, 0.); float a = .55; c.xz = mat2(cos(a), -sin(a), sin(a), cos(a))*c.xz;
+    r = vec2(length(vec2(length(c.xy) - .62, c.z)) - .095, 6.);
+    r = un(r, vec2(sdEll(c - vec3(0., .7, 0.), vec3(.2, .16, .2)) , 9.));
+    r = un(r, vec2(length(vec2(length((c - vec3(0., .62, 0.)).xz) - .17, c.y - .62)) - .04, 6.));
+    return r; }
+  if (uCat == 0){                                   /* Алиса сидит столбиком */
+    float d = sdEll(p - vec3(0., .62, -.03), vec3(.5, .62, .46));
+    d = smin(d, length(p - vec3(0., .8, .2)) - .33, .2);
+    d = smin(d, sdEll(q - vec3(.36, .3, .02), vec3(.3, .32, .36)), .15);
+    d = smin(d, sdEll(q - vec3(.37, .075, .4), vec3(.15, .08, .21)), .08);
+    d = smin(d, sdCap(q, vec3(.16, .72, .33), vec3(.15, .15, .43), .115), .09);
+    d = smin(d, sdEll(q - vec3(.15, .078, .5), vec3(.135, .085, .17)), .06);
+    r = vec2(d, 1.);
+    /* ошейник с медальоном */
+    vec3 c = p - vec3(0., .93, .08); c.yz = mat2(cos(.38), -sin(.38), sin(.38), cos(.38))*c.yz;
+    r = un(r, vec2(length(vec2(length(c.xz) - .44, c.y)) - .036, 5.));
+    r = un(r, vec2(sdEll(p - vec3(0., .775, .545), vec3(.068, .068, .024)), 6.));
+  } else {                                          /* Лапуля лежит буханкой */
+    float d = sdEll(p - vec3(.08, .41, -.06), vec3(.76, .43, .56));
+    d = smin(d, length(p - vec3(-.24, .5, .16)) - .4, .22);
+    d = smin(d, sdEll(p - vec3(.46, .42, -.02), vec3(.44, .43, .5)), .2);
+    d = smin(d, sdEll(p - vec3(-.43, .075, .52), vec3(.14, .085, .16)), .07);
+    d = smin(d, sdEll(p - vec3(-.1, .075, .55), vec3(.14, .085, .16)), .07);
+    r = vec2(d, 1.);
+  }
+  return r;
+}
+vec2 dTail(vec3 p){
+  if (uCat == 2) return vec2(1e9, 1.);
+  vec3 A, B, C; if (uCat == 0){ A = vec3(.28, .15, -.3); B = vec3(1.22, -.02, -.1); C = vec3(.9, .78, .0); } else { A = vec3(.7, .13, -.25); B = vec3(1.3, .1, .45); C = vec3(.5, .12, .7); }
+  float d = 1e9; vec3 prev = A;
+  for (int i = 1; i <= 36; i++){ float t = float(i)/36.; vec3 pt = mix(mix(A, B, t), mix(B, C, t), t); d = min(d, sdCap(p, prev, pt, mix(.128, .108, t))); prev = pt; }
+  return vec2(d, 1.);
+}
+/* часть: 1 тело, 2 голова, 4 хвост */
+vec3 mapP(vec3 p, int mask){ vec3 r = vec3(1e9, 0., 0.);
+  if ((mask & 1) != 0){ vec2 b = dBody(p); if (b.x < r.x) r = vec3(b, 1.); }
+  if ((mask & 2) != 0){ vec2 h = dHead(p); if (h.x < r.x) r = vec3(h, 2.); }
+  if ((mask & 4) != 0){ vec2 t = dTail(p); if (t.x < r.x) r = vec3(t, 4.); }
+  return r; }
+float mapAll(vec3 p){ gWhisk = false; float d = mapP(p, 7).x; gWhisk = true; return d; }
+vec3 normal(vec3 p, int mask){ vec2 e = vec2(.0012, 0.); return normalize(vec3(mapP(p + e.xyy, mask).x - mapP(p - e.xyy, mask).x, mapP(p + e.yxy, mask).x - mapP(p - e.yxy, mask).x, mapP(p + e.yyx, mask).x - mapP(p - e.yyx, mask).x)); }
+float shadow(vec3 ro, vec3 rd, float k){ float res = 1., t = .03; for (int i = 0; i < 48; i++){ float h = mapAll(ro + rd*t); res = min(res, k*h/t); t += clamp(h, .012, .2); if (res < .002 || t > 5.) break; } return clamp(res, 0., 1.); }
+float ao(vec3 p, vec3 n){ float a = 0., s = 1.; for (int i = 1; i <= 6; i++){ float h = .03*float(i)*float(i)*.45 + .01; a += (h - min(mapAll(p + n*h), h))*s; s *= .72; } return clamp(1. - 2.4*a, 0., 1.); }
+
+const vec3 L0 = normalize(vec3(-.45, .62, .72)), L2 = normalize(vec3(.85, .12, .45)), L3 = normalize(vec3(.35, .55, -.8));
+
+vec3 shade(vec3 p, vec3 rd, vec3 hit, int mask){
+  vec3 n = normal(p, mask), v = -rd; float mat = hit.y;
+  vec3 fur = uCat == 0 ? vec3(.265, .305, .41) : vec3(.165, .175, .23), alb = fur; float rough = 1., spec = 0.;
+  vec3 hp = p - headC(); vec3 hq = vec3(abs(hp.x), hp.yz);
+  if (mat < 1.5){
+    /* шерсть: светлее на мордочке и груди, темнее на спине; мелкий ворс */
+    float light = smoothstep(.34, .1, length(hq - vec3(.07, -.2, .42)))*step(1.5, hit.z)*step(hit.z, 2.5);
+    if (uCat == 0) light = max(light, smoothstep(.42, .1, length(p - vec3(0., .78, .42)))*.8*step(hit.z, 1.5));
+    alb = mix(fur, fur*1.2 + .02, light);
+    alb *= mix(.82, 1.06, smoothstep(-.6, .55, p.z));
+    alb *= .95 + .1*noise(p*vec3(22., 22., 22.));
+    n = normalize(n + .16*(vec3(noise(p*85.), noise(p*85. + 17.), noise(p*85. + 31.)) - .5));
+    /* рот и закрытые глаза нарисованы по поверхности */
+    if (hit.z > 1.5 && hit.z < 2.5 && hp.z > .25){
+      float m = seg2(hq.xy, vec2(0., -.137), vec2(0., -.196));
+      float arc = abs(length(hq.xy - vec2(.052, -.186)) - .052); arc = max(arc, hq.y + .186); m = min(m, arc);
+      alb *= mix(.25, 1., smoothstep(.0035, .0095, m));
+      if (uLid >= .99){ float e = abs(length(hq.xy - (EYE.xy + vec2(0., .1))) - .15); e = max(e, hq.y - (EYE.y - .0)); alb *= mix(.2, 1., smoothstep(.008, .018, e)); }
+    }
+    if (hit.z < 1.5 && p.y < .125 && p.y > .03 && p.z > .52){ float tx = uCat == 0 ? min(abs(abs(p.x) - .15), abs(abs(p.x) - .37)) : min(abs(p.x + .43), abs(p.x + .1)); alb *= mix(.6, 1., smoothstep(.003, .009, abs(tx - .045))); }
+  } else if (mat < 2.5){ alb = uCat == 0 ? vec3(.52, .36, .42) : vec3(.33, .24, .29); }
+  else if (mat < 3.5){ alb = uCat == 0 ? vec3(.42, .25, .3) : vec3(.2, .13, .16); spec = .5; rough = .25; }
+  else if (mat < 4.5){
+    /* глаз: радужка от светлого центра к тёмному краю, крупный зрачок, блики */
+    vec3 ec = headC() + vec3(sign(hp.x)*EYE.x, EYE.y, EYE.z), d = normalize(p - ec), g = normalize(vec3(-sign(hp.x)*.06, .02, 1.));
+    vec3 rt = normalize(cross(vec3(0., 1., 0.), g)), up = cross(g, rt); float u = dot(d, rt), w = dot(d, up), rr = length(vec2(u, w));
+    vec3 c0 = uCat == 0 ? vec3(.93, .9, .3) : vec3(1., .72, .2), c1 = uCat == 0 ? vec3(.42, .56, .1) : vec3(.72, .3, .04);
+    float fib = noise(vec3(atan(w, u)*9., rr*14., 3.));
+    alb = mix(c0, c1, smoothstep(.2, .78, rr + .08*fib)); alb = mix(alb, vec3(.03, .02, .03), smoothstep(.76, .9, rr));
+    float pu = length(vec2(u/.36, w/.5)); alb = mix(vec3(.012, .008, .014), alb, smoothstep(.92, 1.04, pu));
+    spec = 1.; rough = .06;
+  }
+  else if (mat < 5.5){ alb = vec3(.5, .05, .1); spec = .25; rough = .4; }
+  else if (mat < 6.5){ alb = vec3(.95, .68, .25); spec = 1.; rough = .2; }
+  else if (mat < 7.5){ alb = vec3(.96, .94, .88); spec = .4; rough = .3; }
+  else if (mat < 8.5){ alb = vec3(.92, .93, .98); }
+  else { alb = vec3(.75, .08, .16); spec = 1.; rough = .09; }
+
+  float occ = ao(p, n), s0 = shadow(p + n*.004, L0, 9.), s2 = shadow(p + n*.004, L2, 7.);
+  float nv = clamp(dot(n, v), 0., 1.), d0 = clamp(dot(n, L0), 0., 1.), d2 = clamp(dot(n, L2), 0., 1.);
+  vec3 col = alb*(vec3(.92, .96, 1.1)*d0*s0*1.05 + vec3(1.1, .58, .3)*d2*s2*.75);
+  col += alb*mix(vec3(.1, .06, .09), vec3(.2, .23, .4), .5 + .5*n.y)*occ;
+  /* контровой лунный свет и бархатный отблеск по краю силуэта */
+  float rim = pow(1. - nv, 2.6);
+  col += vec3(.6, .74, 1.)*rim*clamp(dot(n, L3) + .35, 0., 1.)*.95*occ*(mat < 1.5 ? 1. : .4);
+  if (mat < 1.5) col += (alb + .12)*pow(1. - nv, 3.5)*.3*occ;
+  if (mat > 1.5 && mat < 2.5) col += vec3(.9, .35, .35)*clamp(dot(-n, L3) + .4, 0., 1.)*.3;
+  if (mat > 8.5) col += vec3(.9, .1, .2)*(.35 + .5*pow(1. - nv, 2.));
+  if (spec > 0.){ vec3 h0 = normalize(L0 + v), h2 = normalize(L2 + v); float sh = 2./(rough*rough);
+    col += spec*(vec3(1.)*pow(clamp(dot(n, h0), 0., 1.), sh)*s0*(mat > 3.5 && mat < 4.5 ? 2.2 : .9) + vec3(1., .7, .4)*pow(clamp(dot(n, h2), 0., 1.), sh)*s2*.8);
+    col += spec*vec3(.5, .6, .85)*pow(1. - nv, 4.)*.5; }
+  if (mat > 3.5 && mat < 4.5){ /* окно в глазу: крупный мягкий блик слева сверху и маленький справа снизу */
+    vec3 ec = headC() + vec3(sign(hp.x)*EYE.x, EYE.y, EYE.z), d = normalize(p - ec);
+    col = mix(col, vec3(1.), smoothstep(.966, .978, dot(d, normalize(vec3(-.34, .42, 1.))))); col += vec3(.6)*smoothstep(.988, .995, dot(d, normalize(vec3(.3, -.34, 1.))));
+    col *= mix(.45, 1., smoothstep(.62, .2, d.y - .1)); }
+  return col;
+}
+void main(){
+  vec2 uv = (gl_FragCoord.xy - .5*uRes)/uRes.y;
+  vec3 fw = normalize(TGT - CAM), rt = normalize(cross(fw, vec3(0., 1., 0.))), up = cross(rt, fw);
+  vec3 rd = normalize(fw + (uv.x*rt + uv.y*up)*(2.2/length(TGT - CAM)));
+  float t = 6.; vec3 hit = vec3(0.); bool ok = false;
+  int mk = uOcc == 1 ? 7 : uShow;
+  for (int i = 0; i < 140; i++){ vec3 p = CAM + rd*t; hit = mapP(p, mk); if (hit.x < .0005){ ok = true; break; } t += hit.x*.9; if (t > 13.) break; }
+  if (ok && (int(hit.z + .5) & uShow) == 0){ o = vec4(0.); return; }
+  float tg = (0. - CAM.y)/rd.y;
+  if (ok && !(uGround > .5 && tg > 0. && tg < t)){ vec3 c = shade(CAM + rd*t, rd, hit.yxz.yxz, uShow); c = c*(1. + c*.18)/(1. + c*.62); c = pow(clamp(c, 0., 1.), vec3(1./2.2)); c = mix(c, c*c*(3. - 2.*c), .35); o = vec4(c, 1.); return; }
+  if (uGround > .5 && tg > 0.){ vec3 g = CAM + rd*tg; float a = (1. - ao(g, vec3(0., 1., 0.)))*.9 + (1. - shadow(g + vec3(0., .01, 0.), L0, 6.))*.5; a = clamp(a, 0., .85);
+    o = vec4(vec3(.015, .01, .04)*a, a); return; }
+  o = vec4(0.);
+}
+</script>
+<script>
+const W = 780, H = 660, SS = 2;
+const cv = document.getElementById("gl"), out = document.getElementById("out"); cv.width = W*SS; cv.height = H*SS; out.width = W; out.height = H;
+const gl = cv.getContext("webgl2", {premultipliedAlpha: true, preserveDrawingBuffer: true, antialias: false});
+function sh(type, src){ const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, "#version 300 es\nin vec2 a;void main(){gl_Position=vec4(a,0.,1.);}")); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, document.getElementById("fs").textContent.trim()));
+gl.linkProgram(pr); if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr)); gl.useProgram(pr);
+gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW); gl.enableVertexAttribArray(0); gl.bindAttribLocation(pr, 0, "a"); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+const U = n => gl.getUniformLocation(pr, n);
+window.renderCat = function({cat = 0, show = 7, lid = 0, ground = 0, occ = 0, type = "image/webp", q = .9} = {}){
+  gl.viewport(0, 0, cv.width, cv.height); gl.uniform2f(U("uRes"), cv.width, cv.height); gl.uniform1i(U("uCat"), cat); gl.uniform1i(U("uShow"), show); gl.uniform1f(U("uLid"), lid); gl.uniform1f(U("uGround"), ground); gl.uniform1i(U("uOcc"), occ);
+  gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.enable(gl.SCISSOR_TEST);
+  /* полосами, чтобы длинный кадр не упёрся в сторож видеодрайвера */
+  const band = 120; for (let y = 0; y < cv.height; y += band){ gl.scissor(0, y, cv.width, band); gl.drawArrays(gl.TRIANGLES, 0, 3); gl.finish(); }
+  gl.disable(gl.SCISSOR_TEST);
+  const c = out.getContext("2d"); c.clearRect(0, 0, W, H); c.imageSmoothingQuality = "high"; c.drawImage(cv, 0, 0, W, H);
+  return out.toDataURL(type, q);
+};
+</script>
