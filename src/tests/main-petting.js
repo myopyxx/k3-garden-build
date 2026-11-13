@@ -27,9 +27,9 @@ const {open} = require('./helper.js');
   for (let i = g.purr; i < g.D; i++){ await p.mouse.click(cx, cy - 20); await p.waitForTimeout(120); }
   g = await get(); console.log('шкала полная', JSON.stringify(g), 'капель за шкалу:', g.drops - d0);
   await p.waitForTimeout(600); await p.screenshot({path: __dirname + '/pet-over.png'});
-  for (let i = 0; i < 5; i++){ await p.mouse.click(cx, cy - 20); await p.waitForTimeout(150); }
+  for (let i = 0; i < 9; i++){ await p.mouse.click(cx, cy - 20); await p.waitForTimeout(150); }
   await p.waitForTimeout(250); await p.screenshot({path: __dirname + '/pet-overwin.png'});
-  g = await get(); console.log('после 5 поглаживаний в окне', JSON.stringify(g), 'итого за цикл:', g.drops - d0);
+  g = await get(); console.log('после 9 поглаживаний в окне', JSON.stringify(g), 'итого за цикл:', g.drops - d0);
   await p.waitForTimeout(1200); g = await get(); console.log('шкала вернулась', JSON.stringify(g));
   // 4. окно без поглаживаний закрывается само, капли не удваиваются
   const d1 = g.drops; for (let i = g.purr; i < g.D; i++){ await p.mouse.click(cx, cy - 20); await p.waitForTimeout(120); }

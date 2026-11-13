@@ -1466,10 +1466,72 @@ html,body{background:#0f0a17}
 .pola.scratch .drtag{animation:drNudge 1.8s ease-in-out infinite}
 @keyframes drNudge{50%{transform:translateX(-50%) translateY(-2px)}}
 @media (prefers-reduced-motion:reduce){.pola.scratch .drtag{animation:none}.viewer .deck{transform:none}}
+
+/* ===== v12: док, свои значки, камера по вкладкам, лунные лучи ===== */
+.icv{width:1em;height:1em;display:block;overflow:visible}
+.wit .e{line-height:0}.wit .e .icv{width:40px;height:40px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
+.gslot .e .icv{width:36px;height:36px}
+.gift .e .icv{width:32px;height:32px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+.wit:not(.on):not(.own) .e .icv{opacity:.92}
+.perk .e .icv{width:18px;height:18px}
+/* три кнопки одним парящим доком: под котиками остаётся больше неба */
+#v-home .dock{position:relative;margin-top:12px;width:100%;max-width:340px;gap:6px;padding:6px;border-radius:36px}
+#v-home .dk{width:80px;height:60px;border-radius:30px;gap:5px;font:600 11px/1 var(--ui);color:rgba(255,255,255,.92)}
+#v-home .dk svg.ico{width:22px;height:22px;opacity:.95}
+#v-home .dk.play{flex:1;width:auto;min-height:60px;height:60px;font:600 16px/1 var(--ui);gap:9px}
+#v-home .dk.play svg{width:20px;height:20px}
+.app.lowfx #v-home .dock{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(180deg,rgba(98,72,126,.66),rgba(56,39,80,.7))}
+/* золотой кант стекла: светится там, где палец */
+.edge{position:absolute;inset:0;border-radius:inherit;padding:1.2px;pointer-events:none;opacity:.3;transition:opacity .45s ease;
+  background:radial-gradient(150px circle at var(--ex,50%) var(--ey,0%),rgba(255,236,180,.95),rgba(243,207,114,.4) 45%,rgba(243,207,114,0) 78%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.edged > .edge{opacity:1;transition-duration:.08s}
+@media (max-height:700px){#v-home .dock{margin-top:9px;padding:5px}#v-home .dk,#v-home .dk.play{height:54px;min-height:54px}}
+/* камера: у каждой вкладки свой уголок сада. Слои едут с разной скоростью, поэтому сдвиг читается как панорама */
+#world .stars,#world .moon,#world .rays,#world .ridge{transition:translate 1.1s var(--spring-soft)}
+#world .stars{translate:calc(var(--cx,0px)*.12) calc(var(--cy,0px)*.12)}
+#world .moon,#world .rays{translate:calc(var(--cx,0px)*.2) calc(var(--cy,0px)*.2)}
+#world .ridge.far{translate:calc(var(--cx,0px)*.4) calc(var(--cy,0px)*.25)}
+#world .ridge.mid{translate:calc(var(--cx,0px)*.7) calc(var(--cy,0px)*.4)}
+#world .ridge.near{translate:var(--cx,0px) calc(var(--cy,0px)*.55)}
+#world[data-cam="v-wardrobe"]{--cx:-12px;--cy:8px}
+#world[data-cam="v-map"]{--cx:6px;--cy:22px}
+#world[data-cam="v-album"]{--cx:-14px;--cy:5px}
+#world[data-cam="v-awards"]{--cx:14px;--cy:12px}
+/* лунные лучи: два веера медленно вращаются навстречу, яркость от фазы луны */
+.rays{position:absolute;right:calc(7% + 31px - 280px);top:calc(env(safe-area-inset-top) + 91px - 280px);width:560px;height:560px;pointer-events:none;opacity:calc(.2 + .6*var(--lit,.8));
+  transform:translate3d(calc(var(--dx,0)*.08px),calc(var(--sc,0)*-0.06px + var(--dy,0)*.08px),0)}
+.rays i{position:absolute;inset:0;border-radius:50%;will-change:transform;animation:moonRays 150s linear infinite;
+  background:repeating-conic-gradient(from 0deg,rgba(243,227,176,0) 0 8deg,rgba(243,227,176,.09) 11deg 13deg,rgba(243,227,176,0) 17deg 26deg);
+  -webkit-mask:radial-gradient(closest-side,#000 10%,rgba(0,0,0,.5) 40%,transparent 82%);mask:radial-gradient(closest-side,#000 10%,rgba(0,0,0,.5) 40%,transparent 82%)}
+.rays i + i{animation-duration:100s;animation-direction:reverse;background:repeating-conic-gradient(from 7deg,rgba(214,200,255,0) 0 13deg,rgba(214,200,255,.065) 17deg 20deg,rgba(214,200,255,0) 25deg 41deg)}
+@keyframes moonRays{to{transform:rotate(1turn)}}
+body.day .rays i{background:repeating-conic-gradient(from 0deg,rgba(255,224,160,0) 0 8deg,rgba(255,224,160,.11) 11deg 13deg,rgba(255,224,160,0) 17deg 26deg)}
+.app.blood .rays i{background:repeating-conic-gradient(from 0deg,rgba(227,32,60,0) 0 8deg,rgba(227,32,60,.11) 11deg 13deg,rgba(227,32,60,0) 17deg 26deg)}
+.app.lowfx .rays i,.app.game-on .rays i{animation-play-state:paused}
+.app.lowfx .rays i + i{display:none}
+@media (prefers-reduced-motion:reduce){.rays i{animation:none}#world .stars,#world .moon,#world .rays,#world .ridge{transition:none}}
+/* уровень 5: сумеречный порыв */
+.fgust{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.3s ease;
+  background:radial-gradient(circle 70vmax at 74% 12%,rgba(226,234,255,.46),rgba(160,176,236,.18) 42%,rgba(160,176,236,0) 72%),linear-gradient(180deg,rgba(126,112,206,.26),rgba(126,112,206,0) 72%)}
+.fgust.on{opacity:1}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="w-bow" viewBox="0 0 48 48"><path d="M24 24C17 14 8 12 5 15c-2 3-1 15 1 18 3 3 12 0 18-9z" fill="url(#gRose)"/><path d="M24 24c7-10 16-12 19-9 2 3 1 15-1 18-3 3-12 0-18-9z" fill="url(#gRose)"/><path d="M21 27l-5 13 6-3 2-9zM27 27l5 13-6-3-2-9z" fill="#c2334f"/><path d="M8 18c5 0 10 3 14 6M40 18c-5 0-10 3-14 6" stroke="#fff" stroke-opacity=".45" stroke-width="1.5" fill="none" stroke-linecap="round"/><rect x="19.500" y="19" width="9" height="10" rx="4" fill="#ff8aa0" stroke="#b8243f"/></symbol>
+    <symbol id="w-cape" viewBox="0 0 48 48"><path d="M14 9l10 6 10-6 3 7-13 5-13-5z" fill="#8e1c2e"/><path d="M11 16c8 4 18 4 26 0l6 26c-12-5-26-5-38 0z" fill="url(#gFelt)"/><path d="M18 19c2 8 2 15 0 21M30 19c-2 8-2 15 0 21" stroke="#2a0710" stroke-opacity=".45" stroke-width="1.600" fill="none"/><path d="M11 16c8 4 18 4 26 0" stroke="#ffb3c0" stroke-opacity=".5" stroke-width="1.200" fill="none"/><circle cx="24" cy="18.500" r="3" fill="url(#gStar)" stroke="#8a5d14" stroke-width=".8"/></symbol>
+    <symbol id="w-ring" viewBox="0 0 48 48"><ellipse cx="24" cy="30" rx="12" ry="11" fill="none" stroke="url(#gStar)" stroke-width="5"/><ellipse cx="23" cy="28.600" rx="12" ry="11" fill="none" stroke="#fff" stroke-opacity=".45"/><path d="M24 6l8 7-8 9-8-9z" fill="url(#gGem)" stroke="#f3cf72" stroke-width="1.400" stroke-linejoin="round"/><path d="M16 13h16M24 6l-3 7 3 9 3-9z" stroke="#fff" stroke-opacity=".55" stroke-width=".9" fill="none"/></symbol>
+    <symbol id="w-tiara" viewBox="0 0 48 48"><path d="M7 34L5 15l9 8 5-13 5 12 5-12 5 13 9-8-2 19z" fill="url(#gStar)" stroke="#8a5d14" stroke-linejoin="round"/><rect x="7" y="33" width="34" height="6" rx="2" fill="#c98f2a" stroke="#8a5d14"/><circle cx="24" cy="28" r="3.400" fill="url(#gDrop)" stroke="#7a0f20" stroke-width=".7"/><circle cx="13.500" cy="30" r="1.800" fill="#bfe3ff"/><circle cx="34.500" cy="30" r="1.800" fill="#bfe3ff"/><path d="M9 18l6 6M19 13l3 9" stroke="#fff" stroke-opacity=".6" stroke-width="1.200" stroke-linecap="round"/></symbol>
+    <symbol id="w-wreath" viewBox="0 0 48 48"><circle cx="24" cy="26" r="14" fill="none" stroke="#3f7a3a" stroke-width="5"/><g fill="url(#gLeaf)"><ellipse cx="10" cy="21" rx="4.500" ry="2.400" transform="rotate(-60 10 21)"/><ellipse cx="38" cy="21" rx="4.500" ry="2.400" transform="rotate(60 38 21)"/><ellipse cx="12" cy="35" rx="4.500" ry="2.400" transform="rotate(50 12 35)"/><ellipse cx="36" cy="35" rx="4.500" ry="2.400" transform="rotate(-50 36 35)"/><ellipse cx="24" cy="41" rx="4.500" ry="2.400"/></g><circle cx="24" cy="12" r="6.500" fill="url(#gDrop)"/><path d="M24 9a3 3 0 1 0 3 3 2 2 0 1 1-2-2" fill="none" stroke="#7a0f20"/><circle cx="12.500" cy="15.500" r="4.200" fill="url(#gRose)"/><circle cx="35.500" cy="15.500" r="4.200" fill="url(#gRose)"/><circle cx="12.500" cy="15.500" r="1.600" fill="#a3132a"/><circle cx="35.500" cy="15.500" r="1.600" fill="#a3132a"/></symbol>
+    <symbol id="w-shades" viewBox="0 0 48 48"><path d="M3 18l5 3M45 18l-5 3" stroke="#d9b45a" stroke-width="2.200" stroke-linecap="round"/><path d="M6 20q1-3 9-3 8 0 8 6 0 9-8 9-8 0-9-8zM42 20q-1-3-9-3-8 0-8 6 0 9 8 9 8 0 9-8z" fill="url(#gGlassD)" stroke="#d9b45a" stroke-width="2" stroke-linejoin="round"/><path d="M22 22q2-2 4 0" stroke="#d9b45a" stroke-width="2.200" fill="none"/><path d="M9 21q4-2 8-1M29 21q4-2 8-1" stroke="#fff" stroke-opacity=".5" stroke-width="1.600" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="w-mask" viewBox="0 0 48 48"><path d="M39 17q6-8 3-14M41 20q7-4 6-10" stroke="#b01e33" stroke-width="2.400" fill="none" stroke-linecap="round"/><path fill-rule="evenodd" d="M4 22q2-9 13-7 5 1 7 5 2-4 7-5 11-2 13 7-1 10-12 11-6 0-8-5-2 5-8 5Q5 32 4 22zM11 23q2-4 6-4 4 1 4 4-1 4-5 4-4 0-5-4zM27 23q0-3 4-4 4 0 6 4-1 4-5 4-4 0-5-4z" fill="url(#gGlassD)" stroke="#d9b45a" stroke-width="1.600" stroke-linejoin="round"/><circle cx="24" cy="18.500" r="1.800" fill="url(#gDrop)"/><path d="M8 20q4-4 9-3" stroke="#fff" stroke-opacity=".35" stroke-width="1.300" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="g-mouse" viewBox="0 0 48 48"><path d="M36 30q9 2 8-6" stroke="#c9a0ac" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="22" cy="29" rx="16" ry="10" fill="url(#gFurG)"/><circle cx="14" cy="19" r="5.500" fill="#b9bcc6"/><circle cx="14" cy="19" r="3" fill="#e8a5b5"/><circle cx="24" cy="17.500" r="5" fill="#b9bcc6"/><circle cx="24" cy="17.500" r="2.700" fill="#e8a5b5"/><circle cx="11" cy="28" r="1.700" fill="#1a1420"/><circle cx="5.500" cy="30.500" r="1.800" fill="#e8798f"/><path d="M8 32l-5 2M8 30l-6-1" stroke="#ecebef" stroke-width=".9" stroke-linecap="round"/></symbol>
+    <symbol id="g-feather" viewBox="0 0 48 48"><path d="M40 6C24 6 10 18 9 34l5 5c16-1 28-15 26-33z" fill="url(#gFeather)"/><path d="M40 6L7 42" stroke="#7a4a20" stroke-width="1.800" stroke-linecap="round"/><path d="M30 12l-4 9M22 19l-3 8M35 17l-8 4M28 26l-8 3" stroke="#7a4a20" stroke-opacity=".5" stroke-width="1.100" stroke-linecap="round"/></symbol>
+    <symbol id="g-sock" viewBox="0 0 48 48"><path d="M17 5h14v20l8 8q4 5-1 9-5 3-10-1L17 30z" fill="#f3f0f6" stroke="#b9b2c4" stroke-width="1.200" stroke-linejoin="round"/><path d="M17 5h14v6H17z" fill="url(#gDrop)"/><path d="M17 15h14M17 19h14" stroke="#6aa2e8" stroke-width="2.200"/><path d="M33 36q4 0 6-3" stroke="#e2445a" stroke-width="5" stroke-linecap="round" fill="none" opacity=".85"/></symbol>
+    <symbol id="g-yarn" viewBox="0 0 48 48"><circle cx="22" cy="24" r="15" fill="url(#gYarn)"/><path d="M10 17q12 2 22 14M8 25q10 0 20 12M16 11q12 6 18 20M28 10q-12 6-18 24M34 16q-12 4-22 20" stroke="#fff" stroke-opacity=".35" stroke-width="1.300" fill="none" stroke-linecap="round"/><path d="M34 34q6 6 10 2-2 8-9 6" stroke="#b58adf" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="g-leaf" viewBox="0 0 48 48"><path d="M8 40C6 20 18 7 41 7c1 22-11 34-33 33z" fill="url(#gLeaf)"/><path d="M8 40L34 14M17 31l-1-10M24 24l-1-9M17 31l10 1M24 24l9 1" stroke="#2f5f2c" stroke-width="1.400" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="g-rose" viewBox="0 0 48 48"><path d="M24 26v18" stroke="#3f7a3a" stroke-width="2.600" stroke-linecap="round"/><path d="M24 36q-8-1-9-8 8 0 9 8zM24 33q7-2 8-8-8 1-8 8z" fill="url(#gLeaf)"/><circle cx="24" cy="16" r="12" fill="url(#gDrop)"/><path d="M24 10a6 6 0 1 0 6 6 4 4 0 1 1-4-4 2.300 2.300 0 1 0-2 3" fill="none" stroke="#7a0f20" stroke-width="1.300" stroke-linecap="round"/><path d="M15 12q3-5 9-6" stroke="#fff" stroke-opacity=".45" stroke-width="1.400" fill="none" stroke-linecap="round"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
@@ -1477,6 +1539,14 @@ html,body{background:#0f0a17}
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
   <defs>
     <linearGradient id="gDrop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6f7f"/><stop offset=".55" stop-color="#d42a44"/><stop offset="1" stop-color="#8e0f26"/></linearGradient>
+    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffa3b5"/><stop offset=".55" stop-color="#e2445a"/><stop offset="1" stop-color="#a3132a"/></linearGradient>
+    <linearGradient id="gFelt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a3243a"/><stop offset=".5" stop-color="#5c0f1d"/><stop offset="1" stop-color="#36070f"/></linearGradient>
+    <linearGradient id="gGem" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe9ff"/><stop offset=".5" stop-color="#4ea0ff"/><stop offset="1" stop-color="#1d4fb8"/></linearGradient>
+    <linearGradient id="gGlassD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#43365a"/><stop offset="1" stop-color="#120c1a"/></linearGradient>
+    <linearGradient id="gFurG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfd2da"/><stop offset="1" stop-color="#858996"/></linearGradient>
+    <linearGradient id="gFeather" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe6b0"/><stop offset=".55" stop-color="#e09a4a"/><stop offset="1" stop-color="#9a5a22"/></linearGradient>
+    <linearGradient id="gYarn" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dcc0ff"/><stop offset=".55" stop-color="#9b6ad6"/><stop offset="1" stop-color="#5a378f"/></linearGradient>
+    <linearGradient id="gLeaf" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b2e095"/><stop offset=".55" stop-color="#5fa04e"/><stop offset="1" stop-color="#2f6a30"/></linearGradient>
     <linearGradient id="gStar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0c2"/><stop offset=".5" stop-color="#f3cf72"/><stop offset="1" stop-color="#c98f2a"/></linearGradient>
   </defs>
   <symbol id="i-cat" viewBox="0 0 24 24"><path d="M4.6 10.2V4.6l4.3 3.1a9.4 9.4 0 0 1 6.2 0l4.3-3.1v5.6c.8 1.1 1.2 2.4 1.2 3.7 0 4.3-3.8 7.1-8.6 7.1s-8.6-2.8-8.6-7.1c0-1.3.4-2.6 1.2-3.7z"/><path d="M9 13.4v.4M15 13.4v.4M10.9 16.3l1.1.8 1.1-.8"/></symbol>
@@ -1511,6 +1581,7 @@ html,body{background:#0f0a17}
       <div class="sky"></div><div class="sky-day"></div><div class="sky-blood"></div>
       <div class="stars" id="stars"></div>
       <div class="moon" id="moon"><i class="halo"></i><div class="disc"><i class="shade" id="moonShade"></i><svg class="phase" id="moonPhase" viewBox="-1 -1 2 2" aria-hidden="true"><path/></svg><i class="qtint"></i></div><i class="sunface"></i></div>
+      <div class="rays" id="rays"><i></i><i></i></div>
       <div class="clouds" id="clouds"></div>
       <div class="shoot" id="shoot"></div>
       <svg class="ridge far" viewBox="0 0 440 200" preserveAspectRatio="none">
@@ -1558,13 +1629,13 @@ html,body{background:#0f0a17}
           <div class="duo" id="duo"></div>
           <div class="meter lg int" id="purr" role="progressbar" aria-label="Мурр-шкала: каждые 15 поглаживаний дают каплю" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0">
             <div class="lbl"><span id="purrK">мурр-шкала</span><span class="pc"><span class="num" id="purrN">0/15</span><span class="dropl" aria-hidden="true"><svg class="icf e0"><use href="#i-dropm"/></svg><svg class="icf e1"><use href="#i-drop"/></svg></span></span></div>
-            <div class="bar"><b id="purrBar"></b></div>
+            <div class="bar"><b id="purrBar"></b></div><i class="edge" aria-hidden="true"></i>
           </div>
-          <div class="row-btns hb">
-            <button class="btn ghost" id="btnWardrobe"><svg class="ico"><use href="#i-hanger"/></svg>Гардероб</button>
-            <button class="btn ghost" id="btnShop"><svg class="ico"><use href="#i-bag"/></svg>Лавка</button>
+          <div class="dock lg" id="dock"><i class="edge" aria-hidden="true"></i>
+            <button class="dk" id="btnWardrobe"><svg class="ico"><use href="#i-hanger"/></svg><span>Гардероб</span></button>
+            <button class="dk play" id="btnPlay"><svg class="icf"><use href="#i-moon"/></svg>Играть</button>
+            <button class="dk" id="btnShop"><svg class="ico"><use href="#i-bag"/></svg><span>Лавка</span></button>
           </div>
-          <div class="row-btns hb"><button class="btn" id="btnPlay"><svg class="icf"><use href="#i-moon"/></svg>Играть</button></div>
         </div>
       </section>
 
@@ -1700,11 +1771,11 @@ const CONFIG = {
 
   // Лавка: капли меняются на настоящие вещи
   shop: [
-    { id: "lapula", e: "🐈", title: "Свидание с Лапулей", text: "Приходишь ко мне гладить Лапулю сколько хочешь. Осталось только забрать.", price: 100 },
-    { id: "purr", e: "🎙️", title: "Лапуля мурчит тебе в голосовом", text: "Это очень дорого.", price: 450 },
-    { id: "horror", e: "👻", title: "Ужастик вдвоём", text: "Как с «Астралом»: фильм выбираем вместе, плед и свет на мне.", price: 180 },
-    { id: "kiss", e: "💋", title: "Целую тебя столько, пока мне не надоест", text: "Это уже для меня.", price: 240 },
-    { id: "wish", e: "🌠", title: "Одно желание", text: "Любое. В разумных пределах, но пределы обсуждаются.", price: 320 }
+    { id: "lapula", e: "🐈", title: "Свидание с Лапулей", text: "Приходишь ко мне гладить Лапулю сколько хочешь. Осталось только забрать.", price: 150 },
+    { id: "purr", e: "🎙️", title: "Лапуля мурчит тебе в голосовом", text: "Это очень дорого.", price: 650 },
+    { id: "horror", e: "👻", title: "Ужастик вдвоём", text: "Как с «Астралом»: фильм выбираем вместе, плед и свет на мне.", price: 260 },
+    { id: "kiss", e: "💋", title: "Целую тебя столько, пока мне не надоест", text: "Это уже для меня.", price: 350 },
+    { id: "wish", e: "🌠", title: "Одно желание", text: "Любое. В разумных пределах, но пределы обсуждаются.", price: 470 }
   ]
 };
 /* ============================================= */
@@ -1881,6 +1952,13 @@ const snd = {
   tick(k){ if (!canPlay("tick", 45)) return; const i = Math.max(0, Math.min(14, Math.round(k*15) - 1)), t = ctx.currentTime;
     fmBell({f:TICK15[i], t, ratio:2, index:.5, dur:.1 + (14 - i)*.004, peak:.03 + (14 - i)*.0012, send:.06});
     if (k >= 1) [1046.5, 1318.51, 1567.98].forEach((f, j) => fmBell({f, t:t + .03 + j*.018, ratio:2, index:.4, dur:.42, peak:.017, send:.22})); },
+  /* трещотка взвода: тон растёт, пока затвор открыт */
+  ratchet(k){ if (!canPlay("ratchet", 90)) return; const t = ctx.currentTime; noise({t, type:"bandpass", freq:2100 + k*1900, Q:5, envOpts:{a:.001, d:.012, peak:.055}}); voice({type:"square", f:300 + k*280, t, lp:1700, envOpts:{a:.001, d:.012, peak:.012}}); },
+  /* плёночная камера: две шторки затвора, потом протяжка плёнки */
+  camClick(){ if (!canPlay("cam", 200)) return; const t = ctx.currentTime;
+    noise({t, type:"highpass", freq:4200, Q:.8, envOpts:{a:.001, d:.018, peak:.2}}); voice({type:"sine", f:210, f2:70, glide:.05, t, envOpts:{a:.001, d:.07, peak:.14}});
+    noise({t:t + .062, type:"bandpass", freq:1700, Q:3, envOpts:{a:.001, d:.03, peak:.17}}); voice({type:"sine", f:150, f2:60, glide:.04, t:t + .062, envOpts:{a:.001, d:.05, peak:.09}});
+    for (let i = 0; i < 5; i++) noise({t:t + .2 + i*.046, type:"bandpass", freq:2600 + i*120, Q:6, envOpts:{a:.001, d:.011, peak:.045}}); },
   splash(){ if (!canPlay("splash", 230)) return; const t = ctx.currentTime; noise({t, type:"lowpass", freq:1100, Q:.8, envOpts:{a:.02, d:.16, peak:.035}}); noise({t:t + .03, type:"bandpass", freq:2600, Q:1.4, envOpts:{a:.01, d:.07, peak:.012}}); },
   over(k){ if (!canPlay("over", 60)) return; const i = Math.max(0, Math.min(4, Math.round(k*5) - 1)); fmBell({f:[1318.51,1567.98,1760,2093,2349.32][i], t:ctx.currentTime, ratio:3.5, index:1.1, dur:.2, peak:.05, send:.2}); },
   overWin(){ if (!canPlay("overwin", 300)) return; const t = ctx.currentTime;
@@ -2173,13 +2251,16 @@ document.addEventListener("pointercancel", unpress, {passive:true});
 /* =================== КОТИКИ =================== */
 function catSVG(c, opts={}){
   const fangs = opts.fangs !== false, k = c === CONFIG.alisa ? "a" : "l";
-  const eye = cx => `<g class="eye"><circle cx="${cx}" cy="102" r="12.5" fill="${c.eyes}"/><circle cx="${cx}" cy="102" r="12.5" fill="url(#eye-${k})"/><ellipse class="pup" cx="${cx}" cy="102" rx="4" ry="9.5" fill="#141014"/><circle cx="${cx+4.5}" cy="97" r="3.2" fill="#fff"/><circle cx="${cx-4}" cy="107" r="1.4" fill="#fff" opacity=".6"/><path class="lid" d="M${cx-13.5} 102 a13.5 13.5 0 0 1 27 0 Z" fill="${c.fur}"/></g>`;
+  const eye = cx => `<g class="eye"><circle cx="${cx}" cy="102" r="12.5" fill="${c.eyes}"/><circle cx="${cx}" cy="102" r="12.5" fill="url(#iris-${k})"/><circle cx="${cx}" cy="102" r="12.5" fill="url(#eye-${k})"/><circle cx="${cx}" cy="102" r="12" fill="none" stroke="#150c12" stroke-opacity=".4" stroke-width="1.3"/><ellipse class="pup" cx="${cx}" cy="102" rx="4" ry="9.5" fill="#141014"/><circle cx="${cx+4.5}" cy="97" r="5.2" fill="#fff" opacity=".16"/><circle cx="${cx+4.5}" cy="97" r="3.2" fill="#fff"/><circle cx="${cx+8.3}" cy="101.6" r="1.05" fill="#fff" opacity=".9"/><circle cx="${cx-4}" cy="107" r="1.4" fill="#fff" opacity=".6"/><path class="lid" d="M${cx-13.5} 102 a13.5 13.5 0 0 1 27 0 Z" fill="${c.fur}"/></g>`;
   return `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="rim-${k}" cx=".74" cy=".16" r=".78"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".45" stop-color="#fff" stop-opacity=".07"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
     <radialGradient id="shd-${k}" cx=".28" cy=".92" r=".85"><stop offset="0" stop-color="#0a0612" stop-opacity=".34"/><stop offset="1" stop-color="#0a0612" stop-opacity="0"/></radialGradient>
     <radialGradient id="eg-${k}" r=".5"><stop offset=".3" stop-color="${c.eyes}" stop-opacity=".7"/><stop offset="1" stop-color="${c.eyes}" stop-opacity="0"/></radialGradient>
     <radialGradient id="eye-${k}" cx=".5" cy=".62" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="iris-${k}" r=".5"><stop offset=".3" stop-color="#000" stop-opacity="0"/><stop offset=".76" stop-color="#2a1608" stop-opacity=".14"/><stop offset="1" stop-color="#2a1608" stop-opacity=".6"/></radialGradient>
+    <radialGradient id="vel-${k}" cx=".46" cy=".36" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#1a1226" stop-opacity="0"/><stop offset="1" stop-color="#1a1226" stop-opacity=".4"/></radialGradient>
+    <radialGradient id="fluff-${k}" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
   </defs>
   <path class="acc acc-cape" d="M42 142 Q100 120 158 142 L178 234 Q100 216 22 234 Z" fill="#5c0f1d"/>
   <path class="acc acc-cape" d="M54 134 Q100 114 146 134 L152 148 Q100 130 48 148 Z" fill="#8e1c2e"/>
@@ -2188,16 +2269,21 @@ function catSVG(c, opts={}){
   <ellipse cx="100" cy="186" rx="32" ry="34" fill="${c.shade}" opacity=".35"/>
   <ellipse cx="100" cy="174" rx="60" ry="54" fill="url(#shd-${k})"/>
   <ellipse cx="100" cy="174" rx="60" ry="54" fill="url(#rim-${k})"/>
+  <ellipse cx="100" cy="174" rx="60" ry="54" fill="url(#vel-${k})"/>
+  <ellipse cx="100" cy="158" rx="31" ry="25" fill="url(#fluff-${k})"/>
+  <path d="M147 141 A60 54 0 0 1 159 169" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/>
   <g class="paw pl"><ellipse cx="76" cy="222" rx="19" ry="10" fill="${c.fur}"/></g>
   <g class="paw pr"><ellipse cx="124" cy="222" rx="19" ry="10" fill="${c.fur}"/><g class="acc acc-ring"><circle cx="124" cy="216" r="6" fill="none" stroke="#f5c84c" stroke-width="3"/><rect x="121" y="206" width="6" height="6" fill="#4ea0ff" transform="rotate(45 124 209)"/></g></g>
-  <g class="ear el"><path d="M54 80 Q52 48 74 58 Z" fill="${c.fur}"/><path d="M60 72 Q60 56 72 61 Z" fill="#b99aa6"/></g>
-  <g class="ear er"><path d="M146 80 Q148 48 126 58 Z" fill="${c.fur}"/><path d="M140 72 Q140 56 128 61 Z" fill="#b99aa6"/></g>
+  <g class="ear el"><path d="M54 80 Q52 48 74 58 Z" fill="${c.fur}"/><path d="M60 72 Q60 56 72 61 Z" fill="#b99aa6"/><path d="M54.500 76 Q53 50 73 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g>
+  <g class="ear er"><path d="M146 80 Q148 48 126 58 Z" fill="${c.fur}"/><path d="M140 72 Q140 56 128 61 Z" fill="#b99aa6"/><path d="M145.500 76 Q147 50 127 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g>
   <ellipse cx="100" cy="104" rx="56" ry="48" fill="${c.fur}"/>
   <ellipse cx="74" cy="122" rx="20" ry="15" fill="${c.fur}"/>
   <ellipse cx="126" cy="122" rx="20" ry="15" fill="${c.fur}"/>
   <ellipse cx="100" cy="84" rx="34" ry="20" fill="#fff" opacity=".06"/>
   <ellipse cx="100" cy="104" rx="56" ry="48" fill="url(#shd-${k})"/>
   <ellipse cx="100" cy="104" rx="56" ry="48" fill="url(#rim-${k})"/>
+  <ellipse cx="100" cy="104" rx="56" ry="48" fill="url(#vel-${k})"/>
+  <path d="M66 66 A56 48 0 0 1 134 66" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/>
   <path d="M122 60 Q150 68 157 100" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="2" stroke-linecap="round"/>
   <path d="M86 68 Q100 62 114 68" stroke="${c.shade}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
   <path d="M90 76 Q100 72 110 76" stroke="${c.shade}" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".5"/>
@@ -2237,8 +2323,9 @@ const wearOf = k => k === "a" ? S.wearA : S.wearL;
 /* вещь работает, если она есть и надета хотя бы на одной из кошек */
 const wears = id => !!(S.owned[id] && ((S.wearA && S.wearA[id]) || (S.wearL && S.wearL[id])));
 const wornCount = () => ACCS.filter(wears).length;
-/* наряды прибавляют капли к каждой полной мурр-шкале: две вещи дают +1, пять вещей +2 */
-const wearBonus = () => { const n = wornCount(); return n >= 5 ? 2 : n >= 2 ? 1 : 0; };
+/* наряды прибавляют каплю к каждой полной мурр-шкале: три надетые вещи дают +1, больше не бывает.
+   Потолок: 2 капли за шкалу и 4 со сверхмурчанием, то есть не дешевле 5,5 поглаживания за каплю */
+const wearBonus = () => wornCount() >= 3 ? 1 : 0;
 /* перки: что надетая вещь меняет на уровне. Ключ внутри — номер уровня */
 const PERKS = {
   cape:   {1: "плащ прикроет от первой вербены", 6: "плащ прикроет от первой мыши"},
@@ -2250,6 +2337,8 @@ const PERKS = {
 };
 const perk = (id, n) => wears(id) && !!(PERKS[id] && PERKS[id][n]);
 const perksFor = n => ACCS.filter(id => perk(id, n)).map(id => ({id, e: WEAR.find(w => w.id === id).e, t: PERKS[id][n]}));
+/* вещи и подарки нарисованы своими значками в палитре игры, а не системными эмодзи */
+const icoHTML = id => '<svg class="icv" aria-hidden="true"><use href="#' + id + '"/></svg>';
 function putOn(k, id, on){ const w = wearOf(k); w[id] = !!on; if (on && EYEWEAR.includes(id)) EYEWEAR.forEach(x => { if (x !== id) w[x] = false; }); }
 const springPop = () => getComputedStyle(document.documentElement).getPropertyValue("--spring-pop").trim() || "ease-out";
 let lastWear = null;
@@ -2372,7 +2461,7 @@ const PETS_PER_DROP = 15;
 const moonNow = () => typeof fullMoon === "function" && fullMoon();
 const perDrop = () => Math.max(6, (moonNow() ? 8 : PETS_PER_DROP) - (wears("bow") ? 2 : 0));
 /* сверхмурчание: шкала полная, а гладить не перестали. Ещё OVER_NEED поглаживаний за OVER_MS удваивают капли */
-const OVER_NEED = 5, OVER_MS = 2600;
+const OVER_NEED = 9, OVER_MS = 3400;
 let over = null;
 let bubState = {txt: "мрр?", side: "alisa"}, bubT = 0, bubHide = 0;
 function catOf(side){ return document.querySelector(`#duo .pet[data-cat="${side}"] .cat`); }
@@ -2573,7 +2662,8 @@ function pet(el, e, soft){
   }
   { const m = $("#purr"), mr = m.getBoundingClientRect(), px = e && e.clientX ? e.clientX : centerOf(el)[0];
     m.style.setProperty("--px", Math.max(0, Math.min(mr.width, px - mr.left)).toFixed(0) + "px"); m.style.setProperty("--py", "0px");
-    m.classList.add("lit"); clearTimeout(m._lit); m._lit = setTimeout(() => m.classList.remove("lit"), 200); }
+    m.style.setProperty("--ex", Math.max(0, Math.min(mr.width, px - mr.left)).toFixed(0) + "px"); m.style.setProperty("--ey", "0px");
+    m.classList.add("lit", "edged"); clearTimeout(m._lit); m._lit = setTimeout(() => m.classList.remove("lit", "edged"), 260); }
   if (ov) snd.over(1 - (ov.left - 1)/OVER_NEED); else snd.tick(Math.min(1, S.purr/perDrop()));
   haptic(stroke ? 4 : 6);
   if (!purr) purr = startPurr(.22);
@@ -2885,7 +2975,9 @@ function openSettings(){
         swEl(S.day, "Кольцо дневного света", v => { S.day = v; applyLook(); save(); }, !S.owned.ring)),
       li("#i-note:#ff9aa8", "Музыка", "шкатулка на фоне", swEl(S.music, "Музыка", v => { S.music = v; save(); if (v) Music.start(0); else Music.stop(); })),
       li("#i-speaker:#9fc3ff", "Звуки", null, swEl(S.sound, "Звуки", v => { S.sound = v; save(); if (!v) Music.stop(); else if (S.music) Music.start(0); })),
-      li("#i-vibe:#c9a7ff", "Вибрация", "на iPhone лёгкий щелчок", swEl(S.vibe, "Вибрация", v => { S.vibe = v; save(); }))
+      li("#i-vibe:#c9a7ff", "Вибрация", "на iPhone лёгкий щелчок", swEl(S.vibe, "Вибрация", v => { S.vibe = v; save(); })),
+      li("#i-drop:#bfe0ff", "Эффект жидкого стекла", "шкала и кнопки преломляют небо. выключи, если игра идёт рывками",
+        swEl(!glassOff(), "Эффект жидкого стекла", v => { S.glass = v; if (v) try { sessionStorage.removeItem(GLASS_KEY); } catch(e){} save(); applyGlass(); }))
     );
     const crests = document.createElement("div"); crests.className = "crests"; crests.setAttribute("role","radiogroup"); crests.setAttribute("aria-label","Команда");
     TEAMS.forEach(t => {
@@ -3024,14 +3116,14 @@ function wearGrid(box, mode){
   box.innerHTML = "";
   const cap = document.createElement("p"); cap.className = "wcap"; cap.setAttribute("aria-live", "polite");
   const capText = w => { const m = wearBonus();
-    cap.textContent = w && w.p ? w.t + ": " + w.p + "." : "Надето вещей: " + wornCount() + ". " + (m ? "К каждой полной мурр-шкале +" + m + " " + plural(m, "капля", "капли", "капель") + "." : "Две надетые вещи добавят каплю к каждой полной мурр-шкале."); };
+    cap.textContent = w && w.p ? w.t + ": " + w.p + "." : "Надето вещей: " + wornCount() + ". " + (m ? "К каждой полной мурр-шкале +" + m + " " + plural(m, "капля", "капли", "капель") + "." : "Три надетые вещи добавят каплю к каждой полной мурр-шкале."); };
   WEAR.forEach(w => {
     const b = document.createElement("button"); b.className = "wit";
     const paint = () => {
       const tg = mode === "shared" ? ["a","l"] : wTargets(), on = S.owned[w.id] && tg.every(k => wearOf(k)[w.id]);
       b.className = "wit" + (on ? " on" : "") + (!S.owned[w.id] && !w.price ? " lock" : "");
       b.innerHTML = '<span class="e"></span><span class="n"></span>' + (S.owned[w.id] ? "" : w.price ? `<span class="pr num"><svg class="icf cur"><use href="#i-drop"/></svg>${w.price}</span>` : '<span class="pr">награда</span>');
-      b.querySelector(".e").textContent = w.e; b.querySelector(".n").textContent = w.t;
+      b.querySelector(".e").innerHTML = icoHTML("w-" + w.id); b.querySelector(".n").textContent = w.t;
       b.setAttribute("aria-label", w.t + (S.owned[w.id] ? (on ? ", надето" : "") : w.price ? `, ${w.price} капель` : ", " + w.s) + (w.p ? ". " + w.p : ""));
       b.setAttribute("aria-pressed", on ? "true" : "false");
     };
@@ -3228,7 +3320,7 @@ function perkPills(n){
   const list = perksFor(n); if (!list.length) return null;
   const box = document.createElement("div"); box.className = "perks";
   list.forEach(x => { const d = document.createElement("div"); d.className = "perk"; d.innerHTML = '<span class="e" aria-hidden="true"></span><span class="pt"></span>';
-    d.querySelector(".e").textContent = x.e; d.querySelector(".pt").textContent = x.t.charAt(0).toUpperCase() + x.t.slice(1); box.appendChild(d); });
+    d.querySelector(".e").innerHTML = icoHTML("w-" + x.id); d.querySelector(".pt").textContent = x.t.charAt(0).toUpperCase() + x.t.slice(1); box.appendChild(d); });
   return box;
 }
 function openEpisode(L){
@@ -3514,7 +3606,7 @@ function showView(id){
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.v === id));
   moveInd();
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
-  $("#stage").classList.toggle("home-on", id === "v-home");
+  $("#stage").classList.toggle("home-on", id === "v-home"); $("#world").dataset.cam = id;
   const v = document.getElementById(id); $("#ctitle").textContent = v.dataset.title || (S.event === "quarrel" ? "ссора" : "");
   if (id === "v-map") renderMap();
   if (id === "v-album") renderAlbum();
@@ -3730,7 +3822,7 @@ function phasePathD(f){ const th = (f < .5 ? f : 1 - f)*6.2832, c = Math.cos(th)
 function applyMoon(){
   const f = moonPhase(), lit = moonLit(f), p = document.querySelector("#moonPhase path");
   if (p){ p.setAttribute("d", phasePathD(f)); if (f < .5) p.removeAttribute("transform"); else p.setAttribute("transform", "scale(-1 1)"); }
-  const m = $("#moon"); m.style.setProperty("--lit", lit.toFixed(3));
+  const m = $("#moon"); m.style.setProperty("--lit", lit.toFixed(3)); $("#rays").style.setProperty("--lit", lit.toFixed(3));
   m.querySelector(".disc").style.boxShadow = `0 0 30px 6px rgba(243,227,176,${(.06 + .26*lit).toFixed(3)}),0 0 110px 36px rgba(243,227,176,${(.02 + .1*lit).toFixed(3)})`;
   const fm = fullMoon(); app.classList.toggle("fullmoon", fm); if (fm) dayNote().moon = 1;
   if ($("#purr")) renderPurr();
@@ -3851,13 +3943,13 @@ function renderDiaryCard(){
 
 /* =================== ПОДАРОК ОТ КОТИКА =================== */
 const GIFTS = [
-  {e: "🐭", who: "alisa",  t: "я поймала. это тебе"},
-  {e: "🪶", who: "lapula", t: "перо. от кого, не скажу"},
-  {e: "🧦", who: "lapula", t: "твой носок. был мой, теперь снова твой"},
-  {e: "🧶", who: "alisa",  t: "клубок. распутаешь сама"},
-  {e: "🍃", who: "alisa",  t: "лист. принесла на лапе"},
-  {e: "🎀", who: "lapula", t: "бантик. нашла под диваном"},
-  {e: "🌹", who: "alisa",  t: "роза. не спрашивай откуда"}
+  {e: "🐭", ic: "g-mouse", who: "alisa",  t: "я поймала. это тебе"},
+  {e: "🪶", ic: "g-feather", who: "lapula", t: "перо. от кого, не скажу"},
+  {e: "🧦", ic: "g-sock", who: "lapula", t: "твой носок. был мой, теперь снова твой"},
+  {e: "🧶", ic: "g-yarn", who: "alisa",  t: "клубок. распутаешь сама"},
+  {e: "🍃", ic: "g-leaf", who: "alisa",  t: "лист. принесла на лапе"},
+  {e: "🎀", ic: "w-bow", who: "lapula", t: "бантик. нашла под диваном"},
+  {e: "🌹", ic: "g-rose", who: "alisa",  t: "роза. не спрашивай откуда"}
 ];
 let giftTimer = 0;
 function queueGift(ms = 4000){ clearTimeout(giftTimer); giftTimer = setTimeout(maybeGift, ms); }
@@ -3870,7 +3962,7 @@ function maybeGift(){
   const G = GIFTS[S.giftNext], duo = $("#duo"), pet = duo.querySelector(`.pet[data-cat="${G.who}"]`); if (!pet) return;
   const pr = pet.getBoundingClientRect(), dr = duo.getBoundingClientRect();
   const b = document.createElement("button"); b.id = "gift"; b.className = "gift"; b.setAttribute("aria-label", "Подарок от " + (G.who === "alisa" ? "Алисы" : "Лапули"));
-  b.innerHTML = '<span class="e" aria-hidden="true"></span>'; b.querySelector(".e").textContent = G.e;
+  b.innerHTML = '<span class="e" aria-hidden="true"></span>'; b.querySelector(".e").innerHTML = icoHTML(G.ic);
   const x = pr.left - dr.left + pr.width*(G.who === "alisa" ? .13 : .87);
   b.style.left = ((x - 22)/dr.width*100).toFixed(2) + "%"; b.style.bottom = (dr.bottom - pr.bottom - 4).toFixed(1) + "px";
   duo.appendChild(b);
@@ -4041,7 +4133,7 @@ function openGiftBox(){
     GIFTS.forEach((G, i) => {
       const got = box[i], b = document.createElement("button"); b.className = "gslot" + (got ? "" : " empty");
       b.setAttribute("aria-label", got ? "Подарок " + G.e : "Ещё не подарено");
-      const e = document.createElement("span"); e.className = "e"; e.textContent = G.e; e.setAttribute("aria-hidden", "true");
+      const e = document.createElement("span"); e.className = "e"; e.innerHTML = icoHTML(G.ic); e.setAttribute("aria-hidden", "true");
       const s = document.createElement("small"); s.textContent = got ? (got.n > 1 ? "×" + got.n : new Date(got.first).toLocaleDateString("ru-RU", {day: "numeric", month: "short"}).replace(".", "")) : "?";
       b.append(e, s);
       b.onclick = () => {
@@ -5329,10 +5421,15 @@ function lvlForks(area, done){
   const CX = 80, GRAV = 2000, JUMP = -720, DUR = 30;
   let G = Math.round(C.H*.74), y = 0, vy = 0, onGround = true, logs = [], fish = [], drops = [], got = 0, lives = 3, time = DUR, inv = 0, sq = 0;
   let nextLog = 1.4, nextFish = .8, dist = 0, last = 0, raf, running = false, freeze = 0, clock = 0, runPh = 0, art = null, artKey = "";
+  /* Тэн: с 12-й по 20-ю секунду тучи расходятся. Рыбки идут вдвое чаще и стоят две, пока Лапуля не задела бревно; в воздухе можно прыгнуть второй раз */
+  const GUST0 = 12, GUST1 = 20; let gust = 0, gustClean = true, airJump = 0;
   for (let i=0;i<80;i++) drops.push({x: Math.random()*C.W*1.2, y: Math.random()*C.H, z: Math.random() < .35 ? 1 : 0});
   const upd = () => stat(chip("🐟", got) + chip("❤️", Math.max(0,lives)) + chip("⏱️", Math.ceil(time)));
   upd();
-  function jump(){ if (!running || !onGround) return; vy = JUMP; onGround = false; snd.jump(); haptic(8); sq = -1; }
+  function jump(){ if (!running) return;
+    if (!onGround){ if (gust !== 1 || airJump < 1) return; airJump = 0; vy = JUMP*.84; snd.jump(); haptic(8); sq = -1;
+      const r0 = cv.getBoundingClientRect(); FX.burst(r0.left + CX, r0.top + G + y - 10, {emojis:["✨"], n:5, size:[10,16], grav:240}); return; }
+    vy = JUMP; onGround = false; airJump = 1; snd.jump(); haptic(8); sq = -1; }
   const pd = e => { if (e.target.closest && e.target.closest(".overlay")) return; jump(); };
   area.addEventListener("pointerdown", pd);
   const kd = e => { if (e.code === "Space" || e.key === "ArrowUp"){ e.preventDefault(); jump(); } };
@@ -5340,6 +5437,7 @@ function lvlForks(area, done){
   /* небо, луна и виньетка неподвижны: их рисует CSS под холстом и над ним, холст их не перерисовывает */
   const sky = document.createElement("div"); sky.className = "fsky"; sky.innerHTML = "<i></i>"; area.insertBefore(sky, cv); cv.style.position = "relative";
   const vig = document.createElement("div"); vig.className = "fvig"; cv.after(vig);
+  const gl = document.createElement("div"); gl.className = "fgust"; sky.after(gl);
   /* слои леса живут в DOM и двигаются transform: это делает композитор, холст рисует только бревна, рыбок, Лапулю и дождь */
   let par = null, layers = [];
   function buildLayers(){
@@ -5382,6 +5480,7 @@ function lvlForks(area, done){
     g.fillStyle = CONFIG.lapula.shade; g.beginPath(); g.ellipse(CX - 33, G - 27 + y, 10, 5, -.6 + Math.sin(runPh*.5)*.18, 0, 7); g.fill();
     drawCatCanvas(g, CX + 18, G - 23 + y, CONFIG.lapula, .74);
     g.restore();
+    if (gust === 1 && !reduced()){ g.fillStyle = "#fff"; for (let i = 0; i < 5; i++){ const a = clock*3 + i*1.26, r = 1.2 + 1.4*Math.abs(Math.sin(clock*5 + i*2.1)); g.globalAlpha = .35 + .55*Math.abs(Math.sin(clock*4 + i)); g.beginPath(); g.arc(CX - 4 + Math.cos(a)*34, G - 22 + y + Math.sin(a*1.3)*20, r, 0, 6.2832); g.fill(); } g.globalAlpha = 1; }
     /* дождь в два слоя: дальний тоньше и медленнее */
     g.lineCap = "round";
     [[0, "rgba(185,205,220,.16)", 1, 9], [1, "rgba(205,222,238,.3)", 1.3, 16]].forEach(([z, col, lw, len]) => {
@@ -5392,40 +5491,44 @@ function lvlForks(area, done){
     const dt = Math.min(.04, (now - last)/1000); last = now;
     if (freeze > 0){ freeze -= dt; raf = requestAnimationFrame(frame); return; }
     time -= dt; const k = 1 - time/DUR, speed = 230 + 120*k; dist += speed*dt;
+    const el = DUR - time;
+    if (gust === 0 && el >= GUST0){ gust = 1; gustClean = true; gl.classList.add("on"); snd.collect(true); haptic([10, 40, 10]); flashBanner(area, "Сумеречный порыв: рыбки ×2, в воздухе второй прыжок", 2800); }
+    else if (gust === 1 && el >= GUST1){ gust = 2; gl.classList.remove("on"); }
+    const gm = gust === 1 ? 1.9 : 1;
     const wasAir = !onGround;
     vy += GRAV*dt; y += vy*dt;
     if (y >= 0){ y = 0; vy = 0; if (wasAir){ snd.land(.5); sq = 1; } onGround = true; }
     if (sq > 0) sq = Math.max(0, sq - dt*5); if (sq < 0) sq = Math.min(0, sq + dt*3);
     if (inv > 0) inv -= dt;
     clock += dt; if (onGround) runPh += dt*speed/13;
-    drops.forEach(d => { d.y += (d.z ? 640 : 400)*dt; d.x -= (d.z ? 190 : 100)*dt; if (d.y > C.H || d.x < -20){ d.y = -16 - Math.random()*40; d.x = Math.random()*C.W*1.3; } });
+    drops.forEach(d => { d.y += (d.z ? 640 : 400)*dt*gm; d.x -= (d.z ? 190 : 100)*dt*gm*1.3; if (d.y > C.H || d.x < -20){ d.y = -16 - Math.random()*40; d.x = Math.random()*C.W*1.3; } });
     nextLog -= dt; nextFish -= dt;
     if (nextLog <= 0){ logs.push({x: C.W + 10, w: 44, h: 30}); nextLog = 1.25 + Math.random()*.9 - .3*k; }
-    if (nextFish <= 0){ fish.push({x: C.W + 10, y: G - 74 - Math.random()*70}); nextFish = .9 + Math.random()*.9; }
+    if (nextFish <= 0){ fish.push({x: C.W + 10, y: G - 74 - Math.random()*(gust === 1 ? 125 : 70)}); nextFish = (.9 + Math.random()*.9)*(gust === 1 ? .55 : 1); }
     logs.forEach(l => l.x -= speed*dt); fish.forEach(f => f.x -= speed*dt);
     const top = G - 38 + y, bottom = G + y, left = CX - 30, right = CX + 36, r0 = cv.getBoundingClientRect();
     logs = logs.filter(l => {
-      if (inv <= 0 && right > l.x + 8 && left < l.x + l.w - 8 && bottom > G - l.h + 6){ lives--; inv = 1.2; snd.bonk(); haptic(40); freeze = .07; shake(area, 10); upd(); FX.burst(r0.left+CX, r0.top+G-30, {emojis:["💫"],n:3}); }
+      if (inv <= 0 && right > l.x + 8 && left < l.x + l.w - 8 && bottom > G - l.h + 6){ lives--; inv = 1.2; if (gust === 1) gustClean = false; snd.bonk(); haptic(40); freeze = .07; shake(area, 10); upd(); FX.burst(r0.left+CX, r0.top+G-30, {emojis:["💫"],n:3}); }
       return l.x > -80;
     });
     fish = fish.filter(f => {
       if (TIARA && !onGround && Math.abs(f.x - (CX + 8)) < 110) f.y += ((top + bottom)/2 - 14 - f.y)*Math.min(1, dt*5);
-      if (Math.abs(f.x - (CX + 8)) < (TIARA ? 64 : 36) && f.y > top - (TIARA ? 60 : 42) && f.y < bottom + (TIARA ? 10 : 0)){ got++; snd.combo(); haptic(6); upd(); FX.burst(r0.left+f.x, r0.top+f.y, {emojis:["✨"],n:4,size:[10,16],grav:200}); popNum("+1", r0.left+f.x, r0.top+f.y-20); return false; }
+      if (Math.abs(f.x - (CX + 8)) < (TIARA ? 64 : 36) && f.y > top - (TIARA ? 60 : 42) && f.y < bottom + (TIARA ? 10 : 0)){ const v = gust === 1 && gustClean ? 2 : 1; got += v; snd.combo(); haptic(6); upd(); FX.burst(r0.left+f.x, r0.top+f.y, {emojis:["✨"],n:4,size:[10,16],grav:200}); popNum("+" + v, r0.left+f.x, r0.top+f.y-20); return false; }
       return f.x > -30;
     });
     draw();
     if (Math.floor(time*10) % 5 === 0) upd();
     if (lives <= 0 || time <= 0){
       running = false;
-      const st = lives <= 0 ? 0 : got >= 9 ? 3 : got >= 5 ? 2 : 1;
-      done(st, lives <= 0 ? "Брёвна оказались сильнее. Попробуй ещё." : "Лапуля добежала и поймала рыбок: " + got + ". Три звезды с 9.");
+      const st = lives <= 0 ? 0 : got >= 10 ? 3 : got >= 6 ? 2 : 1;
+      done(st, lives <= 0 ? "Брёвна оказались сильнее. Попробуй ещё." : "Лапуля добежала и поймала рыбок: " + got + ". Три звезды с 10.");
       return;
     }
     raf = requestAnimationFrame(frame);
   }
   draw();
-  area.__run = () => ({logs, y, CX, G, speed: 230 + 120*(1 - time/DUR), onGround, running});
-  intro(area, LEVELS[4], "Лапуля бежит через лес Форкса. Тапни по экрану (или пробел), чтобы прыгнуть через бревно 🪵. В прыжке лови рыбок 🐟. Продержись 30 секунд: после трёх ударов забег окончен.", () => {
+  area.__run = () => ({logs, fish, y, CX, G, speed: 230 + 120*(1 - time/DUR), onGround, running, gust, got, lives, time});
+  intro(area, LEVELS[4], "Лапуля бежит через лес Форкса. Тапни по экрану (или пробел), чтобы прыгнуть через бревно 🪵. В прыжке лови рыбок 🐟. В середине забега тучи разойдутся: рыбки ×2 и второй прыжок в воздухе. Продержись 30 секунд: после трёх ударов забег окончен.", () => {
     running = true; snd.resetCombo(); raf = requestAnimationFrame(t => { last = t; frame(t); });
   });
   return () => { running = false; cancelAnimationFrame(raf); removeEventListener("resize", C.fit); removeEventListener("keydown", kd); };
@@ -6095,6 +6198,7 @@ function lvlShot(area, done){
   const inFrame = (x, y) => { const f = frameRect(); return x >= f.x && x <= f.x + f.w && y >= f.y && y <= f.y + f.h; };
   function setOpen(v){
     if (phase !== "run" || v === open) return; open = v; shutterSnd(v); haptic(v ? 12 : 6); if (v) openT = 0;
+    clearInterval(setOpen.iv); if (v) setOpen.iv = setInterval(() => { if (!open || phase !== "run" || ended || !cv.isConnected) return clearInterval(setOpen.iv); snd.ratchet(Math.min(1, openT/4)); haptic(3); }, 180);
     lights.forEach((l, i) => prevPos[i] = [l.x, l.y]);
   }
   function score(){
@@ -6118,8 +6222,9 @@ function lvlShot(area, done){
       slots[i].animate([{transform:"translateY(-40px) scale(1.25) rotate(-6deg)", opacity:0}, {transform:"none", opacity:1}], {duration:800, easing: getComputedStyle(document.documentElement).getPropertyValue("--spring-pop").trim() || "ease-out"}); }
   }
   function finishShot(){
-    phase = "done"; if (open){ open = false; shutterSnd(false); }
-    const m = score(); scores.push(m); flash = 1; snd.collect(m > .7);
+    phase = "done"; clearInterval(setOpen.iv); if (open) open = false;
+    const m = score(); scores.push(m); flash = .7; snd.camClick(); haptic([14, 45, 10]); setTimeout(() => snd.collect(m > .7), 430);
+    if (!reduced()){ const fl = document.createElement("div"); fl.className = "flash"; area.appendChild(fl); fl.animate([{opacity: 0}, {opacity: .5, offset: .12}, {opacity: 0}], {duration: 460, easing: "ease-out"}).onfinish = () => fl.remove(); }
     if (Math.round(m*100) > (S.bestShot || 0)){ S.bestShot = Math.round(m*100); save(); }
     develop(shot, m);
     setTimeout(() => { if (ended) return; if (shot < 2) setupShot(shot + 1); else end(); }, 1700);
@@ -6618,24 +6723,25 @@ function bindDuo(root){
   root.querySelectorAll(".cat").forEach(blinkLoop);
 }
 ["pointerup", "pointercancel", "blur"].forEach(t => addEventListener(t, stopKnead));
-/* стекло стоит дорого на старых телефонах. Меряем кадры на главной: два плохих окна подряд по 2 с выключают его на три дня.
-   Плохое окно — это рывки (каждый восьмой кадр дольше 50 мс) или меньше 24 кадров в секунду. Ровные 30 кадров режима энергосбережения рывками не считаются */
+/* стекло стоит дорого на старых телефонах. Меряем кадры на главной, только пока вкладка видна и песня не открыта:
+   если средняя частота держится ниже 34 кадров дольше трёх секунд подряд, стекло гаснет до перезагрузки вкладки.
+   Ручной переключатель в настройках главнее: выключенное там не включается само, включённое сбрасывает автоотключение */
+const GLASS_KEY = "alisa-lowfx";
+function glassOff(){ let auto = false; try { auto = sessionStorage.getItem(GLASS_KEY) === "1"; } catch(e){} return S.glass === false || auto; }
+function applyGlass(){ app.classList.toggle("lowfx", glassOff()); }
 (function glassGuard(){
-  const KEEP = 3*864e5; if (S.lowfxAt && Date.now() - S.lowfxAt < KEEP){ app.classList.add("lowfx"); return; }
-  let bad = 0, n = 0, t0 = 0, last = 0, long = 0;
-  const live = () => !document.hidden && homeLive() && !reduced();
+  delete S.lowfxAt; applyGlass();
+  let t0 = 0, n = 0, low = 0;
+  const live = () => !document.hidden && homeLive() && !reduced() && !document.querySelector(".song-sheet") && S.glass !== false;
   function frame(now){
-    if (app.classList.contains("lowfx")) return;
-    if (!live()){ n = 0; t0 = 0; last = 0; setTimeout(() => requestAnimationFrame(frame), 1500); return; }
-    if (!t0){ t0 = now; last = now; n = 0; long = 0; } else { if (now - last > 50) long++; last = now; n++; }
-    if (now - t0 >= 2000){ const avg = (now - t0)/Math.max(1, n), poor = avg > 42 || long/Math.max(1, n) > .125;
-      if (poor) bad++; else bad = 0;
-      if (bad >= 2){ app.classList.add("lowfx"); S.lowfxAt = Date.now(); save(); return; }
-      t0 = 0; if (!poor && ++frame.ok >= 3) return;              /* три хороших окна: телефон справляется, больше не меряем */
-    }
+    if (app.classList.contains("lowfx")){ setTimeout(() => requestAnimationFrame(frame), 4000); t0 = 0; low = 0; return; }
+    if (!live()){ t0 = 0; low = 0; setTimeout(() => requestAnimationFrame(frame), 1500); return; }
+    if (!t0 || now - t0 > 1400){ t0 = now; n = 0; low = 0; }        /* разрыв в кадрах (свернули, шторка iOS): начинаем заново */
+    else { n++; if (now - t0 >= 1000){ const fps = n*1000/(now - t0); low = fps < 34 ? low + (now - t0) : 0; t0 = now; n = 0;
+      if (low > 3000){ try { sessionStorage.setItem(GLASS_KEY, "1"); } catch(e){} applyGlass(); } } }
     requestAnimationFrame(frame);
   }
-  frame.ok = 0; setTimeout(() => requestAnimationFrame(frame), 5000);
+  setTimeout(() => requestAnimationFrame(frame), 5000);
 })();
 function renderAll(){ applyLook(); applyEvent(); applySeason(); hud(); applyMoon(); applyHouseTime(); applyWeather(); applyGuest(); showView(document.querySelector(".view.on").id); }
 app.addEventListener("scroll", () => { if (app.scrollTop || app.scrollLeft){ app.scrollTop = 0; app.scrollLeft = 0; } });
@@ -6649,6 +6755,10 @@ $("#duo").innerHTML = duoHTML(); bindDuo($("#duo"));
 document.querySelectorAll("#duo .pet").forEach(p => p.insertAdjacentHTML("beforeend", '<span class="zz" aria-hidden="true">z</span><span class="zz" aria-hidden="true">z</span>'));
 $("#splashDuo").innerHTML = duoHTML(); $("#splashDuo").querySelectorAll(".cat").forEach(blinkLoop);
 $("#btnSettings").onclick = openSettings;
+/* блик на кромке дока идёт за пальцем */
+{ const dk = $("#dock"), at = e => { const r = dk.getBoundingClientRect(); dk.style.setProperty("--ex", (e.clientX - r.left).toFixed(0) + "px"); dk.style.setProperty("--ey", (e.clientY - r.top).toFixed(0) + "px"); dk.classList.add("edged"); };
+  dk.addEventListener("pointerdown", at, {passive: true}); dk.addEventListener("pointermove", e => { if (e.buttons || e.pointerType === "touch") at(e); }, {passive: true});
+  ["pointerup", "pointercancel", "pointerleave"].forEach(t => dk.addEventListener(t, () => dk.classList.remove("edged"), {passive: true})); }
 $("#btnWardrobe").onclick = openWardrobe;
 $("#btnShop").onclick = openShop;
 $("#btnPlay").onclick = () => showView("v-map");
