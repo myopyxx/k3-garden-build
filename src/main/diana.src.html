@@ -31,6 +31,11 @@
   --serif:"Cormorant Garamond",Georgia,serif;
   --emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
   --tab-h:70px;
+  /* три класса пружин по массе, жёсткости и затуханию: док (m 1, k 540, c 28, перелёт 9 %, 430 мс),
+     стекло (m 1, k 340, c 31, перелёт 0,8 %, 440 мс), камера (m 1,5, k 150, c 30, без перелёта, 850 мс) */
+  --spring-dock: linear(0, 0.055, 0.187, 0.357, 0.533, 0.695, 0.832, 0.938, 1.014, 1.061, 1.086, 1.093, 1.088, 1.076, 1.061, 1.044, 1.029, 1.016, 1.006, 0.999, 0.994, 0.992, 0.991, 0.992, 0.993, 0.994, 0.996, 0.997, 1);
+  --spring-glass: linear(0, 0.036, 0.121, 0.232, 0.35, 0.466, 0.573, 0.666, 0.746, 0.811, 0.864, 0.905, 0.937, 0.961, 0.978, 0.99, 0.998, 1.003, 1.006, 1.007, 1.008, 1.007, 1.007, 1.006, 1.005, 1.004, 1.003, 1.003, 1);
+  --spring-cam: linear(0, 0.038, 0.124, 0.231, 0.343, 0.448, 0.544, 0.627, 0.698, 0.757, 0.806, 0.846, 0.878, 0.904, 0.925, 0.942, 0.954, 0.965, 0.973, 0.979, 0.984, 0.987, 0.99, 0.993, 0.994, 0.996, 0.997, 0.997, 1);
   --spring-smooth: linear(0, 0.06, 0.186, 0.329, 0.466, 0.584, 0.682, 0.76, 0.821, 0.868, 0.903, 0.929, 0.949, 0.963, 0.973, 0.981, 0.986, 0.99, 0.993, 0.995, 0.997, 0.998, 0.998, 0.999, 0.999, 0.999, 1, 1, 1, 1, 1, 1, 1);
   --spring-soft: linear(0, 0.064, 0.21, 0.387, 0.561, 0.713, 0.834, 0.924, 0.984, 1.021, 1.04, 1.046, 1.044, 1.038, 1.03, 1.022, 1.014, 1.009, 1.004, 1.001, 0.999, 0.998, 0.998, 0.998, 0.998, 0.999, 0.999, 0.999, 1, 1, 1, 1, 1);
   --spring-pop: linear(0, 0.054, 0.188, 0.366, 0.555, 0.734, 0.888, 1.007, 1.091, 1.141, 1.161, 1.16, 1.142, 1.115, 1.085, 1.054, 1.027, 1.006, 0.99, 0.98, 0.975, 0.973, 0.975, 0.979, 0.984, 0.989, 0.994, 0.998, 1.001, 1.003, 1.004, 1.004, 1.004, 1.004, 1.003, 1.002, 1);
@@ -38,7 +43,7 @@
   --glass-drop:0 10px 30px rgba(0,0,0,.28),0 2px 6px rgba(0,0,0,.16);
 }
 @supports not (animation-timing-function: linear(0, 1)){
-  :root{ --spring-pop:cubic-bezier(.34,1.56,.64,1); --spring-soft:cubic-bezier(.34,1.3,.64,1); --spring-smooth:cubic-bezier(.2,.8,.2,1); }
+  :root{ --spring-dock:cubic-bezier(.34,1.4,.64,1); --spring-glass:cubic-bezier(.3,1.05,.5,1); --spring-cam:cubic-bezier(.2,.8,.2,1); --spring-pop:cubic-bezier(.34,1.56,.64,1); --spring-soft:cubic-bezier(.34,1.3,.64,1); --spring-smooth:cubic-bezier(.2,.8,.2,1); }
 }
 body.team-stefan{--accent:#2f7556;--accent-hi:#86dcae;--accent-lo:#123326;--tint-a:rgba(90,190,140,.55);--tint-b:rgba(20,90,60,.72)}
 body.team-edward{--accent:#9a7414;--accent-hi:#e6c060;--accent-lo:#2e2206;--tint-a:rgba(230,190,90,.55);--tint-b:rgba(120,86,10,.74)}
@@ -454,7 +459,7 @@ canvas.c{display:block;width:100%;height:100%}
 .edge-bot{-webkit-backdrop-filter:none;backdrop-filter:none}
 .edge-top{visibility:hidden}
 .edge-top.on{visibility:visible}
-.app.sheet-on .stage :is(.hudcap,.round,.hgroup,.tabs,.dock,.mini,.seg){-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(46,32,62,.86)}
+.app.sheet-on .stage :is(.hudcap,.round,.hgroup,.tabs,.dk.lg,.mini,.seg){-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(46,32,62,.86)}
 .app.game-on .stage{visibility:hidden}
 .app.game-on .world *{animation-play-state:paused}
 .sheet .btn,.panel .btn,.sheet .chip{-webkit-backdrop-filter:none;backdrop-filter:none}
@@ -725,8 +730,8 @@ body.day .moon .shade{opacity:0}
 .mconfirm:disabled{opacity:.35}
 
 @media (prefers-reduced-transparency:reduce){
-  .lg,.btn.ghost,.chip,.round,.tabs,.meter,.panel,.lvbanner,.sheet,.bubble,.edge-top,.edge-bot,.viewer,.overlay,.dock,.mini,.seg{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-  .lg,.btn.ghost,.chip,.round,.tabs,.meter,.panel,.lvbanner,.bubble,.dock,.mini,.seg{background:rgba(40,28,54,.97)}
+  .lg,.btn.ghost,.chip,.round,.tabs,.meter,.panel,.lvbanner,.sheet,.bubble,.edge-top,.edge-bot,.viewer,.overlay,.mini,.seg{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  .lg,.btn.ghost,.chip,.round,.tabs,.meter,.panel,.lvbanner,.bubble,.mini,.seg{background:rgba(40,28,54,.97)}
   .sheet{background:rgba(30,20,42,.98)}
   .btn{background:var(--accent)}
 }
@@ -857,7 +862,10 @@ svg.sti{width:1em;height:1em;display:block}
 .meter.over .dropl{animation:dropBeat .5s ease-in-out infinite;filter:sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.25)}
 .meter.overwin{animation:bump .7s var(--spring-pop)}
 @media (prefers-reduced-motion:reduce){.meter.over .dropl{animation:none}}
-.cat .pup{transform:translate(var(--gx,0px),var(--gy,0px));transition:transform .34s cubic-bezier(.2,.9,.3,1)}
+.cat .pup{transform:translate(var(--gx,0px),var(--gy,0px));transition:transform .16s cubic-bezier(.2,.9,.3,1)}
+/* сначала глаза, потом тело: корпус наклоняется к пальцу с задержкой 60 мс и доезжает пружиной */
+#duo .cat .turn{translate:calc(var(--gn,0)*1.6px) calc(var(--gm,0)*.8px);rotate:calc(var(--gn,0)*1.3deg);transition:transform 1s var(--spring-soft),translate .5s var(--spring-soft) .06s,rotate .5s var(--spring-soft) .06s}
+@media (prefers-reduced-motion:reduce){#duo .cat .turn{translate:none;rotate:none}}
 .cat.sleep .eye{transform:scaleY(.08);transition:transform 1.1s ease}
 .cat.sleep .breathe{animation-duration:4.8s}
 .cat.slowblink .eye{animation:slowBlink 1.5s ease-in-out}
@@ -1078,7 +1086,34 @@ body.day .moon .phase{opacity:0}
 /* дневник */
 .ndot{flex:none;width:9px;height:9px;border-radius:5px;background:#ff5d7a;box-shadow:0 0 10px rgba(255,93,122,.7)}
 #diaryG{margin:2px 0 14px}
-.diary{padding:0 2px 10px}
+.diary{position:relative;padding:4px 12px 14px 22px;margin:6px 0 0;border-radius:6px 16px 16px 6px;background:linear-gradient(90deg,rgba(0,0,0,.34),rgba(0,0,0,0) 16px),linear-gradient(180deg,rgba(64,44,86,.5),rgba(34,22,50,.5));
+  box-shadow:inset 0 0 0 .5px rgba(245,200,76,.26),inset 9px 0 0 -8px rgba(245,200,76,.34),0 10px 26px rgba(6,3,14,.35)}
+.diary::before{content:"";position:absolute;inset:7px 7px 7px 15px;border:.5px solid rgba(245,200,76,.2);border-radius:3px 11px 11px 3px;pointer-events:none}
+.diary:empty{display:none}
+.dday{position:relative;transition:background .5s}
+.dday.vsel::after{content:"";position:absolute;left:-9px;top:20px;width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px 2px rgba(245,200,76,.5)}
+.dday.vsel h5{color:#f6dc9a}
+.volv{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 16px;margin:2px 0 4px}
+.volv .vdisc{grid-row:1/3;border-radius:50%}
+.volv .vinfo{align-self:end}
+.volv .vnow{align-self:start;margin-top:4px}
+.vdisc{width:156px;height:156px;border-radius:50%;touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none;transition:scale .43s var(--spring-dock)}
+.vdisc.held{cursor:grabbing;scale:1.03}
+.vdisc svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 8px 18px rgba(6,3,14,.5))}
+.vrim{fill:#1e1434;stroke:rgba(245,200,76,.55);stroke-width:1.2}
+.vticks line{stroke:rgba(245,200,76,.6);stroke-width:1;stroke-linecap:round}
+.vfull circle{filter:drop-shadow(0 0 3px rgba(243,227,176,.9))}
+.vplate{fill:#2c1d47;stroke:rgba(245,200,76,.5);stroke-width:1}
+.vrays line{stroke:rgba(245,200,76,.26);stroke-width:.8;stroke-linecap:round}
+.varm{fill:#f1cf7a}.vgem{fill:#fff3cf;filter:drop-shadow(0 0 3px rgba(255,236,170,.95))}
+.vwin{fill:#0f0a1e}.vwinrim{fill:none;stroke:rgba(245,200,76,.7);stroke-width:1.4}
+.vinfo{min-width:0}
+.vinfo b{display:block;font:400 30px/1 var(--script);color:var(--ink)}
+.vinfo span{display:block;margin-top:7px;font:600 11.5px/1.3 var(--ui);color:var(--muted)}
+.vinfo em{display:block;min-height:32px;margin-top:6px;font:500 italic 16px/1.2 var(--serif);color:#f1cf7a;text-wrap:balance}
+.vnow.off{visibility:hidden}
+.vnow{grid-column:2;justify-self:start;min-height:36px;padding:0 14px;border-radius:999px;font:600 11.5px/1 var(--ui);color:#ffe9b8;background:rgba(245,200,76,.14);box-shadow:inset 0 0 0 .5px rgba(245,200,76,.4)}
+.volv.vfullon .vwinrim{stroke:#ffe9b0;filter:drop-shadow(0 0 5px rgba(255,236,170,.8))}
 .dday{padding:16px 2px 14px;border-top:.5px solid var(--sep)}
 .dday:first-child{border-top:0;padding-top:2px}
 .dday h5{font:400 34px/1 var(--script);color:var(--ink);margin:0}
@@ -1474,30 +1509,50 @@ html,body{background:#0f0a17}
 .gift .e .icv{width:32px;height:32px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 .wit:not(.on):not(.own) .e .icv{opacity:.92}
 .perk .e .icv{width:18px;height:18px}
-/* три кнопки одним парящим доком: под котиками остаётся больше неба */
-#v-home .dock{position:relative;margin-top:12px;width:100%;max-width:340px;gap:6px;padding:6px;border-radius:36px}
-#v-home .dk{width:80px;height:60px;border-radius:30px;gap:5px;font:600 11px/1 var(--ui);color:rgba(255,255,255,.92)}
+/* док: три стеклянные кнопки с кошачьими ушками, золотым кантом и лапкой в углу. Ушки дёргаются под пальцем */
+#v-home .dock{position:relative;margin-top:22px;width:100%;max-width:340px;gap:10px;padding:0;border-radius:0;align-items:flex-end}
+#v-home .dk{flex:1 1 0;width:auto;height:60px;border-radius:22px;gap:5px;font:600 11px/1 var(--ui);color:rgba(255,255,255,.94);
+  --ear-fill:#5b4a7c;box-shadow:inset 0 0 0 1.2px rgba(245,200,76,.42),0 10px 22px rgba(8,4,18,.4);transition:transform .43s var(--spring-dock),background .25s}
+#v-home .dk.pressed{transform:scale(1.05,.93);transition-duration:60ms}
 #v-home .dk svg.ico{width:22px;height:22px;opacity:.95}
-#v-home .dk.play{flex:1;width:auto;min-height:60px;height:60px;font:600 16px/1 var(--ui);gap:9px}
-#v-home .dk.play svg{width:20px;height:20px}
-.app.lowfx #v-home .dock{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(180deg,rgba(98,72,126,.66),rgba(56,39,80,.7))}
+#v-home .dk.play{flex:1.3 1 0;min-height:66px;height:66px;border-radius:24px;font:600 16px/1 var(--ui);gap:9px;--ear-fill:var(--tint-a);--ear-rim:rgba(255,226,150,.85);--ear-in:rgba(255,214,224,.55);
+  box-shadow:inset 0 1px .5px rgba(255,255,255,.55),inset 0 0 0 1.5px rgba(255,216,130,.7),0 10px 24px rgba(8,4,18,.42),0 0 26px -6px var(--tint-a)}
+#v-home .dk.play svg.icf{width:20px;height:20px}
+.dk .ear{position:absolute;top:-11px;left:9px;width:25px;height:17px;overflow:visible;pointer-events:none;transform-origin:50% 100%;transition:rotate .43s var(--spring-dock)}
+.dk .ear.r{left:auto;right:9px;transform:scaleX(-1)}
+.dk.play .ear{top:-12px;width:28px;height:19px;left:11px}
+.dk.play .ear.r{left:auto;right:11px}
+.dk.pressed .ear.l{rotate:-12deg;transition-duration:60ms}
+.dk.pressed .ear.r{rotate:12deg;transition-duration:60ms}
+.dk .pawb{position:absolute;right:7px;bottom:6px;width:11px;height:11px;fill:#ff9db8;opacity:.6;pointer-events:none}
+.dk.play .pawb{fill:#ffe1e8;opacity:.55;right:9px;bottom:8px}
+.app.lowfx #v-home .dk.lg{-webkit-backdrop-filter:none;backdrop-filter:none;background:linear-gradient(180deg,rgba(98,72,126,.9),rgba(56,39,80,.92))}
 /* золотой кант стекла: светится там, где палец */
 .edge{position:absolute;inset:0;border-radius:inherit;padding:1.2px;pointer-events:none;opacity:.3;transition:opacity .45s ease;
   background:radial-gradient(150px circle at var(--ex,50%) var(--ey,0%),rgba(255,236,180,.95),rgba(243,207,114,.4) 45%,rgba(243,207,114,0) 78%);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
 .edged > .edge{opacity:1;transition-duration:.08s}
-@media (max-height:700px){#v-home .dock{margin-top:9px;padding:5px}#v-home .dk,#v-home .dk.play{height:54px;min-height:54px}}
+@media (max-height:700px){#v-home .dock{margin-top:17px}#v-home .dk{height:52px}#v-home .dk.play{height:56px;min-height:56px}}
 /* камера: у каждой вкладки свой уголок сада. Слои едут с разной скоростью, поэтому сдвиг читается как панорама */
-#world .stars,#world .moon,#world .rays,#world .ridge{transition:translate 1.1s var(--spring-soft)}
-#world .stars{translate:calc(var(--cx,0px)*.12) calc(var(--cy,0px)*.12)}
-#world .moon,#world .rays{translate:calc(var(--cx,0px)*.2) calc(var(--cy,0px)*.2)}
-#world .ridge.far{translate:calc(var(--cx,0px)*.4) calc(var(--cy,0px)*.25)}
-#world .ridge.mid{translate:calc(var(--cx,0px)*.7) calc(var(--cy,0px)*.4)}
-#world .ridge.near{translate:var(--cx,0px) calc(var(--cy,0px)*.55)}
-#world[data-cam="v-wardrobe"]{--cx:-12px;--cy:8px}
-#world[data-cam="v-map"]{--cx:6px;--cy:22px}
-#world[data-cam="v-album"]{--cx:-14px;--cy:5px}
-#world[data-cam="v-awards"]{--cx:14px;--cy:12px}
+/* камера диорамы: у каждой вкладки и у листов гардероба и лавки своя точка съёмки.
+   --cx/--cy сдвигают мир, --cz приближает холмы, --sz приближает небо. Слои едут с разной скоростью, ближний быстрее всех.
+   Кривая без перелёта (критическое затухание): камера не качается */
+#world{--cx:0px;--cy:0px;--cz:0;--sz:0}
+#world .stars,#world .moon,#world .rays,#world .ridge{transition:translate .85s var(--spring-cam),scale .85s var(--spring-cam)}
+#world .stars{translate:calc(var(--cx)*.12) calc(var(--cy)*.12);scale:calc(1 + var(--sz));transform-origin:62% 18%}
+#world .moon,#world .rays{translate:calc(var(--cx)*.2) calc(var(--cy)*.2);scale:calc(1 + var(--sz)*1.6)}
+#world .ridge{transform-origin:var(--ox,50%) 100%}
+#world .ridge.far{translate:calc(var(--cx)*.4) calc(var(--cy)*.25);scale:calc(1 + var(--cz)*.45)}
+#world .ridge.mid{translate:calc(var(--cx)*.7) calc(var(--cy)*.4);scale:calc(1 + var(--cz)*.72)}
+#world .ridge.near{translate:var(--cx) calc(var(--cy)*.55);scale:calc(1 + var(--cz))}
+#world[data-cam="v-map"]{--cx:20px;--cy:-8px;--cz:.07;--ox:22%}
+#world[data-cam="v-album"]{--cx:-24px;--cy:-14px;--cz:.17;--ox:80%}
+#world[data-cam="v-awards"]{--cx:0px;--cy:38px;--cz:0;--sz:.11}
+#world[data-cam="v-wardrobe"],#world[data-cam="s-wardrobe"]{--cx:-16px;--cy:-10px;--cz:.12;--ox:78%}
+#world[data-cam="s-shop"]{--cx:18px;--cy:-6px;--cz:.09;--ox:30%}
+/* вкладка въезжает с той стороны, куда поехала камера */
+.view.on{animation-name:vinDir}
+@keyframes vinDir{from{opacity:0;transform:translate(calc(var(--vdir,0)*26px),10px) scale(.985)}}
 /* лунные лучи: два веера медленно вращаются навстречу, яркость от фазы луны */
 .rays{position:absolute;right:calc(7% + 31px - 280px);top:calc(env(safe-area-inset-top) + 91px - 280px);width:560px;height:560px;pointer-events:none;opacity:calc(.2 + .6*var(--lit,.8));
   transform:translate3d(calc(var(--dx,0)*.08px),calc(var(--sc,0)*-0.06px + var(--dy,0)*.08px),0)}
@@ -1552,6 +1607,8 @@ body.day .rays i{background:repeating-conic-gradient(from 0deg,rgba(255,224,160,
   <symbol id="i-cat" viewBox="0 0 24 24"><path d="M4.6 10.2V4.6l4.3 3.1a9.4 9.4 0 0 1 6.2 0l4.3-3.1v5.6c.8 1.1 1.2 2.4 1.2 3.7 0 4.3-3.8 7.1-8.6 7.1s-8.6-2.8-8.6-7.1c0-1.3.4-2.6 1.2-3.7z"/><path d="M9 13.4v.4M15 13.4v.4M10.9 16.3l1.1.8 1.1-.8"/></symbol>
   <symbol id="i-cat-sleep" viewBox="0 0 24 24"><path d="M4.6 10.2V4.6l4.3 3.1a9.4 9.4 0 0 1 6.2 0l4.3-3.1v5.6c.8 1.1 1.2 2.4 1.2 3.7 0 4.3-3.8 7.1-8.6 7.1s-8.6-2.8-8.6-7.1c0-1.3.4-2.6 1.2-3.7z"/><path d="M7.8 13.5q1.2 1.1 2.4 0M13.8 13.5q1.2 1.1 2.4 0M10.9 16.3l1.1.8 1.1-.8"/></symbol>
   <symbol id="i-replay" viewBox="0 0 24 24"><path d="M4.9 12.2a7.2 7.2 0 1 0 2.3-5.4"/><path d="M4.7 4.3v4h4"/></symbol>
+  <symbol id="dk-ear" viewBox="0 0 26 18"><path d="M1.400 19C1.200 10 3 3.600 6.500 1.500c1.800-1 3.800-.2 5.700 1.800C16.500 7.700 21.500 13.600 25 19z" style="fill:var(--ear-fill,#4a3a66);stroke:none"/><path d="M2 14.200C2.300 8.300 3.800 3.200 6.500 1.500c1.800-1 3.800-.2 5.700 1.800 3.100 3.200 6.600 7.200 9.600 11" style="fill:none;stroke:var(--ear-rim,rgba(245,200,76,.6));stroke-width:1.300;stroke-linecap:round;stroke-linejoin:round"/><path d="M6.300 16.500c-.3-5 .5-8.800 2.100-10.100 1.900 1.300 5.300 5.500 8.300 10.100z" style="fill:var(--ear-in,rgba(255,150,180,.5));stroke:none"/></symbol>
+  <symbol id="dk-paw" viewBox="0 0 16 16"><ellipse cx="8" cy="10.800" rx="3.700" ry="3"/><ellipse cx="3" cy="6.700" rx="1.500" ry="1.900"/><ellipse cx="6.300" cy="4" rx="1.500" ry="2"/><ellipse cx="9.800" cy="4" rx="1.500" ry="2"/><ellipse cx="13" cy="6.700" rx="1.500" ry="1.900"/></symbol>
   <symbol id="i-hanger" viewBox="0 0 24 24"><path d="M10 5.6a2 2 0 1 1 3.1 1.7c-.6.4-1.1.8-1.1 1.5v.6"/><path d="M12 9.4l-8.4 6.3c-.7.5-.3 1.6.5 1.6h15.8c.8 0 1.2-1.1.5-1.6L12 9.4z"/></symbol>
   <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4.6L4 6.4a1 1 0 0 0-.6.9v11.4c0 .5.5.8.9.6L9 17.6l6 2 5-1.8a1 1 0 0 0 .6-.9V5.3c0-.5-.5-.8-.9-.6L15 6.4l-6-1.8z"/><path d="M9 4.6v13M15 6.4v13.2"/></symbol>
   <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3.4" y="5" width="17.2" height="14" rx="2.8"/><path d="M3.6 16.4l4.5-4.2a1.4 1.4 0 0 1 1.9 0l5.4 5.2M13.4 14.8l2-1.9a1.4 1.4 0 0 1 1.9 0l3.2 3"/><circle cx="15.8" cy="9.4" r="1.5"/></symbol>
@@ -1631,10 +1688,10 @@ body.day .rays i{background:repeating-conic-gradient(from 0deg,rgba(255,224,160,
             <div class="lbl"><span id="purrK">мурр-шкала</span><span class="pc"><span class="num" id="purrN">0/15</span><span class="dropl" aria-hidden="true"><svg class="icf e0"><use href="#i-dropm"/></svg><svg class="icf e1"><use href="#i-drop"/></svg></span></span></div>
             <div class="bar"><b id="purrBar"></b></div><i class="edge" aria-hidden="true"></i>
           </div>
-          <div class="dock lg" id="dock"><i class="edge" aria-hidden="true"></i>
-            <button class="dk" id="btnWardrobe"><svg class="ico"><use href="#i-hanger"/></svg><span>Гардероб</span></button>
-            <button class="dk play" id="btnPlay"><svg class="icf"><use href="#i-moon"/></svg>Играть</button>
-            <button class="dk" id="btnShop"><svg class="ico"><use href="#i-bag"/></svg><span>Лавка</span></button>
+          <div class="dock ears" id="dock">
+            <button class="dk lg" id="btnWardrobe"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ico"><use href="#i-hanger"/></svg><span>Гардероб</span><svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg><i class="edge" aria-hidden="true"></i></button>
+            <button class="dk play" id="btnPlay"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="icf"><use href="#i-moon"/></svg>Играть<svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg></button>
+            <button class="dk lg" id="btnShop"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ico"><use href="#i-bag"/></svg><span>Лавка</span><svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg><i class="edge" aria-hidden="true"></i></button>
           </div>
         </div>
       </section>
@@ -2323,9 +2380,11 @@ const wearOf = k => k === "a" ? S.wearA : S.wearL;
 /* вещь работает, если она есть и надета хотя бы на одной из кошек */
 const wears = id => !!(S.owned[id] && ((S.wearA && S.wearA[id]) || (S.wearL && S.wearL[id])));
 const wornCount = () => ACCS.filter(wears).length;
-/* наряды прибавляют каплю к каждой полной мурр-шкале: три надетые вещи дают +1, больше не бывает.
-   Потолок: 2 капли за шкалу и 4 со сверхмурчанием, то есть не дешевле 5,5 поглаживания за каплю */
-const wearBonus = () => wornCount() >= 3 ? 1 : 0;
+/* сколько капель даёт полная мурр-шкала. n: надетых вещей (0..7), over: сверхмурчание удалось.
+   Формула: round((1 + 0,25·n)·B), B = 1,8 при сверхмурчании. Выходит 1/2 капли без вещей и 3/5 с полным гардеробом */
+const OVER_MULT = 1.8;
+const cyclePay = (over, n = wornCount()) => Math.round((1 + .25*n)*(over ? OVER_MULT : 1) + 1e-9);
+const wearBonus = () => cyclePay(false) - 1;
 /* перки: что надетая вещь меняет на уровне. Ключ внутри — номер уровня */
 const PERKS = {
   cape:   {1: "плащ прикроет от первой вербены", 6: "плащ прикроет от первой мыши"},
@@ -2460,8 +2519,8 @@ let purr = null, purrT = 0, phraseIn = 5 + Math.floor(Math.random()*5), sinceLin
 const PETS_PER_DROP = 15;
 const moonNow = () => typeof fullMoon === "function" && fullMoon();
 const perDrop = () => Math.max(6, (moonNow() ? 8 : PETS_PER_DROP) - (wears("bow") ? 2 : 0));
-/* сверхмурчание: шкала полная, а гладить не перестали. Ещё OVER_NEED поглаживаний за OVER_MS удваивают капли */
-const OVER_NEED = 9, OVER_MS = 3400;
+/* сверхмурчание: шкала полная, а гладить не перестали. Ещё OVER_NEED поглаживаний за OVER_MS доводят выдачу до cyclePay(true) */
+const OVER_NEED = 5, OVER_MS = 2600;
 let over = null;
 let bubState = {txt: "мрр?", side: "alisa"}, bubT = 0, bubHide = 0;
 function catOf(side){ return document.querySelector(`#duo .pet[data-cat="${side}"] .cat`); }
@@ -2510,7 +2569,7 @@ function speakFx(side){
 /* взгляд: зрачки следят за пальцем */
 let gazeT = 0, gazeRaf = 0;
 function homeLive(){ return $("#v-home").classList.contains("on") && !$("#game").classList.contains("on") && !openSh && !document.querySelector("#splash:not(.off)") && !$("#viewer").classList.contains("on"); }
-function setGaze(c, x, y){ if (!c) return; c.style.setProperty("--gx", x.toFixed(2) + "px"); c.style.setProperty("--gy", y.toFixed(2) + "px"); }
+function setGaze(c, x, y){ if (!c) return; c.style.setProperty("--gx", x.toFixed(2) + "px"); c.style.setProperty("--gy", y.toFixed(2) + "px"); c.style.setProperty("--gn", (x/3.6).toFixed(3)); c.style.setProperty("--gm", (y/2.8).toFixed(3)); }
 function lookAt(x, y){
   if (S.event === "quarrel" || reduced()) return;
   document.querySelectorAll("#duo .cat").forEach(c => { if (c.classList.contains("sleep")) return; const r = c.getBoundingClientRect(), dx = x - (r.left + r.width*.5), dy = y - (r.top + r.height*.43), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d/150); setGaze(c, dx/d*k*3.6, dy/d*k*2.8); });
@@ -2684,7 +2743,7 @@ function pet(el, e, soft){
   }
   if (ov) overStep(who, x, y);
   else if (S.purr >= perDrop()){
-    const D = perDrop(), pay = 1 + wearBonus(); S.purr = 0; S.drops += pay; const m = $("#purr"), bar = $("#purrBar");
+    const D = perDrop(), pay = cyclePay(false); S.purr = 0; S.drops += pay; const m = $("#purr"), bar = $("#purrBar");
     bar.style.width = "100%"; $("#purrN").textContent = D + "/" + D; m.style.setProperty("--dt", "11%"); m.style.setProperty("--heat", 1); m.classList.remove("near");
     m.classList.remove("full"); void m.offsetWidth; m.classList.add("full");
     setTimeout(() => { flyDrops(m.querySelector(".dropl"), pay); setTimeout(() => hud(true), 800); }, 380);
@@ -2695,10 +2754,10 @@ function pet(el, e, soft){
   checkAch(); save();
 }
 function overStart(pay, who){
-  const m = $("#purr"), bar = $("#purrBar"), o = over = {left: OVER_NEED, pay};
+  const m = $("#purr"), bar = $("#purrBar"), o = over = {left: OVER_NEED, pay: Math.max(1, cyclePay(true) - pay)};
   o.t = setTimeout(() => overEnd(false), OVER_MS + 440);
   /* первые 0,4 с шкала ещё празднует каплю, потом золотеет и начинает убывать */
-  setTimeout(() => { if (over !== o) return; m.classList.add("over"); $("#purrK").textContent = "сверхмурчание ×2"; $("#purrN").textContent = "ещё " + o.left;
+  setTimeout(() => { if (over !== o) return; m.classList.add("over"); $("#purrK").textContent = "сверхмурчание +" + o.pay; $("#purrN").textContent = "ещё " + o.left;
     bar.style.transition = "none"; bar.style.width = "100%"; void bar.offsetWidth; bar.style.transition = `width ${OVER_MS}ms linear`; bar.style.width = "0%"; }, 440);
   if (!S.overSeen) setTimeout(() => { if (over === o) setBubble(who === "alisa" ? "не останавливайся" : "ещё, ещё", who); }, 560);
 }
@@ -2712,8 +2771,8 @@ function overEnd(win, who){
   const m = $("#purr"), bar = $("#purrBar"), back = () => { m.classList.remove("over", "overwin"); bar.style.transition = "none"; renderPurr(); void bar.offsetWidth; bar.style.transition = ""; };
   if (!win){ back(); return; }
   S.drops += o.pay; S.overs = (S.overs || 0) + 1; S.overSeen = 1; save();
-  $("#purrN").textContent = "×2"; m.classList.add("overwin"); snd.overWin(); haptic([10, 30, 16]);
-  const [mx, my] = centerOf(m); popNum("×2", mx, my - 26); FX.burst(mx, my, {emojis: ["✨","⭐"], n: 12, size: [12, 20], speed: [140, 300], grav: 160});
+  $("#purrN").textContent = "+" + o.pay; m.classList.add("overwin"); snd.overWin(); haptic([10, 30, 16]);
+  const [mx, my] = centerOf(m); popNum("+" + o.pay, mx, my - 26); FX.burst(mx, my, {emojis: ["✨","⭐"], n: 12, size: [12, 20], speed: [140, 300], grav: 160});
   flyDrops(m.querySelector(".dropl"), Math.min(8, o.pay)); setTimeout(() => hud(true), 900);
   if (S.overs === 1 && who) setTimeout(() => setBubble(who === "alisa" ? "вот. это уровень" : "я перегрелась", who), 700);
   setTimeout(back, 760);
@@ -2908,7 +2967,7 @@ function closeSheet(){
   const sh = openSh; if (!sh || !sh.classList.contains("on")) return;
   sh.style.transform = ""; $("#scrim").style.opacity = "";
   $("#scrim").classList.remove("on"); sh.classList.remove("on"); app.classList.remove("sheet-on", "medium"); snd.sheet(false);
-  openSh = null;
+  openSh = null; camTo(null, "");
   if (sheetClose){ const f = sheetClose; sheetClose = null; f(); }
 }
 $("#sheetDone").onclick = closeSheet;
@@ -3115,8 +3174,8 @@ function wTargets(){ if (S.event === "quarrel" && wSel === "both") wSel = "a"; r
 function wearGrid(box, mode){
   box.innerHTML = "";
   const cap = document.createElement("p"); cap.className = "wcap"; cap.setAttribute("aria-live", "polite");
-  const capText = w => { const m = wearBonus();
-    cap.textContent = w && w.p ? w.t + ": " + w.p + "." : "Надето вещей: " + wornCount() + ". " + (m ? "К каждой полной мурр-шкале +" + m + " " + plural(m, "капля", "капли", "капель") + "." : "Три надетые вещи добавят каплю к каждой полной мурр-шкале."); };
+  const capText = w => { const b = cyclePay(false), t = cyclePay(true);
+    cap.textContent = w && w.p ? w.t + ": " + w.p + "." : "Надето вещей: " + wornCount() + ". Полная мурр-шкала: " + b + " " + plural(b, "капля", "капли", "капель") + ", со сверхмурчанием " + t + ". Чем больше надето, тем больше капель."; };
   WEAR.forEach(w => {
     const b = document.createElement("button"); b.className = "wit";
     const paint = () => {
@@ -3143,7 +3202,7 @@ function wearGrid(box, mode){
 }
 function openWardrobe(){
   if (S.splitWear){ showView("v-wardrobe"); return; }
-  const q = S.event === "quarrel";
+  const q = S.event === "quarrel"; camTo(null, "s-wardrobe");
   openSheet("Гардероб", body => {
     body.appendChild(para(q ? "Пока они в ссоре, наряды у каждой свои. Выбери, кого наряжаешь." : "Наряды надеваются на обеих, чтобы никому не было обидно."));
     let segEl = null;
@@ -3212,6 +3271,7 @@ function renderLooks(){
 function renderLooksState(){}
 
 function openShop(){
+  camTo(null, "s-shop");
   openSheet("Лавка", body => {
     body.appendChild(para("Капли из игры меняются на настоящие вещи. Купленное покажи мне."));
     const g = group();
@@ -3601,12 +3661,16 @@ function onScroll(v){
   $("#ctitle").style.setProperty("--ct", tt ? Math.min(1, Math.max(0, (y - 44)/34)).toFixed(3) : (S.event === "quarrel" && v.id === "v-home" ? 1 : 0));
 }
 document.querySelectorAll(".view").forEach(v => v.addEventListener("scroll", () => onScroll(v), {passive:true}));
+/* куда смотрит камера: вкладка, а поверх неё открытый лист гардероба или лавки */
+function camTo(view, sheet){ if (view) camTo.view = view; if (sheet !== undefined) camTo.sheet = sheet; $("#world").dataset.cam = camTo.sheet || camTo.view || "v-home"; }
 function showView(id){
   if (id === "v-wardrobe" && !S.splitWear) id = "v-home";
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.v === id));
   moveInd();
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
-  $("#stage").classList.toggle("home-on", id === "v-home"); $("#world").dataset.cam = id;
+  $("#stage").classList.toggle("home-on", id === "v-home"); camTo(id);
+  { const ord = ["v-home", "v-wardrobe", "v-map", "v-album", "v-awards"], d = ord.indexOf(id) - ord.indexOf(showView.last || id); showView.last = id;
+    $("#stage").style.setProperty("--vdir", reduced() ? 0 : Math.sign(d)); }
   const v = document.getElementById(id); $("#ctitle").textContent = v.dataset.title || (S.event === "quarrel" ? "ссора" : "");
   if (id === "v-map") renderMap();
   if (id === "v-album") renderAlbum();
@@ -3905,13 +3969,72 @@ const LNOTES = {first: "и с ошибками", late: "а я спала", early
   d_blink: "я первая моргнула", d_tail: "я поддалась", d_cuddle: "тепло было", ans: "я записала",
   wdw: "я знала это слово", wdh: "это я подсказала", wdl: "оно было трудное"};
 function hashStr(s){ let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+/* луна на небе показывает другой день, пока крутят лунный диск в дневнике. На шкалу и гостей это не влияет: они считают настоящее время */
+function previewMoon(t){
+  const f = moonPhase(t), lit = moonLit(f), p = document.querySelector("#moonPhase path"), m = $("#moon"); if (!p || !m) return;
+  p.setAttribute("d", phasePathD(f)); if (f < .5) p.removeAttribute("transform"); else p.setAttribute("transform", "scale(-1 1)");
+  m.style.setProperty("--lit", lit.toFixed(3)); $("#rays").style.setProperty("--lit", lit.toFixed(3));
+  m.querySelector(".disc").style.boxShadow = `0 0 30px 6px rgba(243,227,176,${(.06 + .26*lit).toFixed(3)}),0 0 110px 36px rgba(243,227,176,${(.02 + .1*lit).toFixed(3)})`;
+}
+/* лунный диск: вращающийся календарь на первой странице дневника. Стрелку крутят пальцем, один оборот равен лунному месяцу.
+   Показывает фазу и дату, обещает гостя в полнолуние и листает дневник к записи выбранного дня */
+function moonDial(onDay){
+  const el = document.createElement("section"); el.className = "volv";
+  const DEG = 360/SYNODIC, t0 = Date.now(), a0 = moonPhase(t0)*360, pos = (f, R) => { const a = f*6.2832; return [Math.sin(a)*R, -Math.cos(a)*R]; };
+  let ticks = "", glyphs = "";
+  for (let d = 0; d < 29; d++){ const [x1, y1] = pos(d/SYNODIC, 96), [x2, y2] = pos(d/SYNODIC, d % 7 === 0 ? 89 : 92); ticks += `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`; }
+  for (let i = 0; i < 8; i++){ const f = i/8, [x, y] = pos(f, 76);
+    glyphs += `<g transform="translate(${x.toFixed(2)} ${y.toFixed(2)}) scale(${i === 4 ? 8.4 : 6.6})"${i === 4 ? ' class="vfull"' : ""}><circle r="1" fill="#f3e3b0"/><path d="${phasePathD(f || .0001)}" fill="#1b1230"${f >= .5 ? ' transform="scale(-1 1)"' : ""}/></g>`; }
+  let rays = ""; for (let i = 0; i < 48; i++){ const a = i*7.5*Math.PI/180; rays += `<line x1="${(Math.sin(a)*40).toFixed(2)}" y1="${(-Math.cos(a)*40).toFixed(2)}" x2="${(Math.sin(a)*(i % 4 ? 55 : 60)).toFixed(2)}" y2="${(-Math.cos(a)*(i % 4 ? 55 : 60)).toFixed(2)}"/>`; }
+  el.innerHTML = `<div class="vdisc" role="slider" tabindex="0" aria-label="Лунный диск: день" aria-valuemin="-30" aria-valuemax="60" aria-valuenow="0">
+    <svg viewBox="-100 -100 200 200" aria-hidden="true">
+      <circle r="98" class="vrim"/><g class="vticks">${ticks}</g>${glyphs}
+      <g class="vrot"><circle r="62" class="vplate"/><g class="vrays">${rays}</g><path class="varm" d="M0 -62L3.4 -70 0 -90 -3.4 -70Z"/><circle cx="0" cy="-90" r="2.6" class="vgem"/></g>
+      <circle r="34" class="vwin"/><g transform="scale(29)"><circle r="1" fill="#f3e3b0"/><path class="vshade" fill="#1b1230" d=""/></g><circle r="34" class="vwinrim"/>
+    </svg></div>
+    <div class="vinfo" aria-live="polite"><b></b><span></span><em></em></div>
+    <button class="vnow off" tabindex="-1">вернуть сегодня</button>`;
+  const disc = el.querySelector(".vdisc"), rot = el.querySelector(".vrot"), shade = el.querySelector(".vshade"), [iB, iS, iE] = el.querySelectorAll(".vinfo > *"), nowB = el.querySelector(".vnow");
+  let off = 0, day = 0, drag = null;
+  const paint = settle => {
+    const t = t0 + off*864e5, f = moonPhase(t);
+    rot.style.transition = settle && !reduced() ? "transform .44s var(--spring-glass)" : "none"; rot.style.transform = `rotate(${(a0 + off*DEG).toFixed(2)}deg)`;
+    shade.setAttribute("d", phasePathD(f)); if (f < .5) shade.removeAttribute("transform"); else shade.setAttribute("transform", "scale(-1 1)");
+    previewMoon(t);
+    const d = Math.round(off); if (d === day && !settle) return;
+    if (d !== day){ if (day === day){ haptic(3); snd.tick(.12 + .8*moonLit(f)); } day = d; }
+    const dt = new Date(t0 + d*864e5), k = dayKey(dt), full = Math.abs(moonPhase(t0 + d*864e5) - .5)*SYNODIC < 1, e = (S.diary || {})[k];
+    iB.textContent = d === 0 ? "сегодня" : d > 0 ? "через " + d + " " + plural(d, "день", "дня", "дней") : -d + " " + plural(-d, "день", "дня", "дней") + " назад";
+    iS.textContent = dt.toLocaleDateString("ru-RU", {day: "numeric", month: "long"}) + " · " + moonName(moonPhase(t0 + d*864e5));
+    const G = e && e.guest && GUESTS.find(g => g.id === e.guest);
+    iE.textContent = G ? "на крыше был гость: " + G.n.toLowerCase() : full && d >= 0 ? (d === 0 ? "сегодня на крыше гость" : "в эту ночь на крышу кто-то прилетит") : e && d < 0 ? "в дневнике есть запись" : "";
+    disc.setAttribute("aria-valuenow", d); disc.setAttribute("aria-valuetext", iB.textContent + ", " + iS.textContent + (iE.textContent ? ", " + iE.textContent : ""));
+    nowB.classList.toggle("off", d === 0); nowB.tabIndex = d === 0 ? -1 : 0; el.classList.toggle("vfullon", full);
+    if (settle && onDay) onDay(k, d);
+  };
+  const ang = e => { const r = disc.getBoundingClientRect(); return Math.atan2(e.clientX - (r.left + r.width/2), -(e.clientY - (r.top + r.height/2)))*180/Math.PI; };
+  const clamp = v => Math.max(-30, Math.min(60, v));
+  disc.addEventListener("pointerdown", e => { drag = {a: ang(e), id: e.pointerId}; try { disc.setPointerCapture(e.pointerId); } catch(_){} disc.classList.add("held"); e.preventDefault(); });
+  disc.addEventListener("pointermove", e => { if (!drag || e.pointerId !== drag.id) return; const a = ang(e); let da = a - drag.a; if (da > 180) da -= 360; if (da < -180) da += 360; drag.a = a; off = clamp(off + da/DEG); paint(false); });
+  const drop = e => { if (!drag || (e && e.pointerId !== drag.id)) return; drag = null; disc.classList.remove("held"); off = Math.round(off); paint(true); };
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(t => disc.addEventListener(t, drop));
+  disc.addEventListener("keydown", e => { const st = {ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1, PageUp: 7, PageDown: -7}[e.key]; if (e.key === "Home"){ off = 0; } else if (st) off = clamp(Math.round(off) + st); else return; e.preventDefault(); paint(true); });
+  nowB.onclick = () => { off = 0; snd.tap(); paint(true); };
+  day = NaN; paint(true);
+  return el;
+}
 function openDiary(){
   const ks = Object.keys(S.diary || {}).sort().reverse(), firstK = ks[ks.length - 1];
   S.diarySeen = Date.now(); save(); renderDiaryCard();
   openSheet("Дневник Алисы", body => {
     const box = document.createElement("div"); box.className = "diary";
+    body.appendChild(moonDial((k, d) => {
+      box.querySelectorAll(".dday.vsel").forEach(x => x.classList.remove("vsel"));
+      const hit = d ? box.querySelector(`.dday[data-k="${k}"]`) : null; if (!hit) return;
+      hit.classList.add("vsel"); hit.scrollIntoView({block: "nearest", behavior: reduced() ? "auto" : "smooth"});
+    }));
     ks.slice(0, 60).forEach(k => {
-      const [y, m, d] = k.split("-").map(Number), dt = new Date(y, m - 1, d), day = document.createElement("article"); day.className = "dday";
+      const [y, m, d] = k.split("-").map(Number), dt = new Date(y, m - 1, d), day = document.createElement("article"); day.className = "dday"; day.dataset.k = k;
       const h = document.createElement("h5"); h.textContent = k === dayKey() ? "сегодня" : dt.toLocaleDateString("ru-RU", {day: "numeric", month: "long"});
       const sm = document.createElement("small"); sm.textContent = k === dayKey() ? dt.toLocaleDateString("ru-RU", {day: "numeric", month: "long"}) : dt.toLocaleDateString("ru-RU", {weekday: "long"});
       day.append(h, sm);
@@ -3925,7 +4048,7 @@ function openDiary(){
       box.appendChild(day);
     });
     body.appendChild(box);
-  });
+  }, () => applyMoon());
 }
 function renderDiaryCard(){
   const g = $("#diaryG"); if (!g) return; g.innerHTML = "";
@@ -6671,19 +6794,29 @@ const STROKE_PX = 52, STROKE_MS = 210;
    Пружина пишет в отдельные свойства scale/rotate/translate и поэтому не спорит с анимациями transform */
 function strokeRig(el){
   const cat = el.querySelector(".cat"), glow = document.createElement("i"); glow.className = "strokeglow"; glow.setAttribute("aria-hidden", "true"); el.appendChild(glow);
-  let sx = 0, ln = 0, tx = 0, vsx = 0, vln = 0, vtx = 0, raf = 0, last = 0;
+  /* sx тянется к цели sT: цель задаёт скорость пальца, 1 + AMP·tanh(v/V_REF). Вдоль пальца кошка вытягивается, поперёк приседает,
+     произведение осей всегда 1, поэтому она не «надувается». Палец остановился: цель уходит в ноль, пружина доигрывает */
+  const V_REF = 650, AMP = .18;
+  let sx = 0, sT = 0, ln = 0, tx = 0, vsx = 0, vln = 0, vtx = 0, raf = 0, last = 0, pushAt = 0;
   const K = 420, C = 22;                         /* 2–3 затухающих колебания примерно за 0,4 с */
   function frame(now){
     const dt = Math.min(.034, Math.max(.001, (now - last)/1000)); last = now;
-    vsx += (-K*sx - C*vsx)*dt; sx = Math.max(-.14, Math.min(.17, sx + vsx*dt));
+    if (now - pushAt > 70) sT = 0;
+    vsx += (-K*(sx - sT) - C*vsx)*dt; sx = Math.max(-.16, Math.min(.2, sx + vsx*dt));
     vln += (-K*ln - C*vln)*dt; ln = Math.max(-5.5, Math.min(5.5, ln + vln*dt));
     vtx += (-K*tx - C*vtx)*dt; tx = Math.max(-10, Math.min(10, tx + vtx*dt));
     const X = 1 + sx; cat.style.scale = X.toFixed(3) + " " + (1/X).toFixed(3); cat.style.rotate = ln.toFixed(2) + "deg"; cat.style.translate = tx.toFixed(1) + "px 0";
-    if (Math.abs(sx) + Math.abs(vsx)*.05 + (Math.abs(ln) + Math.abs(tx))*.02 + (Math.abs(vln) + Math.abs(vtx))*.001 > .004) raf = requestAnimationFrame(frame);
-    else { raf = 0; sx = ln = tx = vsx = vln = vtx = 0; cat.style.scale = cat.style.rotate = cat.style.translate = ""; }
+    if (Math.abs(sT) + Math.abs(sx) + Math.abs(vsx)*.05 + (Math.abs(ln) + Math.abs(tx))*.02 + (Math.abs(vln) + Math.abs(vtx))*.001 > .004) raf = requestAnimationFrame(frame);
+    else { raf = 0; sx = sT = ln = tx = vsx = vln = vtx = 0; cat.style.scale = cat.style.rotate = cat.style.translate = ""; }
   }
   return {
-    push(dx, dy){ if (reduced()) return; vsx += (Math.abs(dx) - Math.abs(dy)*.9)*.075; vln += dx*2.8; vtx += dx*5.6; if (!raf){ last = performance.now(); raf = requestAnimationFrame(frame); } },
+    push(dx, dy){ if (reduced()) return;
+      const now = performance.now(), dt = Math.max(.008, Math.min(.06, (now - (pushAt || now - 16))/1000)), step = Math.hypot(dx, dy) || 1, lam = AMP*Math.tanh(step/dt/V_REF);
+      pushAt = now;
+      /* горизонтальный свайп растягивает по X, вертикальный по Y (значит X = 1/λ), диагональ почти не деформирует */
+      const ax = Math.abs(dx)/step, ay = Math.abs(dy)/step, along = ax*ax - ay*ay;
+      sT = along >= 0 ? lam*along : 1/(1 - lam*along) - 1;
+      vln += dx*2.8; vtx += dx*5.6; if (!raf){ last = now; raf = requestAnimationFrame(frame); } },
     glow(x, y){ if (x == null){ glow.classList.remove("on"); return; } const r = el.getBoundingClientRect(); glow.style.transform = `translate(${(x - r.left).toFixed(1)}px,${(y - r.top).toFixed(1)}px)`; glow.classList.add("on"); }
   };
 }
@@ -6756,9 +6889,10 @@ document.querySelectorAll("#duo .pet").forEach(p => p.insertAdjacentHTML("before
 $("#splashDuo").innerHTML = duoHTML(); $("#splashDuo").querySelectorAll(".cat").forEach(blinkLoop);
 $("#btnSettings").onclick = openSettings;
 /* блик на кромке дока идёт за пальцем */
-{ const dk = $("#dock"), at = e => { const r = dk.getBoundingClientRect(); dk.style.setProperty("--ex", (e.clientX - r.left).toFixed(0) + "px"); dk.style.setProperty("--ey", (e.clientY - r.top).toFixed(0) + "px"); dk.classList.add("edged"); };
+{ const dk = $("#dock"), at = e => { const b = e.target.closest(".dk.lg"); dk.querySelectorAll(".edged").forEach(x => x !== b && x.classList.remove("edged")); if (!b) return;
+    const r = b.getBoundingClientRect(); b.style.setProperty("--ex", (e.clientX - r.left).toFixed(0) + "px"); b.style.setProperty("--ey", (e.clientY - r.top).toFixed(0) + "px"); b.classList.add("edged"); };
   dk.addEventListener("pointerdown", at, {passive: true}); dk.addEventListener("pointermove", e => { if (e.buttons || e.pointerType === "touch") at(e); }, {passive: true});
-  ["pointerup", "pointercancel", "pointerleave"].forEach(t => dk.addEventListener(t, () => dk.classList.remove("edged"), {passive: true})); }
+  ["pointerup", "pointercancel", "pointerleave"].forEach(t => dk.addEventListener(t, () => dk.querySelectorAll(".edged").forEach(x => x.classList.remove("edged")), {passive: true})); }
 $("#btnWardrobe").onclick = openWardrobe;
 $("#btnShop").onclick = openShop;
 $("#btnPlay").onclick = () => showView("v-map");

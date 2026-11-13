@@ -27,14 +27,14 @@ const {open} = require('./helper.js');
   for (let i = g.purr; i < g.D; i++){ await p.mouse.click(cx, cy - 20); await p.waitForTimeout(120); }
   g = await get(); console.log('шкала полная', JSON.stringify(g), 'капель за шкалу:', g.drops - d0);
   await p.waitForTimeout(600); await p.screenshot({path: __dirname + '/pet-over.png'});
-  for (let i = 0; i < 9; i++){ await p.mouse.click(cx, cy - 20); await p.waitForTimeout(150); }
+  for (let i = 0; i < 5; i++){ await p.mouse.click(cx, cy - 20); await p.waitForTimeout(150); }
   await p.waitForTimeout(250); await p.screenshot({path: __dirname + '/pet-overwin.png'});
-  g = await get(); console.log('после 9 поглаживаний в окне', JSON.stringify(g), 'итого за цикл:', g.drops - d0);
+  g = await get(); console.log('после 5 поглаживаний в окне', JSON.stringify(g), 'итого за цикл:', g.drops - d0);
   await p.waitForTimeout(1200); g = await get(); console.log('шкала вернулась', JSON.stringify(g));
   // 4. окно без поглаживаний закрывается само, капли не удваиваются
   const d1 = g.drops; for (let i = g.purr; i < g.D; i++){ await p.mouse.click(cx, cy - 20); await p.waitForTimeout(120); }
   await p.waitForTimeout(3400); g = await get(); console.log('окно пропущено', JSON.stringify(g), 'за цикл:', g.drops - d1);
-  // 5. наряды: две вещи дают +1 к шкале, бантики укорачивают её
+  // 5. наряды: две вещи дают +1 к шкале (round(1,5) = 2), бантики укорачивают её
   console.log('с бантиком и плащом', JSON.stringify(await p.evaluate(() => { S.owned.bow = 1; S.owned.cape = 1; putOn('a', 'bow', true); putOn('a', 'cape', true); renderPurr(); return {D: perDrop(), bonus: wearBonus(), worn: wornCount()}; })));
   console.log('ERRORS', errs.length ? errs.join('\n') : 'none'); await b.close();
 })();
