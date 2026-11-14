@@ -82,7 +82,7 @@ const {open} = require('./helper.js');
   await p.evaluate(() => showView('v-album')); await p.waitForTimeout(900);
   const moonD = () => p.evaluate(() => { const m = document.querySelector('#moonPhase path').getAttribute('d').match(/A([\d.]+) 1 0 0 (\d) 0 -1Z/); return +m[1]*(m[2] === '1' ? -1 : 1); });
   const moon0 = await moonD();
-  await p.click('#diaryG .li'); await p.waitForTimeout(1500);
+  await p.click('#diaryG .desk-book'); await p.waitForTimeout(1800);
   const info = () => p.evaluate(() => [...document.querySelectorAll('.vinfo > *')].map(x => x.textContent));
   let inf = await info(); ok('диск открыт на сегодня', inf[0] === 'сегодня', JSON.stringify(inf));
   await p.screenshot({path: __dirname + '/s3-diary.png'});

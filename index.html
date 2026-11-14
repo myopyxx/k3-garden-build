@@ -629,6 +629,15 @@ body.day .moon .shade{opacity:0}
 .perk .e{flex:none;font-size:16px;line-height:1}
 .panel .perks{margin:-8px 0 16px}
 .wcap{grid-column:1/-1;margin:0 4px 2px;min-height:32px;font-size:11px;line-height:1.45;color:var(--muted)}
+.osets{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 4px}
+.oset{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 12px;border-radius:14px;text-align:left;color:var(--muted);background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.1);transition:transform .43s var(--spring-dock)}
+.oset .e{flex:none;font-size:15px;letter-spacing:-1px;filter:grayscale(1) opacity(.5)}
+.oset b{font:600 10.5px/1.15 var(--ui)}
+.oset.on{color:#2a1a08;background:linear-gradient(180deg,#ffe9a8,#e9b949);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 4px rgba(120,70,0,.3),0 6px 14px rgba(245,200,76,.22)}
+.oset.on .e{filter:none}
+.oset.lit{animation:osetFlash .9s var(--spring-pop)}
+@keyframes osetFlash{0%{transform:scale(.9);filter:brightness(1.8)}100%{transform:none;filter:none}}
+.perk.set{box-shadow:inset 0 0 0 1px rgba(245,200,76,.55)}
 .epst{display:flex;align-items:center;justify-content:space-between;margin:0 4px 16px;font-size:10.5px;color:var(--muted)}
 .epst .stars3{display:flex;gap:4px;font-size:20px}
 .btn.wide{width:100%}
@@ -862,7 +871,14 @@ svg.sti{width:1em;height:1em;display:block}
 .meter.over .dropl{animation:dropBeat .5s ease-in-out infinite;filter:sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.25)}
 .meter.overwin{animation:bump .7s var(--spring-pop)}
 @media (prefers-reduced-motion:reduce){.meter.over .dropl{animation:none}}
-.cat .pup{transform:translate(var(--gx,0px),var(--gy,0px));transition:transform .16s cubic-bezier(.2,.9,.3,1)}
+.cat .pup{transform:translate(var(--gx,0px),var(--gy,0px)) scaleX(var(--pd,1));transition:transform .16s cubic-bezier(.2,.9,.3,1)}
+/* голова в 2,5D: слои сдвигаются за взглядом на разную глубину. Уши уходят назад, лоб чуть вперёд, глаза дальше, нос и усы дальше всех */
+.cat .hl{transition:transform .3s cubic-bezier(.2,.9,.3,1)}
+.cat .hl-ear{transform:translate(calc(var(--gx,0px)*-.35),calc(var(--gy,0px)*-.25))}
+.cat .hl-top{transform:translate(calc(var(--gx,0px)*.3),calc(var(--gy,0px)*.2))}
+.cat .hl-eyes{transform:translate(calc(var(--gx,0px)*.5),calc(var(--gy,0px)*.35))}
+.cat .hl-muz{transform:translate(calc(var(--gx,0px)*.85),calc(var(--gy,0px)*.55));transition-duration:.36s}
+@media (prefers-reduced-motion:reduce){.cat .hl{transform:none}}
 /* сначала глаза, потом тело: корпус наклоняется к пальцу с задержкой 60 мс и доезжает пружиной */
 #duo .cat .turn{translate:calc(var(--gn,0)*1.6px) calc(var(--gm,0)*.8px);rotate:calc(var(--gn,0)*1.3deg);transition:transform 1s var(--spring-soft),translate .5s var(--spring-soft) .06s,rotate .5s var(--spring-soft) .06s}
 @media (prefers-reduced-motion:reduce){#duo .cat .turn{translate:none;rotate:none}}
@@ -989,6 +1005,35 @@ svg.sti{width:1em;height:1em;display:block}
 .sheet.songsheet{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom)*.5)}
 .songsheet .shead h3 small{display:block;font:500 11px/1.2 var(--ui);color:var(--muted);letter-spacing:.02em;margin-top:2px}
 .songsheet p.t{text-align:center;margin:16px 8px 2px}
+/* латунная шкатулка */
+.mbox{display:flex;align-items:stretch;gap:12px;margin:0 0 14px;--roll:0px;--ang:0deg}
+.mb-case{position:relative;flex:1;min-width:0;padding:12px 12px 10px;border-radius:16px;background:linear-gradient(180deg,#4a2a1c,#2a160f);
+  box-shadow:inset 0 0 0 1px rgba(245,200,76,.5),inset 0 0 0 4px rgba(26,12,8,.6),inset 0 0 0 5px rgba(245,200,76,.2),0 10px 22px rgba(6,3,14,.4)}
+.mb-roll{position:relative;height:30px;border-radius:15px;overflow:hidden;background:linear-gradient(180deg,#fff0b8 0,#e5b84c 22%,#a87720 62%,#6e4a10 100%);box-shadow:inset 0 -3px 6px rgba(60,30,0,.5),0 3px 6px rgba(0,0,0,.4)}
+.mb-roll i{position:absolute;inset:0;background:radial-gradient(circle,rgba(255,250,220,.95) 0 1.6px,rgba(120,70,0,.55) 1.7px 2.6px,rgba(0,0,0,0) 2.8px) 0 var(--roll)/22px 22px,
+  radial-gradient(circle,rgba(255,250,220,.9) 0 1.6px,rgba(120,70,0,.5) 1.7px 2.6px,rgba(0,0,0,0) 2.8px) 11px calc(var(--roll) + 11px)/22px 22px}
+.mb-roll::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.5) 0 12%,rgba(255,255,255,0) 34% 70%,rgba(0,0,0,.3) 100%)}
+.mb-roll.ping{animation:rollPing .3s ease-out}
+@keyframes rollPing{0%{filter:brightness(1.35)}100%{filter:none}}
+.mb-comb{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.mb-ham{position:relative;display:flex;flex-direction:column;align-items:center;transform-origin:50% 100%}
+.mb-ham .stem{width:5px;height:14px;border-radius:2px 2px 0 0;background:linear-gradient(90deg,#8a6418,#ffe9a8 45%,#b08422);opacity:.45}
+.mb-ham .e{display:grid;place-items:center;width:100%;max-width:34px;aspect-ratio:1;border-radius:50%;font-size:17px;line-height:1;background:radial-gradient(circle at 35% 28%,#3d2f4f,#1f1730);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);filter:grayscale(1) brightness(.55)}
+.mb-ham.on .stem{opacity:1}
+.mb-ham.on .e{filter:none;background:radial-gradient(circle at 35% 28%,#fff1c2,#f5c84c 56%,#a8771a);box-shadow:0 0 12px rgba(245,200,76,.4),inset 0 -2px 4px rgba(120,70,0,.35)}
+.mb-notes{position:absolute;inset:0;pointer-events:none}
+.mb-notes span{position:absolute;font:600 15px/1 var(--ui);color:#ffe7a6;text-shadow:0 0 8px rgba(255,220,130,.8);opacity:0}
+.mb-side{flex:none;width:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.mb-crank{position:relative;width:68px;height:68px;border-radius:50%;touch-action:none;cursor:grab;background:radial-gradient(circle at 36% 30%,#fff0b8,#d9a93c 55%,#8a6418);
+  box-shadow:inset 0 -4px 8px rgba(70,40,0,.5),inset 0 2px 3px rgba(255,255,255,.6),0 8px 16px rgba(6,3,14,.45);transition:scale .43s var(--spring-dock)}
+.mb-crank.held{cursor:grabbing;scale:1.05}
+.mb-crank::before{content:"";position:absolute;inset:25px;border-radius:50%;background:radial-gradient(circle at 36% 30%,#6e4a10,#2a160f);box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+.mb-crank .arm{position:absolute;left:50%;top:50%;width:6px;height:30px;margin:-30px 0 0 -3px;border-radius:3px;background:linear-gradient(90deg,#6e4a10,#ffe9a8 50%,#8a6418);transform-origin:50% 100%;rotate:var(--ang)}
+.mb-crank .arm b{position:absolute;left:50%;top:-9px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:radial-gradient(circle at 36% 30%,#ff9db0,#c22b47 60%,#7a1226);box-shadow:0 2px 4px rgba(0,0,0,.5)}
+.mb-bpm{font:600 12px/1 var(--ui);color:var(--muted);font-variant-numeric:tabular-nums;transition:color .3s}
+.mb-bpm::after{content:" уд/мин";font-size:9.5px}
+.mbox.fast .mb-bpm{color:#ffd98a}.mbox.slow .mb-bpm{color:#b9c6ff}
+.mbox.mute .mb-roll,.mbox.mute .mb-comb{opacity:.6}
 .sheet .ticket{margin-bottom:0}
 /* результат уровня */
 .rbtns{display:flex;flex-direction:column;gap:10px}
@@ -1086,6 +1131,40 @@ body.day .moon .phase{opacity:0}
 /* дневник */
 .ndot{flex:none;width:9px;height:9px;border-radius:5px;background:#ff5d7a;box-shadow:0 0 10px rgba(255,93,122,.7)}
 #diaryG{margin:2px 0 14px}
+.desk-wrap.group{background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0;border-radius:0;overflow:visible}
+.desk-wrap .group{margin-top:12px}
+.desk-shelf{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch;perspective:900px;padding:2px 2px 0}
+.desk{position:relative;display:block;min-height:150px;padding:0;text-align:left;color:var(--ink);transition:transform .43s var(--spring-dock)}
+.desk.pressed{transform:scale(.97);transition-duration:60ms}
+/* книга: переплёт цвета ночного вина, тиснёный полумесяц, ленточка, сургуч при новой записи */
+.desk-book .bk{position:absolute;inset:0;display:block;transform-style:preserve-3d}
+.desk-book .pages{position:absolute;inset:5px 3px 5px 12px;border-radius:3px 9px 9px 3px;background:repeating-linear-gradient(0deg,#e9dcc6 0 1.5px,#cbbb9f 1.5px 3px);box-shadow:0 10px 22px rgba(6,3,14,.45)}
+.desk-book .cover{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:14px 14px 14px 24px;border-radius:5px 14px 14px 5px;transform-origin:0 50%;
+  background:linear-gradient(90deg,rgba(0,0,0,.42) 0 7px,rgba(255,255,255,.1) 8px 9px,rgba(0,0,0,0) 15px),radial-gradient(120% 90% at 78% 12%,#7a2440,#4a1630 55%,#2c0e22);
+  box-shadow:inset 0 0 0 1px rgba(245,200,76,.34),inset 0 1px 0 rgba(255,255,255,.14),0 12px 24px rgba(6,3,14,.4);transition:transform .5s var(--spring-glass)}
+.desk-book .cover::before{content:"";position:absolute;inset:8px 8px 8px 19px;border:.5px solid rgba(245,200,76,.42);border-radius:2px 8px 8px 2px;pointer-events:none}
+.desk-book .cres{position:absolute;right:20px;top:20px;width:40px;height:40px;fill:#f1cf7a;filter:drop-shadow(0 1px 0 rgba(60,20,10,.6)) drop-shadow(0 0 8px rgba(241,207,122,.35))}
+.desk-book b{position:relative;font:400 27px/.95 var(--script);color:#f6e2ad;text-shadow:0 1px 0 rgba(50,14,20,.7)}
+.desk-book small{position:relative;font:600 10.5px/1 var(--ui);color:rgba(246,226,173,.74)}
+.desk-book .ribbon{position:absolute;right:26px;bottom:-9px;width:10px;height:26px;background:linear-gradient(180deg,#c22b47,#8e1c2e);clip-path:polygon(0 0,100% 0,100% 100%,50% 76%,0 100%)}
+.desk-book .seal{position:absolute;left:14px;top:14px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 36% 30%,#ff7d8f,#d4233f 55%,#8c1226);box-shadow:0 2px 5px rgba(0,0,0,.45),inset 0 -2px 3px rgba(80,0,10,.5);display:none}
+.desk-book.fresh .seal{display:block;animation:sealPulse 2.4s ease-in-out infinite}
+@keyframes sealPulse{50%{box-shadow:0 2px 5px rgba(0,0,0,.45),inset 0 -2px 3px rgba(80,0,10,.5),0 0 0 5px rgba(232,72,106,.22)}}
+.desk-book.opening .cover{transform:rotateY(-24deg)}
+/* шкатулка: бархат, латунная кромка, за стеклом лежит то, что принесли котики */
+.desk-box{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:14px;border-radius:14px;
+  background:linear-gradient(180deg,#3a2456,#24143a);box-shadow:inset 0 0 0 1px rgba(245,200,76,.4),inset 0 0 0 4px rgba(20,10,34,.55),inset 0 0 0 5px rgba(245,200,76,.18),0 12px 24px rgba(6,3,14,.4)}
+.desk-box .lid{position:absolute;left:50%;top:-3px;width:26px;height:9px;margin-left:-13px;border-radius:3px 3px 5px 5px;background:linear-gradient(180deg,#ffe9a8,#c9982f);box-shadow:0 2px 4px rgba(0,0,0,.4)}
+.desk-box .glass{position:relative;flex:1;display:grid;grid-template-columns:repeat(4,1fr);align-content:center;justify-items:center;gap:6px 2px;margin-bottom:6px;padding:9px 6px;border-radius:9px;
+  background:radial-gradient(120% 100% at 50% 100%,rgba(140,30,58,.6),rgba(70,18,44,.7));box-shadow:inset 0 2px 8px rgba(0,0,0,.5),inset 0 0 0 .5px rgba(245,200,76,.3)}
+.desk-box .glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.2) 0 16%,rgba(255,255,255,0) 30% 100%)}
+.desk-box .glass .e{font-size:21px;line-height:1.1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
+.desk-box .glass .no{width:7px;height:7px;margin:9px 0;border-radius:50%;background:rgba(255,255,255,.13)}
+.desk-box .gsts{position:absolute;right:5px;top:-11px;display:flex;gap:1px}
+.desk-box .gsts .e{font-size:16px}
+.desk-box b{font:600 14px/1 var(--ui)}
+.desk-box small{font:600 10.5px/1.2 var(--ui);color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.desk-book.fresh .seal{animation:none}}
 .diary{position:relative;padding:4px 12px 14px 22px;margin:6px 0 0;border-radius:6px 16px 16px 6px;background:linear-gradient(90deg,rgba(0,0,0,.34),rgba(0,0,0,0) 16px),linear-gradient(180deg,rgba(64,44,86,.5),rgba(34,22,50,.5));
   box-shadow:inset 0 0 0 .5px rgba(245,200,76,.26),inset 9px 0 0 -8px rgba(245,200,76,.34),0 10px 26px rgba(6,3,14,.35)}
 .diary::before{content:"";position:absolute;inset:7px 7px 7px 15px;border:.5px solid rgba(245,200,76,.2);border-radius:3px 11px 11px 3px;pointer-events:none}
@@ -1203,7 +1282,7 @@ body.day .moon .phase{opacity:0}
 .cat .cbox text{font:700 12px/1 var(--ui);letter-spacing:.12em}
 #duo .yarn{position:absolute;left:0;top:0;z-index:3;pointer-events:none}
 #duo .yarn svg{display:block;width:100%;height:100%;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}
-.app.moongaze #duo .cat .pup{transform:translate(var(--gx,0px),var(--gy,0px)) scale(1.3,1.04)}
+.app.moongaze #duo .cat .pup{transform:translate(var(--gx,0px),var(--gy,0px)) scale(calc(1.3*var(--pd,1)),1.04)}
 .app.moongaze #duo .cat .tail{animation-duration:5.5s}
 .cat.hunt .pup{transform:translate(var(--gx,0px),var(--gy,0px)) scale(1.45,1.06)}
 .cat.tailplay .tail{animation:tailPlay .62s ease-in-out infinite alternate}
@@ -1296,42 +1375,56 @@ html,body{background:#0f0a17}
 .dropflash{position:absolute;inset:0;z-index:88;pointer-events:none;opacity:0;mix-blend-mode:screen;
   background:radial-gradient(ellipse 80% 60% at 50% 52%,rgba(255,120,140,.75),rgba(225,40,70,.55) 45%,rgba(150,10,40,.7) 100%)}
 /* награды: карточки-медальоны */
-.agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
-.acard{position:relative;display:block;width:100%;aspect-ratio:1/1.22;min-height:0;padding:0;border-radius:20px;perspective:800px;background:none;color:var(--ink)}
-.acard .in{position:absolute;inset:0;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .75s var(--spring-soft)}
-.acard.flip .in{transform:rotateY(180deg)}
-.acard .fa{position:absolute;inset:0;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 7px;text-align:center;
-  -webkit-backface-visibility:hidden;backface-visibility:hidden;background:linear-gradient(180deg,rgba(64,44,88,.92),rgba(36,24,52,.94));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 .5px rgba(255,255,255,.08),0 8px 18px rgba(0,0,0,.22)}
-.acard.got .front{background:linear-gradient(180deg,rgba(82,56,104,.95),rgba(42,28,58,.96))}
-.acard .back{transform:rotateY(180deg);justify-content:center;gap:5px;padding:10px 9px}
-/* Safari не прячет обратную сторону у слоёв с анимацией (блик, эмодзи, свечение): меняем стороны по видимости, ровно когда карточка встаёт ребром */
-.acard .front{transition:visibility 0s .09s}
-.acard.flip .front{visibility:hidden}
-.acard .back{visibility:hidden;transition:visibility 0s .09s}
-.acard.flip .back{visibility:visible}
-.acard .med{position:relative;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:26px;line-height:1;flex:none;overflow:visible}
-.acard.got .med{background:radial-gradient(circle at 35% 28%,#fff1c2,#f5c84c 56%,#a8771a);box-shadow:0 0 18px rgba(245,200,76,.32),inset 0 -3px 6px rgba(120,70,0,.35),inset 0 2px 3px rgba(255,255,255,.6)}
-.acard.lock .med,.acard.hid .med{background:radial-gradient(circle at 35% 28%,#3d2f4f,#1f1730);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 6px rgba(0,0,0,.35)}
-.acard.lock .med .e{filter:brightness(0) opacity(.34)}
-.acard.hid .med .e{font:600 21px/1 var(--ui);color:rgba(255,255,255,.34)}
-.acard.got .med::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+/* награды: созвездия. Фона у карты нет, сквозь неё видно настоящее небо */
+.awseg{max-width:none;margin:0 0 14px;--si:0}
+.awseg .segind{position:absolute;left:4px;top:4px;bottom:4px;width:calc((100% - 8px)/3);border-radius:21px;background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.09));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 12px rgba(0,0,0,.2);translate:calc(var(--si)*100%) 0;transition:translate .44s var(--spring-glass)}
+.awhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 4px;margin-bottom:6px}
+.awhead b{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:400 27px/1.1 var(--script);color:var(--ink);text-shadow:0 0 16px rgba(243,227,176,.25)}
+.awhead span{font:600 11px/1 var(--ui);color:var(--gold);font-variant-numeric:tabular-nums;white-space:nowrap}
+.starmap{position:relative;height:300px;margin:6px 22px 20px;touch-action:pan-y}
+.starmap.in{animation:conIn .5s var(--spring-glass) backwards}
+@keyframes conIn{from{opacity:0;transform:translateX(calc(var(--dir,0)*34px)) scale(.97)}}
+.slines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.slines line{stroke:rgba(255,255,255,.2);stroke-width:1.2;stroke-dasharray:1.5 6;stroke-linecap:round}
+.slines line.on{stroke:#f6d98c;stroke-width:1.8;stroke-dasharray:none;filter:drop-shadow(0 0 4px rgba(246,217,140,.75))}
+.slines line.on.draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:lineDraw .7s ease-out var(--ld,0s) forwards}
+@keyframes lineDraw{to{stroke-dashoffset:0}}
+.snode{position:absolute;width:54px;height:54px;margin:-27px 0 0 -27px;padding:0;border-radius:50%;display:grid;place-items:center;font-size:26px;line-height:1;color:var(--ink);
+  transition:scale .43s var(--spring-dock),box-shadow .3s;animation:nodeIn .7s var(--spring-pop) backwards;animation-delay:calc(var(--sd,0s)*-.03)}
+.snode.sm{width:46px;height:46px;margin:-23px 0 0 -23px;font-size:22px}
+.snode.got{background:radial-gradient(circle at 35% 28%,#fff1c2,#f5c84c 56%,#a8771a);box-shadow:0 0 20px rgba(245,200,76,.45),inset 0 -3px 6px rgba(120,70,0,.35),inset 0 2px 3px rgba(255,255,255,.6)}
+.snode.lock,.snode.hid{background:radial-gradient(circle at 35% 28%,#3d2f4f,#1f1730);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 6px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.08)}
+.snode.lock .e{filter:brightness(0) opacity(.36)}
+.snode.hid .e{font:600 20px/1 var(--ui);color:rgba(255,255,255,.4)}
+.snode.hid{animation:nodeIn .7s var(--spring-pop) backwards,hidPulse 3.6s ease-in-out infinite;animation-delay:0s,var(--sd,0s)}
+@keyframes hidPulse{50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.1),inset 0 -2px 6px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.2),0 0 16px rgba(190,170,255,.28)}}
+.snode.got::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
   background:linear-gradient(115deg,rgba(255,255,255,0) 38%,rgba(255,255,255,.5) 50%,rgba(255,255,255,0) 62%) 150% 0/260% 100% no-repeat;animation:medShine 7s ease-in-out infinite;animation-delay:var(--sd,0s)}
 @keyframes medShine{0%,82%{background-position:150% 0}100%{background-position:-60% 0}}
-.acard .pr{position:absolute;inset:-5px;width:64px;height:64px;transform:rotate(-90deg)}
-.acard .pr circle{fill:none;stroke:rgba(255,255,255,.1);stroke-width:3}
-.acard .pr circle.v{stroke:#e8486a;stroke-linecap:round}
-.acard b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:600 10.5px/1.22 var(--ui);color:var(--ink)}
-.acard.lock b,.acard.hid .front b{color:var(--muted)}
-.acard small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:500 9.5px/1.3 var(--ui);color:var(--muted)}
-.acard .back small.s{-webkit-line-clamp:4;color:rgba(251,241,226,.82)}
-.acard .back small.d{white-space:pre-line}
-.acard .back small.d{color:var(--gold);-webkit-line-clamp:2}
-.acard.lock .back small.d,.acard.hid .back small.d{color:var(--faint)}
-.acard:active .in{scale:.97}
-.acard.fresh .med{animation:medReveal 1.2s var(--spring-pop) both;animation-delay:var(--fd,0s)}
+.snode.sel{scale:1.14}
+.snode.sel::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:1.5px solid rgba(255,236,180,.9);box-shadow:0 0 12px rgba(255,236,180,.5)}
+.snode.pressed{scale:.94;transition-duration:60ms}
+.snode .pr{position:absolute;inset:-5px;width:calc(100% + 10px);height:calc(100% + 10px);transform:rotate(-90deg)}
+.snode .pr circle{fill:none;stroke:rgba(255,255,255,.1);stroke-width:3}
+.snode .pr circle.v{stroke:#e8486a;stroke-linecap:round}
+.snode.fresh{animation:medReveal 1.2s var(--spring-pop) both;animation-delay:var(--fd,0s)}
 @keyframes medReveal{0%{transform:scale(.7) rotateY(180deg);filter:brightness(.25) saturate(0)}55%{filter:brightness(1.45) saturate(1.2)}100%{transform:none;filter:none}}
-@media (prefers-reduced-motion:reduce){.acard .in{transition:none}.acard.got .med::after{animation:none}}
+.adet{display:flex;align-items:center;gap:14px;min-height:92px;padding:14px 16px;border-radius:22px;background:linear-gradient(180deg,rgba(64,44,88,.9),rgba(36,24,52,.93));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 0 .5px rgba(255,255,255,.08),0 10px 22px rgba(0,0,0,.25)}
+.adet.got{background:linear-gradient(180deg,rgba(84,58,104,.93),rgba(42,28,58,.95));box-shadow:inset 0 0 0 1px rgba(245,200,76,.34),0 10px 22px rgba(0,0,0,.25)}
+.adet .med{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:28px;line-height:1}
+.adet.got .med{background:radial-gradient(circle at 35% 28%,#fff1c2,#f5c84c 56%,#a8771a);box-shadow:0 0 18px rgba(245,200,76,.32),inset 0 -3px 6px rgba(120,70,0,.35),inset 0 2px 3px rgba(255,255,255,.6)}
+.adet.lock .med,.adet.hid .med{background:radial-gradient(circle at 35% 28%,#3d2f4f,#1f1730);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 6px rgba(0,0,0,.35)}
+.adet.lock .med .e{filter:brightness(0) opacity(.34)}
+.adet.hid .med .e{font:600 22px/1 var(--ui);color:rgba(255,255,255,.34)}
+.adet .tx{min-width:0;display:flex;flex-direction:column;gap:4px}
+.adet b{font:600 15px/1.2 var(--ui);color:var(--ink)}
+.adet .s{font:500 13px/1.35 var(--ui);color:rgba(251,241,226,.82);text-wrap:pretty}
+.adet small{font:600 11px/1.2 var(--ui);color:var(--gold)}
+.adet.lock small,.adet.hid small{color:var(--muted)}
+@media (max-height:700px){.starmap{height:250px}}
+@media (prefers-reduced-motion:reduce){.snode,.snode.hid,.starmap.in{animation:none}.snode.got::after{animation:none}.slines line.on.draw{animation:none;stroke-dasharray:none}}
 /* погода */
 .wx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .wx i{position:absolute;top:-8%;display:block;will-change:transform}
@@ -1462,6 +1555,7 @@ html,body{background:#0f0a17}
 .bush .item.held{transform:scale(.92)}
 .gnight{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity 1.2s;border-radius:0}
 .bush .item{z-index:2}
+.bush .item.wide::before{content:"";position:absolute;inset:-15%}
 .gnight.on{opacity:1}
 .garden.night .item:not(.bat):not(.lit){filter:brightness(.4) drop-shadow(0 0 10px rgba(255,80,110,.9))}
 .garden.night .item.gold:not(.lit){filter:sepia(1) saturate(4) hue-rotate(-12deg) brightness(.6) drop-shadow(0 0 14px rgba(255,210,90,.95))}
@@ -1504,7 +1598,7 @@ html,body{background:#0f0a17}
 
 /* ===== v12: док, свои значки, камера по вкладкам, лунные лучи ===== */
 .icv{width:1em;height:1em;display:block;overflow:visible}
-.wit .e{line-height:0}.wit .e .icv{width:40px;height:40px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
+.wit .e.ic{line-height:0}.wit .e .icv{width:40px;height:40px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
 .gslot .e .icv{width:36px;height:36px}
 .gift .e .icv{width:32px;height:32px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 .wit:not(.on):not(.own) .e .icv{opacity:.92}
@@ -1550,6 +1644,10 @@ html,body{background:#0f0a17}
 #world[data-cam="v-awards"]{--cx:0px;--cy:38px;--cz:0;--sz:.11}
 #world[data-cam="v-wardrobe"],#world[data-cam="s-wardrobe"]{--cx:-16px;--cy:-10px;--cz:.12;--ox:78%}
 #world[data-cam="s-shop"]{--cx:18px;--cy:-6px;--cz:.09;--ox:30%}
+#world[data-cam="epi"]{--cx:0px;--cy:400px;--cz:.18;--sz:.3}
+.app.epi-rise .stage :is(.views,.hud,.tabs,.edge-top,.edge-bot){transition:opacity .45s ease}
+.app.epi-rise .stage :is(.views,.hud,.tabs,.edge-top,.edge-bot){opacity:0;pointer-events:none}
+.app.epi-rise .epi{animation-duration:1.1s}
 /* вкладка въезжает с той стороны, куда поехала камера */
 .view.on{animation-name:vinDir}
 @keyframes vinDir{from{opacity:0;transform:translate(calc(var(--vdir,0)*26px),10px) scale(.985)}}
@@ -1567,8 +1665,10 @@ body.day .rays i{background:repeating-conic-gradient(from 0deg,rgba(255,224,160,
 .app.lowfx .rays i + i{display:none}
 @media (prefers-reduced-motion:reduce){.rays i{animation:none}#world .stars,#world .moon,#world .rays,#world .ridge{transition:none}}
 /* уровень 5: сумеречный порыв */
-.fgust{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.3s ease;
-  background:radial-gradient(circle 70vmax at 74% 12%,rgba(226,234,255,.46),rgba(160,176,236,.18) 42%,rgba(160,176,236,0) 72%),linear-gradient(180deg,rgba(126,112,206,.26),rgba(126,112,206,0) 72%)}
+.fgust{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.3s ease;mix-blend-mode:screen;
+  background:repeating-linear-gradient(112deg,rgba(255,226,160,0) 0 46px,rgba(255,226,160,.2) 62px 84px,rgba(190,214,255,.12) 96px 108px,rgba(255,226,160,0) 128px 170px),
+  radial-gradient(circle 80vmax at 82% -6%,rgba(255,236,190,.5),rgba(255,214,150,.16) 42%,rgba(255,214,150,0) 70%);
+  -webkit-mask:linear-gradient(180deg,#000 0 46%,rgba(0,0,0,.25) 78%,transparent);mask:linear-gradient(180deg,#000 0 46%,rgba(0,0,0,.25) 78%,transparent)}
 .fgust.on{opacity:1}
 </style>
 </head>
@@ -2134,7 +2234,7 @@ function startPurr(level=.24){
 /* генеративная шкатулка */
 function mulberry32(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const Music = (() => {
-  const BPM = 80, STEP = 60/BPM/2;
+  const BASE_BPM = 80; let BPM = BASE_BPM, STEP = 60/BPM/2, onStep = null, hits = [];
   const SCALE = [64,65,67,69,71,72,74,76,77,79,81];
   const PROG = [{root:45,pcs:[9,0,4]},{root:41,pcs:[5,9,0]},{root:48,pcs:[0,4,7]},{root:43,pcs:[7,11,2]}];
   const hz = m => 440*Math.pow(2,(m-69)/12);
@@ -2159,6 +2259,11 @@ const Music = (() => {
     if (worn.shades){ if (pos === 0 || pos === 5) voice({type:"sine", f:190, f2:80, glide:.08, t, dest:musicBus, envOpts:{a:.002, d:.16, peak:.11*wk}});                       /* очки: ленивый бит */
       if (pos === 4) noise({t, type:"bandpass", freq:1900, Q:1.1, dest:musicBus, envOpts:{a:.001, d:.06, peak:.038*wk}}); }
     if (worn.mask && (pos === 2 || pos === 6)) voice({type:"triangle", f:hz(57 + pc(bar + (pos >> 2))), t, lp:1400, dest:musicBus, envOpts:{a:.03, d:.5, peak:.065*wk}});      /* маски: второй голос */
+      /* какие партии прозвучали на этом шаге: по ним вздрагивают молоточки шкатулки */
+    hits = [];
+    if (worn.bow && pos === 4) hits.push("bow"); if (worn.cape && pos === 0) hits.push("cape"); if (worn.ring && pos === 0 && bar % 2 === 0) hits.push("ring");
+    if (worn.tiara && (pos === 1 || pos === 3 || pos === 5)) hits.push("tiara"); if (worn.wreath && pos % 2 === 1) hits.push("wreath");
+    if (worn.shades && (pos === 0 || pos === 4 || pos === 5)) hits.push("shades"); if (worn.mask && (pos === 2 || pos === 6)) hits.push("mask");
   }
   function bassNote(m, t){ voice({type:"sine",f:hz(m),t,lp:400,dest:musicBus,envOpts:{a:.03,d:.1,sus:.5,hold:STEP*8-.2,r:.3,peak:.08}}); }
   function padChord(ch, t){ [ch.pcs[1],ch.pcs[2]].forEach((pc,i) => { let m = 60+pc; if (m > 67) m -= 12;
@@ -2175,6 +2280,7 @@ const Music = (() => {
     else if (rand() < (pos%4 === 0 ? .9 : .55)){ let i = walk(); if (pos === 0 || pos === 4) idx = i = snap(i, ch.pcs); note = SCALE[i]; }
     hist[s] = note; delete hist[s-64];
     if (note !== null) tine(hz(note), t + (rand()-.5)*.01);
+    if (onStep) onStep({pos, bar, note, hits, at: Math.max(0, t - ctx.currentTime)});
   }
   function tick(){ if (ctx.currentTime > next+.5) next = ctx.currentTime+.05; while (next < ctx.currentTime+.12){ schedule(step++, next); next += STEP; } }
   return {
@@ -2188,7 +2294,10 @@ const Music = (() => {
       next = ctx.currentTime+.1; timer = setInterval(tick, 25);
     },
     stop(){ clearInterval(timer); timer = null; if (!ctx) return; musicBus.gain.setTargetAtTime(.0001, ctx.currentTime, .3); mSend && mSend.gain.setTargetAtTime(.0001, ctx.currentTime, .3); },
-    get playing(){ return !!timer; }
+    get playing(){ return !!timer; },
+    get bpm(){ return BPM; }, base: BASE_BPM,
+    tempo(b){ BPM = Math.max(68, Math.min(112, b)); STEP = 60/BPM/2; },
+    listen(fn){ onStep = fn; }
   };
 })();
 
@@ -2297,7 +2406,7 @@ function flyDrops(fromEl, n=6){
 /* нажатия: визуал + звук + хаптика */
 document.addEventListener("pointerdown", e => {
   const b = e.target.closest(".btn,.round,.hbtn,.node,.pola,.tab,.dk,.mini,.medal,.wit,.look,.crest,[role=radio],.li[role=button]"); if (!b || b.disabled) return;
-  if (b.matches(".btn,.round,.hbtn,.node,.pola,.tab,.dk,.mini,.medal,.wit,.look,.crest")) b.classList.add("pressed");
+  if (b.matches(".btn,.round,.hbtn,.node,.pola,.tab,.dk,.mini,.medal,.wit,.look,.crest,.snode,.desk")) b.classList.add("pressed");
   if (b.matches(".btn,.round,.dk,.mini")){ const r = b.getBoundingClientRect(); b.style.setProperty("--px", (e.clientX - r.left) + "px"); b.style.setProperty("--py", (e.clientY - r.top) + "px"); b.classList.add("lit"); }
   if (b.id === "gClose") return;
   snd.tap(); haptic(8);
@@ -2332,8 +2441,8 @@ function catSVG(c, opts={}){
   <path d="M147 141 A60 54 0 0 1 159 169" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/>
   <g class="paw pl"><ellipse cx="76" cy="222" rx="19" ry="10" fill="${c.fur}"/></g>
   <g class="paw pr"><ellipse cx="124" cy="222" rx="19" ry="10" fill="${c.fur}"/><g class="acc acc-ring"><circle cx="124" cy="216" r="6" fill="none" stroke="#f5c84c" stroke-width="3"/><rect x="121" y="206" width="6" height="6" fill="#4ea0ff" transform="rotate(45 124 209)"/></g></g>
-  <g class="ear el"><path d="M54 80 Q52 48 74 58 Z" fill="${c.fur}"/><path d="M60 72 Q60 56 72 61 Z" fill="#b99aa6"/><path d="M54.500 76 Q53 50 73 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g>
-  <g class="ear er"><path d="M146 80 Q148 48 126 58 Z" fill="${c.fur}"/><path d="M140 72 Q140 56 128 61 Z" fill="#b99aa6"/><path d="M145.500 76 Q147 50 127 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g>
+  <g class="hl hl-ear"><g class="ear el"><path d="M54 80 Q52 48 74 58 Z" fill="${c.fur}"/><path d="M60 72 Q60 56 72 61 Z" fill="#b99aa6"/><path d="M54.500 76 Q53 50 73 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g>
+  <g class="ear er"><path d="M146 80 Q148 48 126 58 Z" fill="${c.fur}"/><path d="M140 72 Q140 56 128 61 Z" fill="#b99aa6"/><path d="M145.500 76 Q147 50 127 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g></g>
   <ellipse cx="100" cy="104" rx="56" ry="48" fill="${c.fur}"/>
   <ellipse cx="74" cy="122" rx="20" ry="15" fill="${c.fur}"/>
   <ellipse cx="126" cy="122" rx="20" ry="15" fill="${c.fur}"/>
@@ -2343,22 +2452,22 @@ function catSVG(c, opts={}){
   <ellipse cx="100" cy="104" rx="56" ry="48" fill="url(#vel-${k})"/>
   <path d="M66 66 A56 48 0 0 1 134 66" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/>
   <path d="M122 60 Q150 68 157 100" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="2" stroke-linecap="round"/>
-  <path d="M86 68 Q100 62 114 68" stroke="${c.shade}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
+  <g class="hl hl-top"><path d="M86 68 Q100 62 114 68" stroke="${c.shade}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
   <path d="M90 76 Q100 72 110 76" stroke="${c.shade}" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".5"/>
   <g class="acc acc-wreath"><circle cx="66" cy="62" r="7" fill="#d7263d"/><circle cx="66" cy="62" r="3.5" fill="#a3132a"/><circle cx="80" cy="54" r="6" fill="#e2445a"/><circle cx="80" cy="54" r="3" fill="#a3132a"/><path d="M58 70 q6 -4 12 0 M86 58 q5 -5 10 -1" stroke="#4f8a43" stroke-width="3" fill="none" stroke-linecap="round"/></g>
   <g class="acc acc-tiara"><path d="M78 62 L84 46 L92 56 L100 40 L108 56 L116 46 L122 62 Z" fill="#f5c84c"/><circle cx="100" cy="48" r="3.5" fill="#e3304a"/></g>
-  <g class="acc acc-bow"><path d="M130 52 L116 42 L116 62 Z M130 52 L144 42 L144 62 Z" fill="#ff8aa0"/><circle cx="130" cy="52" r="4" fill="#ff5d7a"/></g>
-  <g class="eglow"><circle cx="80" cy="102" r="23" fill="url(#eg-${k})"/><circle cx="120" cy="102" r="23" fill="url(#eg-${k})"/></g>
+  <g class="acc acc-bow"><path d="M130 52 L116 42 L116 62 Z M130 52 L144 42 L144 62 Z" fill="#ff8aa0"/><circle cx="130" cy="52" r="4" fill="#ff5d7a"/></g></g>
+  <g class="hl hl-eyes"><g class="eglow"><circle cx="80" cy="102" r="23" fill="url(#eg-${k})"/><circle cx="120" cy="102" r="23" fill="url(#eg-${k})"/></g>
   ${eye(80)}
-  ${eye(120)}
-  <path d="M94 118 L106 118 L100 125 Z" fill="${c.nose}"/>
+  ${eye(120)}</g>
+  <g class="hl hl-muz"><path d="M94 118 L106 118 L100 125 Z" fill="${c.nose}"/>
   <ellipse class="yawn" cx="100" cy="132" rx="7.5" ry="9" fill="#4a1c2a"/>
   <path d="M100 125 Q94 134 86 130 M100 125 Q106 134 114 130" fill="none" stroke="${c.nose}" stroke-width="2" stroke-linecap="round"/>
   ${fangs ? '<path d="M92 129 L96 129 L94 137 Z M104 129 L108 129 L106 137 Z" fill="#fff"/>' : ""}
-  <g stroke="#ecebef" stroke-width="1.6" stroke-linecap="round" opacity=".75"><path d="M64 122 L36 116 M64 127 L36 130 M136 122 L164 116 M136 127 L164 130"/></g>
-  <g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
-  <g class="acc acc-mask"><path fill-rule="evenodd" d="M56 98 Q60 82 80 86 Q92 88 100 96 Q108 88 120 86 Q140 82 144 98 Q142 114 122 116 Q108 116 100 108 Q92 116 78 116 Q58 114 56 98 Z M70 101 Q74 93 82 93 Q90 94 91 101 Q88 108 80 108 Q72 108 70 101 Z M109 101 Q110 94 118 93 Q126 93 130 101 Q128 108 120 108 Q112 108 109 101 Z" fill="#17101a" stroke="#d9b45a" stroke-width="1.8"/><path d="M144 96 Q158 74 150 58 M146 92 Q160 80 162 66" fill="none" stroke="#b01e33" stroke-width="3" stroke-linecap="round"/></g>
-  <path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/>
+  <g stroke="#ecebef" stroke-width="1.6" stroke-linecap="round" opacity=".75"><path d="M64 122 L36 116 M64 127 L36 130 M136 122 L164 116 M136 127 L164 130"/></g></g>
+  <g class="hl hl-eyes"><g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
+  <g class="acc acc-mask"><path fill-rule="evenodd" d="M56 98 Q60 82 80 86 Q92 88 100 96 Q108 88 120 86 Q140 82 144 98 Q142 114 122 116 Q108 116 100 108 Q92 116 78 116 Q58 114 56 98 Z M70 101 Q74 93 82 93 Q90 94 91 101 Q88 108 80 108 Q72 108 70 101 Z M109 101 Q110 94 118 93 Q126 93 130 101 Q128 108 120 108 Q112 108 109 101 Z" fill="#17101a" stroke="#d9b45a" stroke-width="1.8"/><path d="M144 96 Q158 74 150 58 M146 92 Q160 80 162 66" fill="none" stroke="#b01e33" stroke-width="3" stroke-linecap="round"/></g></g>
+  <g class="hl hl-muz"><path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/></g>
   <g class="wpaw"><ellipse cx="0" cy="0" rx="17" ry="11.5" fill="${c.fur}"/><ellipse cx="0" cy="4" rx="13" ry="6" fill="${c.shade}" opacity=".22"/><path d="M-7 -10 q2 5 0 10 M1 -11 q2 5 0 11 M9 -9 q2 4 0 9" stroke="${c.shade}" stroke-width="1.6" fill="none" opacity=".4" stroke-linecap="round"/></g>
 </svg>`;
 }
@@ -2396,9 +2505,22 @@ const PERKS = {
   shades: {7: "солнце жжёт на треть слабее"}
 };
 const perk = (id, n) => wears(id) && !!(PERKS[id] && PERKS[id][n]);
-const perksFor = n => ACCS.filter(id => perk(id, n)).map(id => ({id, e: WEAR.find(w => w.id === id).e, t: PERKS[id][n]}));
+/* сеты: две вещи вместе дают отдельный бонус. Капель сеты не добавляют, кроме окна сверхмурчания у «Королев Выпускного» */
+const OUTFIT_SETS = [
+  {id: "day",   t: "Дневные Бродяги",     need: ["ring", "shades"],  p: "в «Без кольца» первые 1,2 с на солнце не жгут", lv: {7: "первые 1,2 с на солнце не жгут"}},
+  {id: "ball",  t: "Бал у Сальваторе",    need: ["cape", "mask"],    p: "в «Можно или нельзя» прощается первая ошибка, на маскараде лупа слышит сердце за 0,75 с", lv: {4: "первая ошибка прощается", 8: "лупа слышит сердце за 0,75 с"}},
+  {id: "prom",  t: "Королевы Выпускного", need: ["tiara", "bow"],    p: "сверхмурчанию хватает 4 поглаживаний, и окно длится 3,2 с", lv: {}},
+  {id: "forks", t: "Полночь в Форксе",    need: ["wreath", "ring"],  p: "рыбки в лесу и розы на поляне собираются с большего расстояния", lv: {5: "рыбки ловятся издалека", 6: "по розам легче попасть"}}
+];
+const setOn = id => { const st = OUTFIT_SETS.find(x => x.id === id); return !!st && st.need.every(wears); };
+const setEmoji = st => st.need.map(id => WEAR.find(w => w.id === id).e).join("");
+const perksFor = n => ACCS.filter(id => perk(id, n)).map(id => ({id, e: WEAR.find(w => w.id === id).e, t: PERKS[id][n]}))
+  .concat(OUTFIT_SETS.filter(st => st.lv[n] && setOn(st.id)).map(st => ({id: st.need[0], set: 1, e: setEmoji(st), t: st.t + ": " + st.lv[n]})));
 /* вещи и подарки нарисованы своими значками в палитре игры, а не системными эмодзи */
 const icoHTML = id => '<svg class="icv" aria-hidden="true"><use href="#' + id + '"/></svg>';
+/* вещи и подарки показываются родными эмодзи телефона. Свои векторные значки лежат в спрайте: NATIVE_EMOJI = false вернёт их */
+const NATIVE_EMOJI = true;
+function setIco(el, emoji, id){ if (NATIVE_EMOJI){ el.textContent = emoji; el.classList.remove("ic"); } else { el.innerHTML = icoHTML(id); el.classList.add("ic"); } }
 function putOn(k, id, on){ const w = wearOf(k); w[id] = !!on; if (on && EYEWEAR.includes(id)) EYEWEAR.forEach(x => { if (x !== id) w[x] = false; }); }
 const springPop = () => getComputedStyle(document.documentElement).getPropertyValue("--spring-pop").trim() || "ease-out";
 let lastWear = null;
@@ -2520,8 +2642,9 @@ let purr = null, purrT = 0, phraseIn = 5 + Math.floor(Math.random()*5), sinceLin
 const PETS_PER_DROP = 15;
 const moonNow = () => typeof fullMoon === "function" && fullMoon();
 const perDrop = () => Math.max(6, (moonNow() ? 8 : PETS_PER_DROP) - (wears("bow") ? 2 : 0));
-/* сверхмурчание: шкала полная, а гладить не перестали. Ещё OVER_NEED поглаживаний за OVER_MS доводят выдачу до cyclePay(true) */
-const OVER_NEED = 5, OVER_MS = 2600;
+/* сверхмурчание: шкала полная, а гладить не перестали. Ещё OVER_NEED поглаживаний за OVER_MS доводят выдачу до cyclePay(true).
+   Сет «Королевы Выпускного» смягчает окно: 4 поглаживания за 3,2 с */
+const overNeed = () => setOn("prom") ? 4 : 5, overMs = () => setOn("prom") ? 3200 : 2600;
 let over = null;
 let bubState = {txt: "мрр?", side: "alisa"}, bubT = 0, bubHide = 0;
 function catOf(side){ return document.querySelector(`#duo .pet[data-cat="${side}"] .cat`); }
@@ -2688,6 +2811,7 @@ function renderPurr(){
   m.setAttribute("aria-valuemax", D); m.style.setProperty("--heat", q ? 0 : Math.max(0, Math.min(1, (n/D - .6)/.4)).toFixed(2));
   m.style.setProperty("--dt", (11 + (1 - n/D)*78).toFixed(1) + "%"); m.classList.toggle("near", n === D - 1 && !q);
   $("#purrN").textContent = n + "/" + D; $("#purrBar").style.width = (n/D*100) + "%";
+  $("#duo").style.setProperty("--pd", q ? 1 : (1 + .38*n/D).toFixed(3));        /* зрачки шире с каждым делением шкалы */
   m.setAttribute("aria-valuenow", n); m.classList.toggle("paused", q);
   $("#purrK").textContent = q ? "мурр-шкала · на паузе" : (moonNow() ? "мурр-шкала · полнолуние" : "мурр-шкала"); m.classList.toggle("moonx", moonNow() && !q);
 }
@@ -2724,7 +2848,7 @@ function pet(el, e, soft){
     m.style.setProperty("--px", Math.max(0, Math.min(mr.width, px - mr.left)).toFixed(0) + "px"); m.style.setProperty("--py", "0px");
     m.style.setProperty("--ex", Math.max(0, Math.min(mr.width, px - mr.left)).toFixed(0) + "px"); m.style.setProperty("--ey", "0px");
     m.classList.add("lit", "edged"); clearTimeout(m._lit); m._lit = setTimeout(() => m.classList.remove("lit", "edged"), 260); }
-  if (ov) snd.over(1 - (ov.left - 1)/OVER_NEED); else snd.tick(Math.min(1, S.purr/perDrop()));
+  if (ov) snd.over(1 - (ov.left - 1)/ov.need); else snd.tick(Math.min(1, S.purr/perDrop()));
   haptic(stroke ? 4 : 6);
   if (!purr) purr = startPurr(.22);
   clearTimeout(purrT); purrT = setTimeout(() => { if (purr){ purr.stop(); purr = null; } }, 1500);
@@ -2745,7 +2869,7 @@ function pet(el, e, soft){
   if (ov) overStep(who, x, y);
   else if (S.purr >= perDrop()){
     const D = perDrop(), pay = cyclePay(false); S.purr = 0; S.drops += pay; const m = $("#purr"), bar = $("#purrBar");
-    bar.style.width = "100%"; $("#purrN").textContent = D + "/" + D; m.style.setProperty("--dt", "11%"); m.style.setProperty("--heat", 1); m.classList.remove("near");
+    bar.style.width = "100%"; $("#purrN").textContent = D + "/" + D; $("#duo").style.setProperty("--pd", 1.38); m.style.setProperty("--dt", "11%"); m.style.setProperty("--heat", 1); m.classList.remove("near");
     m.classList.remove("full"); void m.offsetWidth; m.classList.add("full");
     setTimeout(() => { flyDrops(m.querySelector(".dropl"), pay); setTimeout(() => hud(true), 800); }, 380);
     if (pay > 1){ const [mx, my] = centerOf(m); setTimeout(() => popNum("+" + pay, mx + 70, my - 14), 380); }
@@ -2755,11 +2879,11 @@ function pet(el, e, soft){
   checkAch(); save();
 }
 function overStart(pay, who){
-  const m = $("#purr"), bar = $("#purrBar"), o = over = {left: OVER_NEED, pay: Math.max(1, cyclePay(true) - pay)};
-  o.t = setTimeout(() => overEnd(false), OVER_MS + 440);
+  const m = $("#purr"), bar = $("#purrBar"), MS = overMs(), o = over = {left: overNeed(), need: overNeed(), pay: Math.max(1, cyclePay(true) - pay)};
+  o.t = setTimeout(() => overEnd(false), MS + 440);
   /* первые 0,4 с шкала ещё празднует каплю, потом золотеет и начинает убывать */
   setTimeout(() => { if (over !== o) return; m.classList.add("over"); $("#purrK").textContent = "сверхмурчание +" + o.pay; $("#purrN").textContent = "ещё " + o.left;
-    bar.style.transition = "none"; bar.style.width = "100%"; void bar.offsetWidth; bar.style.transition = `width ${OVER_MS}ms linear`; bar.style.width = "0%"; }, 440);
+    bar.style.transition = "none"; bar.style.width = "100%"; void bar.offsetWidth; bar.style.transition = `width ${MS}ms linear`; bar.style.width = "0%"; }, 440);
   if (!S.overSeen) setTimeout(() => { if (over === o) setBubble(who === "alisa" ? "не останавливайся" : "ещё, ещё", who); }, 560);
 }
 function overStep(who, x, y){
@@ -3177,29 +3301,39 @@ function wearGrid(box, mode){
   const cap = document.createElement("p"); cap.className = "wcap"; cap.setAttribute("aria-live", "polite");
   const capText = w => { const b = cyclePay(false), t = cyclePay(true);
     cap.textContent = w && w.p ? w.t + ": " + w.p + "." : "Надето вещей: " + wornCount() + ". Полная мурр-шкала: " + b + " " + plural(b, "капля", "капли", "капель") + ", со сверхмурчанием " + t + ". Чем больше надето, тем больше капель."; };
+  const sets = document.createElement("div"); sets.className = "osets";
+  const paintSets = () => { sets.innerHTML = ""; OUTFIT_SETS.forEach(st => { const on = setOn(st.id), d = document.createElement("button"); d.type = "button"; d.className = "oset" + (on ? " on" : "");
+    d.innerHTML = '<span class="e" aria-hidden="true"></span><b></b>'; d.querySelector(".e").textContent = setEmoji(st); d.querySelector("b").textContent = st.t;
+    d.setAttribute("aria-label", "Сет «" + st.t + "»" + (on ? ", собран: " : ", не собран: ") + st.p);
+    d.onclick = () => { snd.tap(); haptic(5); cap.textContent = "«" + st.t + "»" + (on ? ": " : " (наденьте обе вещи): ") + st.p + "."; }; sets.appendChild(d); }); };
   WEAR.forEach(w => {
     const b = document.createElement("button"); b.className = "wit";
     const paint = () => {
       const tg = mode === "shared" ? ["a","l"] : wTargets(), on = S.owned[w.id] && tg.every(k => wearOf(k)[w.id]);
       b.className = "wit" + (on ? " on" : "") + (!S.owned[w.id] && !w.price ? " lock" : "");
       b.innerHTML = '<span class="e"></span><span class="n"></span>' + (S.owned[w.id] ? "" : w.price ? `<span class="pr num"><svg class="icf cur"><use href="#i-drop"/></svg>${w.price}</span>` : '<span class="pr">награда</span>');
-      b.querySelector(".e").innerHTML = icoHTML("w-" + w.id); b.querySelector(".n").textContent = w.t;
+      setIco(b.querySelector(".e"), w.e, "w-" + w.id); b.querySelector(".n").textContent = w.t;
       b.setAttribute("aria-label", w.t + (S.owned[w.id] ? (on ? ", надето" : "") : w.price ? `, ${w.price} капель` : ", " + w.s) + (w.p ? ". " + w.p : ""));
       b.setAttribute("aria-pressed", on ? "true" : "false");
     };
     b.onclick = () => {
       capText(w);
-      const tg = mode === "shared" ? ["a","l"] : wTargets();
+      const tg = mode === "shared" ? ["a","l"] : wTargets(), was = OUTFIT_SETS.filter(st => setOn(st.id)).map(st => st.id);
       if (S.owned[w.id]){ const on = !tg.every(k => wearOf(k)[w.id]); tg.forEach(k => putOn(k, w.id, on)); snd.toggle(on); haptic(10); }
       else if (w.price){
         if (S.drops < w.price){ shake(b, 5); snd.wrong(); haptic(30); const [x, y] = centerOf(b); popNum("ещё " + (w.price - S.drops), x - 20, y - 20); return; }
         S.drops -= w.price; S.owned[w.id] = 1; tg.forEach(k => putOn(k, w.id, true)); snd.purchase(); haptic([12,40,18]); const [x,y] = centerOf(b); FX.burst(x,y,{emojis:[w.e,"✨"],n:10});
       } else { shake(b, 4); snd.wrong(); const [x, y] = centerOf(b); popNum(w.s, x - 50, y - 20); return; }
       save(); hud(true); applyLook(); checkAch(); box.querySelectorAll(".wit").forEach(x => x._paint && x._paint()); if (mode !== "shared") renderLooksState();
+      paintSets();
+      /* сет только что собрался: плашка вспыхивает, подпись объясняет, что он даёт */
+      const fresh = OUTFIT_SETS.find(st => setOn(st.id) && !was.includes(st.id) && st.need.includes(w.id));
+      if (fresh){ const el = [...sets.querySelectorAll(".oset")].find(x => x.querySelector("b").textContent === fresh.t); cap.textContent = "Сет «" + fresh.t + "»: " + fresh.p + ".";
+        snd.collect(true); haptic([10, 30, 14]); if (el){ el.classList.add("lit"); const [x, y] = centerOf(el); FX.burst(x, y, {emojis: ["✨"], n: 9, size: [10, 16], grav: 160}); } }
     };
     b._paint = paint; paint(); box.appendChild(b);
   });
-  capText(); box.prepend(cap);
+  capText(); box.prepend(cap); cap.after(sets); paintSets();
 }
 function openWardrobe(){
   if (S.splitWear){ showView("v-wardrobe"); return; }
@@ -3380,8 +3514,8 @@ addEventListener("resize", () => { const m = $("#map"); if ($("#v-map").classLis
 function perkPills(n){
   const list = perksFor(n); if (!list.length) return null;
   const box = document.createElement("div"); box.className = "perks";
-  list.forEach(x => { const d = document.createElement("div"); d.className = "perk"; d.innerHTML = '<span class="e" aria-hidden="true"></span><span class="pt"></span>';
-    d.querySelector(".e").innerHTML = icoHTML("w-" + x.id); d.querySelector(".pt").textContent = x.t.charAt(0).toUpperCase() + x.t.slice(1); box.appendChild(d); });
+  list.forEach(x => { const d = document.createElement("div"); d.className = "perk" + (x.set ? " set" : ""); d.innerHTML = '<span class="e" aria-hidden="true"></span><span class="pt"></span>';
+    if (x.set) d.querySelector(".e").textContent = x.e; else setIco(d.querySelector(".e"), x.e, "w-" + x.id); d.querySelector(".pt").textContent = x.t.charAt(0).toUpperCase() + x.t.slice(1); box.appendChild(d); });
   return box;
 }
 function openEpisode(L){
@@ -3557,7 +3691,6 @@ function countUp(el, to, ms=900){
   const t0 = performance.now(); const step = t => { const k = Math.min(1, (t - t0)/ms); el.textContent = Math.round(to*(1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
-let awKey = "";
 /* дата получения: новые награды хранят время, у старых ищем день в дневнике */
 function achDate(id){
   const v = S.ach[id]; if (typeof v === "number" && v > 1e12) return v;
@@ -3565,58 +3698,96 @@ function achDate(id){
   return 0;
 }
 const fmtDay = (t, long) => new Date(t).toLocaleDateString("ru-RU", long ? {day: "numeric", month: "long"} : {day: "numeric", month: "short"}).replace(".", "");
-function awardCard(a, i){
+/* награды: три созвездия на небе. Узел созвездия — медальон с эмодзи награды. Линия между соседями золотая, когда получены обе.
+   Во втором созвездии узлы идут в порядке эпизодов, поэтому линия заодно показывает, докуда дошла Диана */
+const STARMAP = [
+  {id: "care", t: "Созвездие Ласки", s: "Ласка",
+    n: {pet1: [16, 20], both: [50, 9], pet100: [84, 20], style: [88, 60], box: [50, 90], nap: [12, 60], hug: [50, 49]},
+    l: [["pet1","both"],["both","pet100"],["pet100","style"],["style","box"],["box","nap"],["nap","pet1"],["both","hug"],["hug","box"]]},
+  {id: "falls", t: "Хроники Мистик Фоллс", s: "Мистик Фоллс",
+    n: {hunt: [8, 14], ring: [29, 6], astral: [50, 18], rules: [71, 7], forks: [92, 20], r51: [85, 46], shade: [63, 39], heart: [41, 50], photo: [19, 41],
+        split: [9, 72], makeup: [31, 86], quiet: [56, 76], all: [83, 88]},
+    l: [["hunt","ring"],["ring","astral"],["astral","rules"],["rules","forks"],["forks","r51"],["r51","shade"],["shade","heart"],["heart","photo"],["photo","split"],["split","makeup"],["makeup","quiet"],["quiet","all"]]},
+  {id: "moon", t: "Тайны Полнолуния", s: "Полнолуние",
+    n: {blood: [32, 12], wish: [70, 30], owl: [72, 68], guest: [34, 88]},
+    l: [["blood","wish"],["wish","owl"],["owl","guest"]]}
+];
+let awCon = 0, awSel = null;
+function awardInfo(a){
   const done = !!S.ach[a.id], hid = a.secret && !done, t = done ? achDate(a.id) : 0, pr = !done && a.p ? a.p() : null;
-  const c = document.createElement("button"); c.type = "button";
-  c.className = "acard " + (done ? "got" : hid ? "hid" : "lock"); c.dataset.id = a.id;
-  c.style.setProperty("--sd", (-(i * 1.7) % 7).toFixed(1) + "s");
-  const front = document.createElement("span"), back = document.createElement("span"), inner = document.createElement("span");
-  inner.className = "in"; front.className = "fa front"; back.className = "fa back";
-  const med = document.createElement("span"); med.className = "med";
-  const e = document.createElement("span"); e.className = "e"; e.textContent = hid ? "?" : a.e; e.setAttribute("aria-hidden", "true"); med.appendChild(e);
+  return {done, hid, t, pr, label: (hid ? "Секрет: " + a.h : a.t + ": " + a.s) + (done ? ". Получено" + (t ? " " + fmtDay(t, true) : "") : pr ? ". " + Math.min(pr[0], pr[1]) + " из " + pr[1] : ". Не получено")};
+}
+function starNode(a, xy, small){
+  const {done, hid, pr, label} = awardInfo(a);
+  const b = document.createElement("button"); b.type = "button"; b.className = "snode " + (done ? "got" : hid ? "hid" : "lock") + (small ? " sm" : ""); b.dataset.id = a.id;
+  b.style.left = xy[0] + "%"; b.style.top = xy[1] + "%"; b.style.setProperty("--sd", (-(xy[0]*.13 + xy[1]*.07) % 7).toFixed(1) + "s");
+  const e = document.createElement("span"); e.className = "e"; e.textContent = hid ? "?" : a.e; e.setAttribute("aria-hidden", "true"); b.appendChild(e);
   if (pr){ const k = Math.max(0, Math.min(1, pr[0]/pr[1])), L = 2*Math.PI*29;
-    med.insertAdjacentHTML("beforeend", `<svg class="pr" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29"/><circle class="v" cx="32" cy="32" r="29" stroke-dasharray="${(L*k).toFixed(1)} ${L.toFixed(1)}"/></svg>`); }
-  const b1 = document.createElement("b"); b1.textContent = hid ? "Секрет" : a.t;
-  const s1 = document.createElement("small"); s1.textContent = done ? (t ? fmtDay(t) : "получено") : hid ? a.h : pr ? Math.min(pr[0], pr[1]) + " из " + pr[1] : "закрыто";
-  front.append(med, b1, s1);
-  const b2 = document.createElement("b"); b2.textContent = hid ? "Секрет" : a.t;
-  const s2 = document.createElement("small"); s2.className = "s"; s2.textContent = hid ? a.h : a.s;
-  const s3 = document.createElement("small"); s3.className = "d"; s3.textContent = done ? (t ? "получено\n" + fmtDay(t, true) : "получено") : pr ? Math.min(pr[0], pr[1]) + " из " + pr[1] : "ещё впереди";
-  back.append(b2, s2, s3);
-  inner.append(front, back); c.appendChild(inner);
-  c.setAttribute("aria-label", (hid ? "Секрет: " + a.h : a.t + ": " + a.s) + (done ? ". Получено" + (t ? " " + fmtDay(t, true) : "") : pr ? ". " + Math.min(pr[0], pr[1]) + " из " + pr[1] : ". Не получено"));
-  c.onclick = () => { c.classList.toggle("flip"); snd.tap(); haptic(6); };
-  return c;
+    b.insertAdjacentHTML("beforeend", `<svg class="pr" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29"/><circle class="v" cx="32" cy="32" r="29" stroke-dasharray="${(L*k).toFixed(1)} ${L.toFixed(1)}"/></svg>`); }
+  b.setAttribute("aria-label", label);
+  return b;
+}
+function awardDetail(a){
+  const {done, hid, t, pr} = awardInfo(a), d = $("#awDetail"); if (!d) return;
+  d.className = "adet " + (done ? "got" : hid ? "hid" : "lock");
+  d.innerHTML = '<span class="med"><span class="e" aria-hidden="true"></span></span><span class="tx"><b></b><span class="s"></span><small></small></span>';
+  d.querySelector(".e").textContent = hid ? "?" : a.e; d.querySelector("b").textContent = hid ? "Секрет" : a.t; d.querySelector(".s").textContent = hid ? a.h : a.s;
+  d.querySelector("small").textContent = done ? (t ? "получено " + fmtDay(t, true) : "получено") : pr ? Math.min(pr[0], pr[1]) + " из " + pr[1] : hid ? "ещё не найден" : "ещё впереди";
+  if (!reduced()) d.animate([{opacity: .2, transform: "translateY(8px) scale(.98)"}, {opacity: 1, transform: "none"}], {duration: 430, easing: springCSS("--spring-dock")});
+}
+const springCSS = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "ease-out";
+function renderStarMap(dir){
+  const M = STARMAP[awCon], map = $("#starMap"); if (!map) return;
+  const ids = Object.keys(M.n), got = ids.filter(id => S.ach[id]).length;
+  document.querySelectorAll("#awSeg button").forEach((b, i) => { b.setAttribute("aria-selected", i === awCon); b.tabIndex = i === awCon ? 0 : -1; });
+  $("#awSeg").style.setProperty("--si", awCon);
+  $("#awName").textContent = M.t; $("#awCount").textContent = got + " из " + ids.length;
+  const W = map.clientWidth || 340, H = map.clientHeight || 320, small = ids.length > 8;
+  let lines = "";
+  M.l.forEach(([a, b], k) => { const [x1, y1] = M.n[a], [x2, y2] = M.n[b], on = S.ach[a] && S.ach[b], len = Math.hypot((x2 - x1)*W/100, (y2 - y1)*H/100);
+    lines += `<line class="${on ? "on" : ""}" data-a="${a}" data-b="${b}" x1="${(x1*W/100).toFixed(1)}" y1="${(y1*H/100).toFixed(1)}" x2="${(x2*W/100).toFixed(1)}" y2="${(y2*H/100).toFixed(1)}" style="--len:${len.toFixed(0)};--ld:${(k*.05).toFixed(2)}s"/>`; });
+  map.innerHTML = `<svg class="slines" viewBox="0 0 ${W} ${H}" aria-hidden="true">${lines}</svg>`;
+  ids.forEach(id => { const a = ACH.find(x => x.id === id); if (a) map.appendChild(starNode(a, M.n[id], small)); });
+  map.style.setProperty("--dir", dir || 0); map.classList.remove("in"); void map.offsetWidth; map.classList.add("in");
+  if (!awSel || !M.n[awSel]){ const best = ids.filter(id => S.ach[id]).sort((x, y) => achDate(y) - achDate(x))[0]; awSel = best || ids[0]; }
+  pickStar(awSel, true);
+}
+function pickStar(id, quiet){
+  const a = ACH.find(x => x.id === id); if (!a) return; awSel = id;
+  document.querySelectorAll("#starMap .snode").forEach(n => n.classList.toggle("sel", n.dataset.id === id));
+  awardDetail(a); if (!quiet){ snd.tap(); haptic(6); }
+}
+function setCon(i, dir){ i = Math.max(0, Math.min(STARMAP.length - 1, i)); if (i === awCon) return; dir = dir || Math.sign(i - awCon); awCon = i; awSel = null; snd.tap(); haptic(5); renderStarMap(dir); }
+function initStarMap(){
+  const g = $("#achList"); if (g.dataset.ready) return; g.dataset.ready = 1;
+  g.innerHTML = '<div class="seg lg awseg" id="awSeg" role="tablist" aria-label="Созвездия"><i class="segind" aria-hidden="true"></i>' + STARMAP.map((m, i) => `<button role="tab" data-i="${i}">${m.s}</button>`).join("") +
+    '</div><div class="awhead"><b id="awName"></b><span id="awCount"></span></div><div class="starmap" id="starMap"></div><div class="adet" id="awDetail" aria-live="polite"></div>';
+  g.querySelectorAll("#awSeg button").forEach(b => b.onclick = () => setCon(+b.dataset.i));
+  $("#awSeg").addEventListener("keydown", e => { const d = {ArrowRight: 1, ArrowLeft: -1}[e.key]; if (!d) return; e.preventDefault(); setCon(awCon + d); const b = document.querySelector('#awSeg button[aria-selected="true"]'); b && b.focus(); });
+  const map = $("#starMap"); let sw = null;
+  map.addEventListener("click", e => { const n = e.target.closest(".snode"); if (n) pickStar(n.dataset.id); });
+  /* свайп по карте листает созвездия; вертикальная прокрутка страницы при этом не трогается */
+  map.addEventListener("pointerdown", e => { sw = {x: e.clientX, y: e.clientY, id: e.pointerId}; });
+  map.addEventListener("pointerup", e => { if (!sw || e.pointerId !== sw.id) return; const dx = e.clientX - sw.x, dy = e.clientY - sw.y; sw = null; if (Math.abs(dx) > 44 && Math.abs(dx) > Math.abs(dy)*1.6) setCon(awCon + (dx < 0 ? 1 : -1)); });
+  map.addEventListener("pointercancel", () => { sw = null; });
 }
 function renderAwards(){
   countUp($("#stPets"), S.pets); countUp($("#stStars"), totalStars());
-  /* сетка пересобирается только если что-то изменилось, иначе просто заново проигрывается появление */
-  const key = JSON.stringify([S.ach, ACH.map(a => a.p && !S.ach[a.id] ? a.p()[0] : 0)]);
-  if (key === awKey && $("#achList").children.length){
-    const g = $("#achList"); g.querySelectorAll(".acard.flip").forEach(c => c.classList.remove("flip"));
-    g.classList.remove("again"); void g.offsetWidth; g.classList.add("again"); return;
-  }
-  awKey = key;
   $("#stOf").textContent = "звёзд из " + LEVELS.length*3;
   const main = ACH.filter(a => !a.secret), sec = ACH.filter(a => a.secret);
-  const gotMain = main.filter(a => S.ach[a.id]), lockMain = main.filter(a => !S.ach[a.id]), sgot = sec.filter(a => S.ach[a.id]).length;
-  $("#awCap").textContent = "открыто " + gotMain.length + " из " + main.length + " · секретов " + sgot + " из " + sec.length;
-  gotMain.sort((x, y) => achDate(y.id) - achDate(x.id));
-  lockMain.sort((x, y) => (y.p ? y.p()[0]/y.p()[1] : 0) - (x.p ? x.p()[0]/x.p()[1] : 0));
-  const grid = (list, from) => { const g = document.createElement("div"); g.className = "agrid"; list.forEach((a, i) => g.appendChild(awardCard(a, from + i))); return g; };
-  const g = $("#achList"); g.innerHTML = "";
-  if (gotMain.length) g.append(label("Получено · " + gotMain.length), grid(gotMain, 0));
-  if (lockMain.length) g.append(label("Впереди · " + lockMain.length), grid(lockMain, gotMain.length));
-  g.append(label("Секреты · найдено " + sgot + " из " + sec.length), grid(sec, main.length));
-  /* новые награды проявляются: медальон переворачивается из тёмного в золотой */
+  $("#awCap").textContent = "открыто " + main.filter(a => S.ach[a.id]).length + " из " + main.length + " · секретов " + sec.filter(a => S.ach[a.id]).length + " из " + sec.length;
+  initStarMap();
+  /* новые награды: открываем их созвездие, медальон проявляется из тёмного в золотой, линии к соседям прочерчиваются со звоном */
   S.achSeen = S.achSeen || {};
-  const fresh = ACH.filter(a => S.ach[a.id] && !S.achSeen[a.id]);
-  const show = fresh.sort((x, y) => achDate(y.id) - achDate(x.id)).slice(0, 3);
-  fresh.forEach(a => S.achSeen[a.id] = 1); save();
-  if (!reduced()) show.forEach((a, k) => {
-    const c = g.querySelector(`.acard[data-id="${a.id}"]`); if (!c) return;
-    c.style.setProperty("--fd", (.45 + k*.35).toFixed(2) + "s"); c.classList.add("fresh");
-    setTimeout(() => { if (!c.isConnected) return; snd.collect(true); const [x, y] = centerOf(c.querySelector(".med")); FX.burst(x, y, {emojis: ["✨"], n: 8, size: [10, 16], grav: 120}); }, (1.15 + k*.35)*1000);
+  const fresh = ACH.filter(a => S.ach[a.id] && !S.achSeen[a.id]).sort((x, y) => achDate(y.id) - achDate(x.id));
+  if (fresh.length){ const ci = STARMAP.findIndex(m => m.n[fresh[0].id]); if (ci >= 0){ awCon = ci; awSel = fresh[0].id; } }
+  fresh.forEach(a => S.achSeen[a.id] = 1); if (fresh.length) save();
+  renderStarMap(0);
+  if (!reduced()) fresh.filter(a => STARMAP[awCon].n[a.id]).slice(0, 3).forEach((a, k) => {
+    const n = document.querySelector(`#starMap .snode[data-id="${a.id}"]`); if (!n) return;
+    n.style.setProperty("--fd", (.45 + k*.35).toFixed(2) + "s"); n.classList.add("fresh");
+    document.querySelectorAll(`#starMap line.on[data-a="${a.id}"],#starMap line.on[data-b="${a.id}"]`).forEach(l => { l.classList.add("draw"); l.style.setProperty("--ld", (.9 + k*.35).toFixed(2) + "s"); });
+    setTimeout(() => { if (!n.isConnected) return; snd.collect(true); const [x, y] = centerOf(n); FX.burst(x, y, {emojis: ["✨"], n: 8, size: [10, 16], grav: 120}); }, (1.15 + k*.35)*1000);
   });
 }
 
@@ -3627,7 +3798,7 @@ function initMini(){
   if (!song.yandex){ mini.hidden = true; mini.nextElementSibling.hidden = true; return; }
   mini.classList.toggle("new", !S.songSeen);
   const sh = document.createElement("div"); sh.className = "sheet medium songsheet"; sh.id = "songSheet"; sh.setAttribute("role","dialog"); sh.setAttribute("aria-label", song.artist + " — " + song.title);
-  sh.innerHTML = '<div class="grabzone"><div class="grab"></div></div><div class="shead"><h3></h3><button class="btn" aria-label="Готово"><svg class="ico"><use href="#i-check"/></svg></button></div><div class="song-sheet"></div><p class="t">Шкатулка молчит, пока играет песня.</p>';
+  sh.innerHTML = '<div class="grabzone"><div class="grab"></div></div><div class="shead"><h3></h3><button class="btn" aria-label="Готово"><svg class="ico"><use href="#i-check"/></svg></button></div><div class="mbox" id="mbox"></div><div class="song-sheet"></div><p class="t">Шкатулка молчит, пока играет песня.</p>';
   sh.querySelector("h3").textContent = song.title; const sa = document.createElement("small"); sa.textContent = song.artist; sh.querySelector("h3").appendChild(sa);
   $("#sheet").after(sh);
   sh.querySelector(".shead button").onclick = closeSheet;
@@ -3636,9 +3807,66 @@ function initMini(){
     if (!S.songSeen){ S.songSeen = 1; save(); mini.classList.remove("new"); }
     if (!S.salvJoke && S.event !== "quarrel"){ S.salvJoke = 1; save(); setTimeout(() => setBubble("Сальваторе? это который Деймон?", "alisa"), 500); setTimeout(() => setBubble("это песня. но Деймон тоже ничего", "lapula"), 3600); }
     if (!songFrame){ songFrame = document.createElement("iframe"); songFrame.src = song.yandex; songFrame.allow = "clipboard-write; autoplay; encrypted-media"; songFrame.referrerPolicy = "origin"; songFrame.title = song.artist + " — " + song.title; sh.querySelector(".song-sheet").appendChild(songFrame); }
-    sheetClose = null; showSheetEl(sh, true);
+    sheetClose = () => musicBox.close(); showSheetEl(sh, true); musicBox.open();
   };
 }
+/* музыкальная шкатулка в листе песни: валик крутится в темпе, семь молоточков по числу нарядов вздрагивают на своих партиях,
+   ручку сбоку крутят пальцем. По часовой быстрее (до 112 ударов в минуту), против часовой медленнее (до 68); отпустили: темп сам возвращается к 80 */
+const musicBox = (() => {
+  let el = null, raf = 0, last = 0, roll = 0, ang = 0, vel = 0, drag = null, live = false;
+  function build(){
+    el = $("#mbox"); if (!el || el.dataset.ready) return; el.dataset.ready = 1;
+    el.innerHTML = '<div class="mb-case"><div class="mb-roll" aria-hidden="true"><i></i></div><div class="mb-comb"></div><div class="mb-notes" aria-hidden="true"></div></div>' +
+      '<div class="mb-side"><div class="mb-crank" role="slider" tabindex="0" aria-label="Ручка шкатулки: темп" aria-valuemin="68" aria-valuemax="112" aria-valuenow="80"><i class="arm" aria-hidden="true"><b></b></i></div><span class="mb-bpm" aria-hidden="true"></span></div>';
+    const comb = el.querySelector(".mb-comb");
+    WEAR.forEach(w => { const h = document.createElement("span"); h.className = "mb-ham"; h.dataset.id = w.id; h.innerHTML = '<i class="stem"></i><span class="e" aria-hidden="true"></span>'; h.querySelector(".e").textContent = w.e; comb.appendChild(h); });
+    const crank = el.querySelector(".mb-crank");
+    const a = e => { const r = crank.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2))*180/Math.PI; };
+    crank.addEventListener("pointerdown", e => { drag = {a: a(e), id: e.pointerId, t: performance.now()}; try { crank.setPointerCapture(e.pointerId); } catch(_){} crank.classList.add("held"); wake(); e.preventDefault(); });
+    crank.addEventListener("pointermove", e => { if (!drag || e.pointerId !== drag.id) return; const now = performance.now(), cur = a(e); let d = cur - drag.a; if (d > 180) d -= 360; if (d < -180) d += 360;
+      const dt = Math.max(8, now - drag.t)/1000; drag.a = cur; drag.t = now; ang += d; vel += (d/dt/360 - vel)*.35;                /* обороты в секунду, сглаженные */
+      const step = Math.floor(ang/45); if (step !== drag.k){ drag.k = step; haptic(3); } });
+    const up = e => { if (!drag || (e && e.pointerId !== drag.id)) return; drag = null; crank.classList.remove("held"); };
+    ["pointerup", "pointercancel", "lostpointercapture"].forEach(t => crank.addEventListener(t, up));
+    crank.addEventListener("keydown", e => { const d = {ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1}[e.key]; if (!d) return; e.preventDefault(); wake(); vel = d > 0 ? 1.1 : -.8; ang += d*60; });
+  }
+  function wake(){ if (!Music.playing && S.music && S.sound && !app.classList.contains("listening")) Music.start(); }
+  function paint(){
+    el.querySelectorAll(".mb-ham").forEach(h => h.classList.toggle("on", wears(h.dataset.id)));
+    el.classList.toggle("mute", !Music.playing);
+  }
+  function frame(now){
+    if (!live) return; const dt = Math.min(.05, (now - last)/1000); last = now;
+    if (!drag) vel *= Math.pow(.12, dt);                                                 /* отпустили: вращение гаснет примерно за секунду */
+    const target = Music.base + (vel >= 0 ? 32*Math.min(1, vel/1.1) : -12*Math.min(1, -vel/.8));
+    const bpm = Music.bpm + (target - Music.bpm)*Math.min(1, dt*(drag ? 5 : 1.6)); Music.tempo(bpm);
+    if (!drag) ang += vel*360*dt;
+    if (Music.playing) roll = (roll + dt*Music.bpm/60*22) % 44;
+    el.style.setProperty("--roll", roll.toFixed(1) + "px"); el.style.setProperty("--ang", ang.toFixed(1) + "deg");
+    const shown = Math.round(Music.bpm); if (shown !== frame.shown){ frame.shown = shown; el.querySelector(".mb-bpm").textContent = shown; el.querySelector(".mb-crank").setAttribute("aria-valuenow", shown); el.classList.toggle("fast", shown > 84); el.classList.toggle("slow", shown < 77); }
+    if ((frame.n = (frame.n || 0) + 1) % 30 === 0) paint();
+    raf = requestAnimationFrame(frame);
+  }
+  function onStep(ev){
+    if (!live || !el) return;
+    setTimeout(() => { if (!live) return;
+      ev.hits.forEach(id => { const h = el.querySelector(`.mb-ham[data-id="${id}"]`); if (!h) return;
+        if (!reduced()) h.animate([{transform: "none"}, {transform: "translateY(-9px) rotate(-7deg)", offset: .28}, {transform: "translateY(1px)", offset: .7}, {transform: "none"}], {duration: 260, easing: "ease-out"});
+        puff(h, "♪"); });
+      if (ev.note !== null){ const r = el.querySelector(".mb-roll"); r.classList.remove("ping"); void r.offsetWidth; r.classList.add("ping"); if (ev.pos % 2 === 0) puff(r, "♫", (ev.note - 64)/17); }
+    }, ev.at*1000);
+  }
+  function puff(from, ch, k){
+    if (reduced()) return; const box = el.querySelector(".mb-notes"), fr = from.getBoundingClientRect(), br = box.getBoundingClientRect();
+    if (box.childElementCount > 14) return;
+    const n = document.createElement("span"); n.textContent = ch; n.style.left = (fr.left - br.left + (k == null ? fr.width/2 : fr.width*(.1 + .8*k))).toFixed(0) + "px"; n.style.top = (fr.top - br.top).toFixed(0) + "px"; box.appendChild(n);
+    n.animate([{transform: "translate(-50%,0) scale(.6)", opacity: 0}, {transform: "translate(-50%,-14px) scale(1)", opacity: 1, offset: .25}, {transform: `translate(calc(-50% + ${(Math.random()*20 - 10).toFixed(0)}px),-46px) scale(.9)`, opacity: 0}], {duration: 900, easing: "ease-out"}).onfinish = () => n.remove();
+  }
+  return {
+    open(){ build(); if (!el) return; live = true; vel = 0; paint(); Music.listen(onStep); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); },
+    close(){ live = false; cancelAnimationFrame(raf); Music.listen(null); Music.tempo(Music.base); }
+  };
+})();
 /* когда она включает песню в плеере, шкатулка замолкает */
 addEventListener("blur", () => setTimeout(() => { if (document.activeElement && document.activeElement.tagName === "IFRAME"){ Music.stop(); $("#miniPlayer").classList.add("playing"); app.classList.add("listening"); clearTimeout(window._lst); window._lst = setTimeout(() => app.classList.remove("listening"), 285000); } }, 0));
 
@@ -4051,18 +4279,27 @@ function openDiary(){
     body.appendChild(box);
   }, () => applyMoon());
 }
+/* столик в альбоме: дневник и шкатулка лежат предметами, а не строками списка */
 function renderDiaryCard(){
-  const g = $("#diaryG"); if (!g) return; g.innerHTML = "";
-  const n = Object.keys(S.diary || {}).length, e = (S.diary || {})[dayKey()], fresh = e && e.u > (S.diarySeen || 0);
-  const dot = document.createElement("span"); dot.className = "ndot"; if (!fresh) dot.hidden = true;
-  const r = li("#i-book", "Дневник Алисы", n ? `${n} ${plural(n, "запись", "записи", "записей")} · пишет сама` : "пишет сама", dot);
-  r.setAttribute("role", "button"); r.tabIndex = 0; r.onclick = () => { snd.tap(); haptic(6); openDiary(); };
-  r.onkeydown = ev => { if (ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); r.onclick(); } };
-  g.appendChild(r);
-  const k = giftKinds(), gn = Object.keys(S.guests || {}).length;
-  const bx = li("#i-gift", "Шкатулка", (k ? `${k} из ${GIFTS.length} подарков` : "котики пока ничего не принесли") + (gn ? ` · ${gn} ${plural(gn, "гость", "гостя", "гостей")}` : ""));
-  asButton(bx, () => { snd.tap(); haptic(6); openGiftBox(); }); g.appendChild(bx);
-  if (S.epi){ const ep = li("#i-moon", "Эпилог", "Алиса и Лапуля на крыше"); asButton(ep, () => { snd.tap(); haptic(6); playEpilogue(); }); g.appendChild(ep); }
+  const g = $("#diaryG"); if (!g) return; g.innerHTML = ""; g.className = "desk-wrap";
+  const n = Object.keys(S.diary || {}).length, e = (S.diary || {})[dayKey()], fresh = !!(e && e.u > (S.diarySeen || 0));
+  const shelf = document.createElement("div"); shelf.className = "desk-shelf";
+  const book = document.createElement("button"); book.type = "button"; book.className = "desk desk-book" + (fresh ? " fresh" : "");
+  book.innerHTML = '<span class="bk"><i class="pages" aria-hidden="true"></i><span class="cover"><svg class="cres" viewBox="0 0 40 40" aria-hidden="true"><path d="M27 4.500A16 16 0 1 0 35.500 27 12.500 12.500 0 0 1 27 4.500z"/></svg><b>Дневник Алисы</b><small></small><i class="ribbon" aria-hidden="true"></i><i class="seal" aria-hidden="true"></i></span></span>';
+  book.querySelector("small").textContent = n ? `${n} ${plural(n, "запись", "записи", "записей")}` : "пишет сама";
+  book.setAttribute("aria-label", "Дневник Алисы" + (n ? `, ${n} ${plural(n, "запись", "записи", "записей")}` : "") + (fresh ? ", есть новая запись" : ""));
+  book.onclick = () => { snd.tap(); haptic(6); if (reduced()){ openDiary(); return; } book.classList.add("opening"); setTimeout(() => { openDiary(); setTimeout(() => book.classList.remove("opening"), 500); }, 240); };
+  const k = giftKinds(), met = GUESTS.filter(x => (S.guests || {})[x.id]);
+  const bx = document.createElement("button"); bx.type = "button"; bx.className = "desk desk-box";
+  bx.innerHTML = '<span class="lid" aria-hidden="true"></span><span class="glass" aria-hidden="true"></span><b>Шкатулка</b><small></small>';
+  const gl = bx.querySelector(".glass");
+  GIFTS.forEach((G, i) => { const sp = document.createElement("span"); if ((S.giftBox || {})[i]){ sp.className = "e"; sp.textContent = G.e; } else sp.className = "no"; gl.appendChild(sp); });
+  if (met.length){ const gs = document.createElement("span"); gs.className = "gsts"; met.forEach(x => { const sp = document.createElement("span"); sp.className = "e"; sp.textContent = x.e; gs.appendChild(sp); }); gl.appendChild(gs); }
+  bx.querySelector("small").textContent = (k ? `${k} из ${GIFTS.length}` : "пока пусто") + (met.length ? ` · ${met.length} ${plural(met.length, "гость", "гостя", "гостей")}` : "");
+  bx.setAttribute("aria-label", "Шкатулка: " + (k ? `${k} из ${GIFTS.length} подарков` : "котики пока ничего не принесли") + (met.length ? `, ${met.length} ${plural(met.length, "гость", "гостя", "гостей")} полнолуния` : ""));
+  bx.onclick = () => { snd.tap(); haptic(6); openGiftBox(); };
+  shelf.append(book, bx); g.appendChild(shelf);
+  if (S.epi){ const grp = document.createElement("div"); grp.className = "group"; const ep = li("#i-moon", "Эпилог", "Алиса и Лапуля на крыше"); asButton(ep, () => { snd.tap(); haptic(6); playEpilogue(); }); grp.appendChild(ep); g.appendChild(grp); }
 }
 
 /* =================== ПОДАРОК ОТ КОТИКА =================== */
@@ -4086,7 +4323,7 @@ function maybeGift(){
   const G = GIFTS[S.giftNext], duo = $("#duo"), pet = duo.querySelector(`.pet[data-cat="${G.who}"]`); if (!pet) return;
   const pr = pet.getBoundingClientRect(), dr = duo.getBoundingClientRect();
   const b = document.createElement("button"); b.id = "gift"; b.className = "gift"; b.setAttribute("aria-label", "Подарок от " + (G.who === "alisa" ? "Алисы" : "Лапули"));
-  b.innerHTML = '<span class="e" aria-hidden="true"></span>'; b.querySelector(".e").innerHTML = icoHTML(G.ic);
+  b.innerHTML = '<span class="e" aria-hidden="true"></span>'; setIco(b.querySelector(".e"), G.e, G.ic);
   const x = pr.left - dr.left + pr.width*(G.who === "alisa" ? .13 : .87);
   b.style.left = ((x - 22)/dr.width*100).toFixed(2) + "%"; b.style.bottom = (dr.bottom - pr.bottom - 4).toFixed(1) + "px";
   duo.appendChild(b);
@@ -4257,7 +4494,7 @@ function openGiftBox(){
     GIFTS.forEach((G, i) => {
       const got = box[i], b = document.createElement("button"); b.className = "gslot" + (got ? "" : " empty");
       b.setAttribute("aria-label", got ? "Подарок " + G.e : "Ещё не подарено");
-      const e = document.createElement("span"); e.className = "e"; e.innerHTML = icoHTML(G.ic); e.setAttribute("aria-hidden", "true");
+      const e = document.createElement("span"); e.className = "e"; setIco(e, G.e, G.ic); e.setAttribute("aria-hidden", "true");
       const s = document.createElement("small"); s.textContent = got ? (got.n > 1 ? "×" + got.n : new Date(got.first).toLocaleDateString("ru-RU", {day: "numeric", month: "short"}).replace(".", "")) : "?";
       b.append(e, s);
       b.onclick = () => {
@@ -4339,8 +4576,16 @@ function backCat(c, k){
   </svg>`;
 }
 function playEpilogue(){
-  if ($("#epi")) return;
+  if ($("#epi") || app.classList.contains("epi-rise")) return;
   S.epi = 1; dayNote().epi = 1; save();
+  if (reduced()) return showEpilogue();
+  /* интерфейс гаснет, камера за 0,9 с уходит вверх: холмы и дом опускаются за край, луна и звёзды приближаются */
+  if (openSh) closeSheet();
+  app.classList.add("epi-rise"); camTo(null, "epi"); snd.sheet(true);
+  setTimeout(showEpilogue, 760);
+}
+function showEpilogue(){
+  if ($("#epi")) return;
   const ep = document.createElement("div"); ep.id = "epi"; ep.className = "epi"; ep.setAttribute("role", "dialog"); ep.setAttribute("aria-label", "Эпилог");
   let stars = ""; for (let i = 0; i < 46; i++) stars += `<i style="left:${(Math.random()*100).toFixed(1)}%;top:${(Math.random()*58).toFixed(1)}%;animation-delay:${(Math.random()*4).toFixed(2)}s;opacity:${(.3 + Math.random()*.7).toFixed(2)}"></i>`;
   ep.innerHTML = `<div class="esky">${stars}</div><div class="emoon"></div><div class="eshoot"></div>
@@ -4354,6 +4599,7 @@ function playEpilogue(){
   const line = ep.querySelector(".eline"), who = line.querySelector("small"), txt = line.querySelector("p");
   let i = -1, timer = 0, done = false, ePurr = null;
   const close = () => { if (done) return; done = true; clearTimeout(timer); ePurr && ePurr.stop(); snd.sheet(false);
+    app.classList.remove("epi-rise"); camTo(null, "");                                   /* камера возвращается, пока сцена гаснет */
     ep.classList.add("out"); setTimeout(() => ep.remove(), 900); };
   ep.querySelector(".eclose").onclick = e => { e.stopPropagation(); close(); };
   /* титры по одной карточке в небе: так они не наезжают на котиков */
@@ -4383,7 +4629,8 @@ function playEpilogue(){
     timer = setTimeout(next, 3200 + t.length*45);
   };
   ep.onclick = () => { ep.querySelector(".etap").classList.add("off"); next(); };
-  snd.sheet(true); if (ensureRunning()) [392, 523.25, 659.25, 783.99].forEach((f, k) => fmBell({f, t: ctx.currentTime + .4 + k*.22, dur: 1.4, peak: .06, send: .5}));
+  if (!app.classList.contains("epi-rise")) snd.sheet(true);
+  if (ensureRunning()) [392, 523.25, 659.25, 783.99].forEach((f, k) => fmBell({f, t: ctx.currentTime + .4 + k*.22, dur: 1.4, peak: .06, send: .5}));
   timer = setTimeout(next, 2600);
 }
 
@@ -5378,6 +5625,8 @@ function lvlRules(area, done){
     + '<button class="so-chest no" type="button"><span class="so-lid"></span><span class="so-ico">✕</span><b>Нельзя</b></button>'
     + '<button class="so-chest yes" type="button"><span class="so-lid"></span><span class="so-ico">♥</span><b>Можно</b></button>';
   const why = wrap.querySelector(".so-why"), chNo = wrap.querySelector(".so-chest.no"), chYes = wrap.querySelector(".so-chest.yes");
+  let forgive = setOn("ball");          /* сет «Бал у Сальваторе» прощает первую ошибку */
+  const miss = () => { if (forgive){ forgive = false; lvBanner(area, "Бал у Сальваторе: первая ошибка не считается"); return; } errs++; };
   let items = [], deck = [], right = 0, errs = 0, time = SORT_DUR, alive = false, raf = 0, last = 0, spawnT = 0, swapped = false, swapDone = false, W = 0, H = 0, combo = 0, whyT = 0;
   const upd = () => stat(chip("✅", right) + chip("❌", errs) + chip("⏱️", Math.max(0, Math.ceil(time)))); upd();
   const phase = () => { const e = SORT_DUR - time; return e < 14 ? 0 : e < 30 ? 1 : e < 44 ? 2 : 3; };
@@ -5410,11 +5659,11 @@ function lvlRules(area, done){
       ch.classList.remove("ok", "bad"); void ch.offsetWidth; ch.classList.add(ok ? "ok" : "bad");
       const [x, y] = centerOf(ch);
       if (ok){ right++; combo++; snd.combo(); haptic(6); FX.burst(x, y - 20, {emojis: ["✨"], n: 5 + Math.min(6, combo), size: [10, 18], grav: 220}); if (combo % 5 === 0) popNum("×" + combo, x, y - 40); }
-      else { errs++; combo = 0; snd.wrong(); snd.resetCombo(); haptic(28); shake(ch, 5); say("Мимо. " + it.d[3]); }
+      else { miss(); combo = 0; snd.wrong(); snd.resetCombo(); haptic(28); shake(ch, 5); say("Мимо. " + it.d[3]); }
       upd(); };
   }
   function drop(it){
-    it.gone = true; errs++; combo = 0; snd.resetCombo(); snd.thump(); haptic(18); say("Не успела. " + it.d[3]); upd();
+    it.gone = true; miss(); combo = 0; snd.resetCombo(); snd.thump(); haptic(18); say("Не успела. " + it.d[3]); upd();
     it.el.animate([{transform: it.el.style.transform, opacity: 1}, {transform: it.el.style.transform + " translateY(40px) scale(.7)", opacity: 0}], {duration: 360, fill: "forwards"}).onfinish = () => { it.el.remove(); items = items.filter(i => i !== it); };
   }
   /* Лапуля меняет сундуки: они переезжают крест-накрест, надписи и цвета едут вместе с сундуками */
@@ -5546,12 +5795,14 @@ function lvlForks(area, done){
   let G = Math.round(C.H*.74), y = 0, vy = 0, onGround = true, logs = [], fish = [], drops = [], got = 0, lives = 3, time = DUR, inv = 0, sq = 0;
   let nextLog = 1.4, nextFish = .8, dist = 0, last = 0, raf, running = false, freeze = 0, clock = 0, runPh = 0, art = null, artKey = "";
   /* Тэн: с 12-й по 20-ю секунду тучи расходятся. Рыбки идут вдвое чаще и стоят две, пока Лапуля не задела бревно; в воздухе можно прыгнуть второй раз */
-  const GUST0 = 12, GUST1 = 20; let gust = 0, gustClean = true, airJump = 0;
+  /* «Сумеречный просвет» с 10-й по 20-ю секунду: сквозь ели падают лучи, на высоте второго прыжка пролетают три золотые рыбки по +2.
+     Второй прыжок в воздухе доступен весь забег. Сет «Полночь в Форксе» расширяет зону ловли на 30 % */
+  const GUST0 = 10, GUST1 = 20, GOLD_AT = [11.5, 14.5, 17.5], RK = setOn("forks") ? 1.3 : 1; let gust = 0, airJump = 0, goldN = 0;
   for (let i=0;i<80;i++) drops.push({x: Math.random()*C.W*1.2, y: Math.random()*C.H, z: Math.random() < .35 ? 1 : 0});
   const upd = () => stat(chip("🐟", got) + chip("❤️", Math.max(0,lives)) + chip("⏱️", Math.ceil(time)));
   upd();
   function jump(){ if (!running) return;
-    if (!onGround){ if (gust !== 1 || airJump < 1) return; airJump = 0; vy = JUMP*.84; snd.jump(); haptic(8); sq = -1;
+    if (!onGround){ if (airJump < 1) return; airJump = 0; vy = JUMP*.82; snd.jump(); haptic(8); sq = -1;
       const r0 = cv.getBoundingClientRect(); FX.burst(r0.left + CX, r0.top + G + y - 10, {emojis:["✨"], n:5, size:[10,16], grav:240}); return; }
     vy = JUMP; onGround = false; airJump = 1; snd.jump(); haptic(8); sq = -1; }
   const pd = e => { if (e.target.closest && e.target.closest(".overlay")) return; jump(); };
@@ -5589,7 +5840,8 @@ function lvlForks(area, done){
     logs.forEach(l => drawLog(g, l.x, G, l.w, l.h));
     fish.forEach(f => { const fy = f.y + Math.sin(f.x/30)*4, fg = g.createRadialGradient(f.x, fy, 2, f.x, fy, 26);
       fg.addColorStop(0, "rgba(190,235,255,.34)"); fg.addColorStop(1, "rgba(190,235,255,0)"); g.fillStyle = fg; g.fillRect(f.x - 26, fy - 26, 52, 52);
-      drawEmoji(g, "🐟", f.x, fy, 28); });
+      if (f.gold){ const sp = goldFish(), w = 44; g.save(); g.translate(f.x, fy); g.rotate(Math.sin(clock*3.2 + f.x*.01)*.18); g.shadowColor = "rgba(255,214,110,.9)"; g.shadowBlur = 16; g.drawImage(sp, -w/2, -w/2, w, w); g.restore(); }
+      else drawEmoji(g, "🐟", f.x, fy, 28); });
     /* Лапуля: тень, лапы, тело */
     const air = !onGround, sh = Math.max(.3, 1 - (-y)/220);
     g.fillStyle = `rgba(0,0,0,${(.34*sh).toFixed(3)})`; g.beginPath(); g.ellipse(CX - 2, G + 2, 32*sh, 4.5*sh, 0, 0, 6.2832); g.fill();
@@ -5616,9 +5868,10 @@ function lvlForks(area, done){
     if (freeze > 0){ freeze -= dt; raf = requestAnimationFrame(frame); return; }
     time -= dt; const k = 1 - time/DUR, speed = 230 + 120*k; dist += speed*dt;
     const el = DUR - time;
-    if (gust === 0 && el >= GUST0){ gust = 1; gustClean = true; gl.classList.add("on"); snd.collect(true); haptic([10, 40, 10]); flashBanner(area, "Сумеречный порыв: рыбки ×2, в воздухе второй прыжок", 2800); }
+    if (gust === 0 && el >= GUST0){ gust = 1; gl.classList.add("on"); snd.collect(true); haptic([10, 40, 10]); flashBanner(area, "Сумеречный просвет: золотые рыбки высоко, лови вторым прыжком", 2800); }
+    if (gust === 1 && goldN < GOLD_AT.length && el >= GOLD_AT[goldN]){ goldN++; fish.push({x: C.W + 10, y: G - 235, gold: true}); }
     else if (gust === 1 && el >= GUST1){ gust = 2; gl.classList.remove("on"); }
-    const gm = gust === 1 ? 1.9 : 1;
+    const gm = gust === 1 ? .4 : 1;          /* в просвет дождь стихает */
     const wasAir = !onGround;
     vy += GRAV*dt; y += vy*dt;
     if (y >= 0){ y = 0; vy = 0; if (wasAir){ snd.land(.5); sq = 1; } onGround = true; }
@@ -5628,16 +5881,16 @@ function lvlForks(area, done){
     drops.forEach(d => { d.y += (d.z ? 640 : 400)*dt*gm; d.x -= (d.z ? 190 : 100)*dt*gm*1.3; if (d.y > C.H || d.x < -20){ d.y = -16 - Math.random()*40; d.x = Math.random()*C.W*1.3; } });
     nextLog -= dt; nextFish -= dt;
     if (nextLog <= 0){ logs.push({x: C.W + 10, w: 44, h: 30}); nextLog = 1.25 + Math.random()*.9 - .3*k; }
-    if (nextFish <= 0){ fish.push({x: C.W + 10, y: G - 74 - Math.random()*(gust === 1 ? 125 : 70)}); nextFish = (.9 + Math.random()*.9)*(gust === 1 ? .55 : 1); }
+    if (nextFish <= 0){ fish.push({x: C.W + 10, y: G - 74 - Math.random()*70}); nextFish = .9 + Math.random()*.9; }
     logs.forEach(l => l.x -= speed*dt); fish.forEach(f => f.x -= speed*dt);
     const top = G - 38 + y, bottom = G + y, left = CX - 30, right = CX + 36, r0 = cv.getBoundingClientRect();
     logs = logs.filter(l => {
-      if (inv <= 0 && right > l.x + 8 && left < l.x + l.w - 8 && bottom > G - l.h + 6){ lives--; inv = 1.2; if (gust === 1) gustClean = false; snd.bonk(); haptic(40); freeze = .07; shake(area, 10); upd(); FX.burst(r0.left+CX, r0.top+G-30, {emojis:["💫"],n:3}); }
+      if (inv <= 0 && right > l.x + 8 && left < l.x + l.w - 8 && bottom > G - l.h + 6){ lives--; inv = 1.2; snd.bonk(); haptic(40); freeze = .07; shake(area, 10); upd(); FX.burst(r0.left+CX, r0.top+G-30, {emojis:["💫"],n:3}); }
       return l.x > -80;
     });
     fish = fish.filter(f => {
       if (TIARA && !onGround && Math.abs(f.x - (CX + 8)) < 110) f.y += ((top + bottom)/2 - 14 - f.y)*Math.min(1, dt*5);
-      if (Math.abs(f.x - (CX + 8)) < (TIARA ? 64 : 36) && f.y > top - (TIARA ? 60 : 42) && f.y < bottom + (TIARA ? 10 : 0)){ const v = gust === 1 && gustClean ? 2 : 1; got += v; snd.combo(); haptic(6); upd(); FX.burst(r0.left+f.x, r0.top+f.y, {emojis:["✨"],n:4,size:[10,16],grav:200}); popNum("+" + v, r0.left+f.x, r0.top+f.y-20); return false; }
+      if (Math.abs(f.x - (CX + 8)) < (TIARA ? 64 : 36)*RK && f.y > top - (TIARA ? 60 : 42)*RK && f.y < bottom + (TIARA ? 10 : 0) + (RK - 1)*30){ const v = f.gold ? 2 : 1; got += v; if (f.gold) snd.collect(true); else snd.combo(); haptic(f.gold ? 12 : 6); upd(); FX.burst(r0.left+f.x, r0.top+f.y, {emojis:f.gold ? ["✨","⭐"] : ["✨"],n:f.gold ? 9 : 4,size:[10,16],grav:200}); popNum("+" + v, r0.left+f.x, r0.top+f.y-20); return false; }
       return f.x > -30;
     });
     draw();
@@ -5652,7 +5905,7 @@ function lvlForks(area, done){
   }
   draw();
   area.__run = () => ({logs, fish, y, CX, G, speed: 230 + 120*(1 - time/DUR), onGround, running, gust, got, lives, time});
-  intro(area, LEVELS[4], "Лапуля бежит через лес Форкса. Тапни по экрану (или пробел), чтобы прыгнуть через бревно 🪵. В прыжке лови рыбок 🐟. В середине забега тучи разойдутся: рыбки ×2 и второй прыжок в воздухе. Продержись 30 секунд: после трёх ударов забег окончен.", () => {
+  intro(area, LEVELS[4], "Лапуля бежит через лес Форкса. Тапни по экрану (или пробел), чтобы прыгнуть через бревно 🪵. В прыжке лови рыбок 🐟. Тапни ещё раз в воздухе: это второй прыжок. В середине забега тучи разойдутся и высоко пролетят три золотые рыбки, каждая за две. Продержись 30 секунд: после трёх ударов забег окончен.", () => {
     running = true; snd.resetCombo(); raf = requestAnimationFrame(t => { last = t; frame(t); });
   });
   return () => { running = false; cancelAnimationFrame(raf); removeEventListener("resize", C.fit); removeEventListener("keydown", kd); };
@@ -5664,7 +5917,7 @@ function lvlForks(area, done){
 const GARDEN_DUR = 40;
 let GARDEN2 = 30, GARDEN3 = 48; /* пороги звёзд: стартовые, подобраны ботом */
 function lvlGarden(area, done){
-  let capeUp = perk("cape", 6); const HOLD_MS = perk("wreath", 6) ? 400 : 600;
+  let capeUp = perk("cape", 6); const HOLD_MS = perk("wreath", 6) ? 400 : 600, WIDE = setOn("forks");          /* сет «Полночь в Форксе»: по розам попасть легче на 30 % */
   const wrap = document.createElement("div"); wrap.className = "garden"; area.appendChild(wrap);
   const bushes = [];
   for (let i = 0; i < 9; i++){ const b = document.createElement("div"); b.className = "bush"; b.innerHTML = '<span class="leaf e">🌿</span>'; wrap.appendChild(b); bushes.push({el: b, item: null, i}); }
@@ -5677,7 +5930,7 @@ function lvlGarden(area, done){
   function spawn(kind){
     const free = bushes.filter(b => !b.item); if (!free.length) return null;
     const b = free[Math.floor(Math.random()*free.length)], e = el();
-    const it = document.createElement("button"); it.className = "item e " + kind; it.setAttribute("aria-label", {rose: "Роза", bat: "Спящая мышь", gold: "Золотая роза", hold: "Колючая роза"}[kind]);
+    const it = document.createElement("button"); it.className = "item e " + kind + (WIDE && kind !== "bat" ? " wide" : ""); it.setAttribute("aria-label", {rose: "Роза", bat: "Спящая мышь", gold: "Золотая роза", hold: "Колючая роза"}[kind]);
     it.textContent = kind === "bat" ? "🦇" : "🌹";
     if (kind === "hold") it.insertAdjacentHTML("beforeend", '<svg class="hring" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17"/><circle class="v" cx="20" cy="20" r="17"/></svg><span class="hl">держи</span>');
     const life = {rose: (e >= 30 ? .95 : 1.45 - Math.min(.35, e*.012)), bat: 1.25, gold: .95, hold: 2.3}[kind]*1000;
@@ -5884,6 +6137,7 @@ function lvlSun(area, done){
   function cloudCover(t, a){ const [sx, sy] = sunPos(a); for (const c of CLOUDS){ const [x, y] = cloudAt(c, t); if (Math.abs(sx - x) < c.w*.36 && Math.abs(sy - y) < c.h*.55) return true; } return false; }
 
   let a = 90*D2R, target = a, t = 0, burn = 0, expT = 0, alive = false, ended = false, last = 0, raf, exposed = false, flash = 0;
+  const GRACE = setOn("day") ? 1.2 : 0; let sunT = 0;          /* сет «Дневные Бродяги»: первые 1,2 с на солнце не жгут */
   const smoke = [];
   let hissL = { set(){}, stop(){} };
   const catX = () => Math.min(END, START + SPEED*t);
@@ -5976,12 +6230,24 @@ function lvlSun(area, done){
     merged.forEach(([lo, hi]) => { g.fillStyle = "rgba(14,8,26,.78)"; g.fillRect(lo, G, hi - lo, 30);
       const fe = 8; const l1 = g.createLinearGradient(lo - fe, 0, lo, 0); l1.addColorStop(0, "rgba(14,8,26,0)"); l1.addColorStop(1, "rgba(14,8,26,.78)"); g.fillStyle = l1; g.fillRect(lo - fe, G, fe, 30);
       const r1 = g.createLinearGradient(hi, 0, hi + fe, 0); r1.addColorStop(0, "rgba(14,8,26,.78)"); r1.addColorStop(1, "rgba(14,8,26,0)"); g.fillStyle = r1; g.fillRect(hi, G, fe, 30); });
+    /* превью: куда ляжет ближайшая к Лапуле тень, когда солнце доедет до цели. Пунктир на тропе и луч от вершины препятствия */
+    if (alive && Math.abs(target - a) > .03){
+      const kt = cot(target); let best = null, bd = 1e9;
+      objs.forEach(o => o.polys.forEach(p => { const [lo, hi] = proj(p, kt), d = x < lo ? lo - x : x > hi ? x - hi : 0; if (hi - camX > -40 && lo - camX < W + 40 && d < bd){ bd = d; best = {lo, hi, p}; } }));
+      if (best){ const lo = best.lo - camX, hi = best.hi - camX;
+        g.save(); g.strokeStyle = "rgba(255,226,150,.9)"; g.lineWidth = 1.5; g.setLineDash([5, 5]); g.lineDashOffset = -t*18;
+        g.strokeRect(lo, G + 1.5, hi - lo, 27);
+        let vt = best.p[0]; best.p.forEach(q => { if (q[1] > vt[1]) vt = q; });                 /* самая высокая вершина даёт край тени */
+        const ex = vt[0] - vt[1]*kt - camX; g.globalAlpha = .55; g.beginPath(); g.moveTo(vt[0] - camX, G - vt[1]); g.lineTo(ex, G); g.stroke();
+        g.restore(); }
+    }
     // объекты
     const rimCol = rgba(k < .5 ? "#ffb27a" : "#fff4d6", .9);
     objs.forEach(o => drawObj(o, camX, sunRight, rimCol));
     // Лапуля
     const cx = x - camX, bob = alive ? Math.abs(Math.sin(t*9))*3 : 0;
-    if (exposed){ const hg = g.createRadialGradient(cx, G - 28, 4, cx, G - 28, 60); hg.addColorStop(0, "rgba(255,110,60,.45)"); hg.addColorStop(1, "rgba(255,110,60,0)"); g.fillStyle = hg; g.fillRect(cx - 60, G - 90, 120, 120); }
+    if (exposed && sunT <= GRACE){ g.strokeStyle = "rgba(255,226,150,.85)"; g.lineWidth = 3; g.lineCap = "round"; g.beginPath(); g.arc(cx - 6, G - 22, 40, -Math.PI/2, -Math.PI/2 + 6.283*(1 - sunT/GRACE)); g.stroke(); }
+    if (exposed && sunT > GRACE){ const hg = g.createRadialGradient(cx, G - 28, 4, cx, G - 28, 60); hg.addColorStop(0, "rgba(255,110,60,.45)"); hg.addColorStop(1, "rgba(255,110,60,0)"); g.fillStyle = hg; g.fillRect(cx - 60, G - 90, 120, 120); }
     g.save(); g.translate(0, -bob);
     g.fillStyle = "rgba(0,0,0,.35)"; g.beginPath(); g.ellipse(cx, G + 2 + bob, 30, 5, 0, 0, 7); g.fill();
     g.fillStyle = CONFIG.lapula.fur; g.beginPath(); g.ellipse(cx - 8, G - 15, 26, 15, 0, 0, 7); g.fill();
@@ -6011,8 +6277,9 @@ function lvlSun(area, done){
       const da = target - a, step = OMEGA*dt; a += Math.abs(da) <= step ? da : Math.sign(da)*step;
       const x = catX();
       exposed = !(shadedAt(x, a) || cloudCover(t, a));
-      if (exposed){ burn += BURN_UP*dt; expT += dt; } else burn = Math.max(0, burn - BURN_DOWN*dt);
-      hissL.set(exposed ? .05 + burn*.05 : 0);
+      sunT = exposed ? sunT + dt : 0; const burning = exposed && sunT > GRACE;
+      if (burning){ burn += BURN_UP*dt; expT += dt; } else if (!exposed) burn = Math.max(0, burn - BURN_DOWN*dt);
+      hissL.set(burning ? .05 + burn*.05 : 0);
       updT -= dt; if (updT <= 0){ upd(); updT = .2; }
       if (burn >= 1) return end(false);
       if (x >= END) return end(true);
@@ -6040,7 +6307,7 @@ function lvlSun(area, done){
 
 /* ---------- 8: маскарад (слушай сердца) ---------- */
 function lvlMask(area, done){
-  const LENSK = perk("mask", 8) ? 1.25 : 1;
+  const LENSK = perk("mask", 8) ? 1.25 : 1, LISTEN = setOn("ball") ? .75 : 1.1;
   const C = setupCanvas(area), {cv, g} = C;
   const sc = document.createElement("canvas"), sg = sc.getContext("2d");
   const fitSc = () => { const dpr = Math.min(2, devicePixelRatio||1); sc.width = Math.round(C.W*dpr); sc.height = Math.round(C.H*dpr); sg.setTransform(dpr,0,0,dpr,0,0); bg = null; };
@@ -6127,7 +6394,12 @@ function lvlMask(area, done){
       c.save(); c.translate(x, hy); c.scale(sc, sc); c.beginPath(); c.moveTo(0, 5); c.bezierCurveTo(-10, -3, -7, -12, 0, -6.5); c.bezierCurveTo(7, -12, 10, -3, 0, 5); c.closePath();
       if (gu.bpm){ c.fillStyle = `rgba(255,${80 + Math.round(gu.hb*90)},${110 + Math.round(gu.hb*60)},${(.78 + gu.hb*.22).toFixed(2)})`; c.shadowColor = "#ff5a78"; c.shadowBlur = 10*gu.hb; c.fill(); }
       else { c.strokeStyle = "rgba(225,225,235,.75)"; c.lineWidth = 1.7; c.stroke(); }
-      c.restore(); }
+      c.restore();
+      /* ритм цифрой рядом с сердцем: в третьем раунде пара находится сравнением чисел, а не на глаз */
+      const lb = String(gu.bpm), fs = Math.max(11.5, 13*s); c.font = `600 ${fs.toFixed(1)}px Unbounded, sans-serif`; c.textAlign = "left"; c.textBaseline = "middle";
+      const tw = c.measureText(lb).width, bx = x + 11*s, by = hy - 2*s;
+      c.fillStyle = "rgba(20,12,30,.72)"; c.beginPath(); c.roundRect ? c.roundRect(bx - 4, by - fs*.72, tw + 8, fs*1.44, fs*.6) : c.rect(bx - 4, by - fs*.72, tw + 8, fs*1.44); c.fill();
+      c.fillStyle = gu.bpm ? "#ffd3dc" : "#e1e1eb"; c.fillText(lb, bx, by + .5); }
     if (gu.state === "ok" && ROUNDS[round] && ROUNDS[round].kind === "vamp"){ c.fillStyle = "#ff2340"; c.shadowColor = "#ff2340"; c.shadowBlur = 10; [-1, 1].forEach(d => { c.beginPath(); c.arc(x + d*8*s, y - 3*s, 2*s, 0, 7); c.fill(); }); c.shadowBlur = 0; }
     c.restore();
   }
@@ -6165,6 +6437,9 @@ function lvlMask(area, done){
     g.strokeStyle = "rgba(255,255,255,.75)"; g.lineWidth = 1.4; g.beginPath(); g.arc(lx, ly, r, 0, 7); g.stroke();
     g.strokeStyle = "rgba(255,255,255,.9)"; g.lineWidth = 2.4; g.lineCap = "round"; g.beginPath(); g.arc(lx, ly, Math.max(1, r - 5), Math.PI*1.12, Math.PI*1.42); g.stroke();
     g.strokeStyle = "rgba(0,0,0,.35)"; g.lineWidth = 3; g.beginPath(); g.arc(lx, ly, r + 2, .15, Math.PI - .15); g.stroke();
+    /* дуга на ободке: сколько осталось слушать этого гостя */
+    if (heard && !heard.known && alive){ const kq = Math.max(0, Math.min(1, heard.listen/LISTEN)); g.strokeStyle = "#ffd98a"; g.lineWidth = 3.4; g.lineCap = "round"; g.shadowColor = "rgba(255,217,138,.8)"; g.shadowBlur = 8;
+      g.beginPath(); g.arc(lx, ly, r + 1, -Math.PI/2, -Math.PI/2 + 6.283*kq); g.stroke(); g.shadowBlur = 0; }
     if (lens.pulse > 0){ const pr = r + (1 - lens.pulse)*26; g.strokeStyle = `rgba(255,120,140,${lens.pulse*.7})`; g.lineWidth = 2; g.beginPath(); g.arc(lx, ly, pr, 0, 7); g.stroke(); }
   }
   function frame(now){ try { frameBody(now); } catch(err){ console.warn(err); if (!ended) raf = requestAnimationFrame(frame); } }
@@ -6183,7 +6458,7 @@ function lvlMask(area, done){
     }
     guests.forEach(gu => {
       gu.glint = Math.max(0, gu.glint - dt*2.5); gu.hb = Math.max(0, gu.hb - dt*3.2);
-      if (gu === heard && alive){ gu.listen += dt; if (gu.listen > 1.1 && !gu.known){ gu.known = true; if (ensureRunning()) fmBell({f: gu.bpm ? 1318.5 : 659.3, dur:.3, peak:.06, send:.2}); } }
+      if (gu === heard && alive){ gu.listen += dt; if (gu.listen > LISTEN && !gu.known){ gu.known = true; if (ensureRunning()) fmBell({f: gu.bpm ? 1318.5 : 659.3, dur:.3, peak:.06, send:.2}); } }
       if (!gu.bpm) return;
       const per = 60/gu.bpm, n = Math.floor((t + gu.phase*per)/per);
       if (n !== gu.lastBeat){ const fresh = gu.lastBeat !== -1; gu.lastBeat = n; if (fresh) gu.hb = 1;
@@ -6322,7 +6597,9 @@ function lvlShot(area, done){
   const inFrame = (x, y) => { const f = frameRect(); return x >= f.x && x <= f.x + f.w && y >= f.y && y <= f.y + f.h; };
   function setOpen(v){
     if (phase !== "run" || v === open) return; open = v; shutterSnd(v); haptic(v ? 12 : 6); if (v) openT = 0;
-    clearInterval(setOpen.iv); if (v) setOpen.iv = setInterval(() => { if (!open || phase !== "run" || ended || !cv.isConnected) return clearInterval(setOpen.iv); snd.ratchet(Math.min(1, openT/4)); haptic(3); }, 180);
+    clearInterval(setOpen.iv); if (v) setOpen.iv = setInterval(() => { if (!open || phase !== "run" || ended || !cv.isConnected) return clearInterval(setOpen.iv);
+      /* огонёк на контуре: хрустальный тик, тон растёт по мере того, как рисунок заполняется. Мимо контура: сухой стрекот плёнки, пора отпускать */
+      if (lightOn()){ const k = Math.max(...lights.map(l => l.idx/Math.max(1, l.path.length))); snd.tick(.1 + .9*Math.min(1, k)); haptic(3); } else snd.ratchet(.15); }, 160);
     lights.forEach((l, i) => prevPos[i] = [l.x, l.y]);
   }
   function score(){
@@ -6866,7 +7143,7 @@ function applyGlass(){ app.classList.toggle("lowfx", glassOff()); }
 (function glassGuard(){
   delete S.lowfxAt; applyGlass();
   let t0 = 0, n = 0, low = 0;
-  const live = () => !document.hidden && homeLive() && !reduced() && !document.querySelector(".song-sheet") && S.glass !== false;
+  const live = () => !document.hidden && homeLive() && !reduced() && S.glass !== false;      /* homeLive уже учитывает открытые листы, в том числе песню */
   function frame(now){
     if (app.classList.contains("lowfx")){ setTimeout(() => requestAnimationFrame(frame), 4000); t0 = 0; low = 0; return; }
     if (!live()){ t0 = 0; low = 0; setTimeout(() => requestAnimationFrame(frame), 1500); return; }
