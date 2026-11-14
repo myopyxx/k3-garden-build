@@ -317,9 +317,20 @@ body.day .sparkle{display:block}
 .shead button svg{width:20px;height:20px}
 .sheet p.t{font-size:11.5px;line-height:1.55;color:var(--muted);margin:0 4px 14px}
 .sheet .glabel{color:var(--muted)}
-.ticket{position:relative;border-radius:24px;padding:26px 20px;text-align:center;margin-bottom:14px;overflow:hidden;animation:popIn .8s var(--spring-pop);
-  background:linear-gradient(160deg,#2a1830,#140c1a);box-shadow:inset 0 0 0 1.5px rgba(245,200,76,.55),inset 0 0 40px rgba(245,200,76,.08),0 18px 40px rgba(0,0,0,.4)}
-.ticket::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,236,180,.22) 48%,transparent 62%);transform:translateX(-120%);animation:shine 3.2s ease-in-out .6s infinite}
+.ticket{position:relative;margin-bottom:14px;text-align:center;animation:popIn .8s var(--spring-pop);filter:drop-shadow(0 18px 26px rgba(0,0,0,.4));--tk:linear-gradient(160deg,#2a1830,#140c1a)}
+/* билет из двух частей: основа и отрывной корешок. Полукруглые вырезы по бокам сделаны маской, между частями пунктир */
+.ticket .tk-main,.ticket .tk-stub{position:relative;overflow:hidden;background:var(--tk);box-shadow:inset 0 0 0 1.5px rgba(245,200,76,.55),inset 0 0 40px rgba(245,200,76,.08)}
+.ticket .tk-main{padding:26px 20px 20px;border-radius:24px 24px 6px 6px;
+  -webkit-mask:radial-gradient(circle 10px at 0 100%,#0000 96%,#000) left/51% 100% no-repeat,radial-gradient(circle 10px at 100% 100%,#0000 96%,#000) right/51% 100% no-repeat;
+  mask:radial-gradient(circle 10px at 0 100%,#0000 96%,#000) left/51% 100% no-repeat,radial-gradient(circle 10px at 100% 100%,#0000 96%,#000) right/51% 100% no-repeat}
+.ticket .tk-stub{padding:16px 20px 20px;border-radius:6px 6px 24px 24px;transform-origin:0 0;
+  -webkit-mask:radial-gradient(circle 10px at 0 0,#0000 96%,#000) left/51% 100% no-repeat,radial-gradient(circle 10px at 100% 0,#0000 96%,#000) right/51% 100% no-repeat;
+  mask:radial-gradient(circle 10px at 0 0,#0000 96%,#000) left/51% 100% no-repeat,radial-gradient(circle 10px at 100% 0,#0000 96%,#000) right/51% 100% no-repeat}
+.ticket .tk-stub::before{content:"";position:absolute;left:16px;right:16px;top:0;border-top:1.5px dashed rgba(245,200,76,.6)}
+.ticket.tear .tk-stub{animation:stubTear 1s var(--spring-pop) .35s backwards}
+@keyframes stubTear{0%{transform:none}22%{transform:translateY(9px) rotate(5deg)}100%{transform:none}}
+.ticket .tk-main::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,236,180,.22) 48%,transparent 62%);transform:translateX(-120%);animation:shine 3.2s ease-in-out .6s infinite}
+@media (prefers-reduced-motion:reduce){.ticket.tear .tk-stub{animation:none}}
 .ticket .te{font-size:46px;display:block;margin-bottom:10px}
 .ticket b{display:block;font:400 38px/1.1 var(--script);margin-bottom:8px;color:#f8e3a6}
 .ticket .tt{display:block;color:var(--muted);font-size:11.5px;line-height:1.55}
@@ -350,6 +361,13 @@ body.day .sparkle{display:block}
 .garea{position:relative;flex:1;overflow:hidden;touch-action:none}
 .ghint{position:absolute;left:0;right:0;top:10px;text-align:center;color:var(--muted);font-size:10.5px;pointer-events:none;padding:0 16px}
 canvas.c{display:block;width:100%;height:100%}
+.hc .num{position:relative;display:inline-block}
+.hc .num.roll{animation:rollIn var(--rt,.34s) var(--spring-dock) both}
+.hc .num.roll::before{content:attr(data-old);position:absolute;left:0;right:0;top:0;text-align:center;animation:rollOut var(--rt,.34s) ease-out both}
+.hc .num.rollup{--ry:70%}.hc .num.rolldn{--ry:-70%}
+@keyframes rollIn{from{transform:translateY(var(--ry));opacity:0}}
+@keyframes rollOut{from{transform:translateY(calc(var(--ry)*-1));opacity:.9}to{transform:translateY(calc(var(--ry)*-2.4));opacity:0}}
+.pop-num.gold{color:#ffd978;text-shadow:0 0 10px rgba(245,200,76,.8),0 2px 8px rgba(0,0,0,.5)}
 .pop-num{position:absolute;z-index:66;pointer-events:none;font:600 18px/1 var(--ui);color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5)}
 .zoomer{position:absolute;z-index:29;pointer-events:none;display:none;overflow:hidden}
 
@@ -590,6 +608,9 @@ body.day .moon .shade{opacity:0}
 
 /* уровни: тропа + медальоны */
 .trail{position:relative;max-width:400px;margin:0 auto;padding:4px 0 10px}
+.trail .tpulse{stroke-dashoffset:6;filter:drop-shadow(0 0 7px rgba(255,226,150,.95));animation:trailPulse 3.6s cubic-bezier(.45,0,.4,1) 1s infinite}
+@keyframes trailPulse{0%{stroke-dashoffset:6;opacity:0}8%{opacity:1}78%{opacity:1}88%,100%{stroke-dashoffset:-100;opacity:0}}
+@media (prefers-reduced-motion:reduce){.trail .tpulse{display:none}}
 .trail svg.path{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:0}
 .sec{position:relative;z-index:1;text-align:center;margin:8px 0 26px;font:600 9.5px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
 .sec b{display:block;margin-top:8px;font:400 34px/1 var(--script);letter-spacing:0;text-transform:none;color:var(--ink);text-shadow:0 0 18px rgba(243,227,176,.25)}
@@ -616,6 +637,11 @@ body.day .moon .shade{opacity:0}
 .nlab .stars3{display:flex;gap:3px;font-size:13px}
 .node.r .stars3{justify-content:flex-end}
 .poster{position:relative;height:200px;border-radius:28px;overflow:hidden;background:var(--poster);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.14),0 14px 34px rgba(0,0,0,.35);margin-bottom:14px}
+.poster{transform:perspective(700px) rotateX(var(--prx,0deg)) rotateY(var(--pry,0deg));transition:transform .5s var(--spring-glass)}
+.poster.tilt{transition:transform .08s linear}
+.poster .art{translate:var(--ptx,0px) var(--pty,0px);transition:translate .5s var(--spring-glass)}
+.poster .pm{translate:calc(var(--ptx,0px)*-.5) calc(var(--pty,0px)*-.5);transition:translate .5s var(--spring-glass)}
+.poster.tilt .art,.poster.tilt .pm{transition:none}
 .poster .glow{position:absolute;right:-50px;top:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,var(--glow),rgba(0,0,0,0) 64%)}
 .poster .art{position:absolute;right:16px;top:16px;font-size:96px;line-height:1;filter:drop-shadow(0 12px 24px rgba(0,0,0,.55))}
 .poster .sil{position:absolute;left:0;right:0;bottom:0;height:64px;width:100%;opacity:.6}
@@ -635,6 +661,7 @@ body.day .moon .shade{opacity:0}
 .oset b{font:600 10.5px/1.15 var(--ui)}
 .oset.on{color:#2a1a08;background:linear-gradient(180deg,#ffe9a8,#e9b949);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 4px rgba(120,70,0,.3),0 6px 14px rgba(245,200,76,.22)}
 .oset.on .e{filter:none}
+.wit .e{transform-origin:50% -20%}
 .oset.lit{animation:osetFlash .9s var(--spring-pop)}
 /* сеты на главной. «Королевы Выпускного»: короны и бантики вспыхивают раз в 4 с. «Дневные Бродяги»: по очкам пробегает солнечный зайчик */
 .cat .sglint{opacity:0}
@@ -863,8 +890,10 @@ svg.sti{width:1em;height:1em;display:block}
 .home .bubble.hush.quick{transition-duration:.14s,.14s}
 #duo .pet .nm{order:-1;position:relative;z-index:2;font-size:27px;line-height:1;margin:0 0 -26px;text-shadow:0 2px 12px rgba(0,0,0,.55)}
 #duo{margin-top:0}
-#duo::before{bottom:-8px;height:46px}
-.home .meter{position:relative;z-index:1;margin-top:-11px;transform-origin:50% 50%}
+/* терраса: каменный парапет с пледом и парой лепестков. Кошки сидят на нём, а не висят над шкалой */
+#duo::before{left:-3%;right:-3%;bottom:-20px;height:62px;border-radius:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 62' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%236a5886'/%3E%3Cstop offset='.42' stop-color='%234a3a63'/%3E%3Cstop offset='1' stop-color='%23251a38'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23a23a5c'/%3E%3Cstop offset='1' stop-color='%235c1c36'/%3E%3C/linearGradient%3E%3Cpattern id='c' width='16' height='16' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 8H16M8 0V16' stroke='%23ffd9a0' stroke-opacity='.2' stroke-width='2.4'/%3E%3Cpath d='M0 0H16M0 0V16' stroke='%232a0c18' stroke-opacity='.25' stroke-width='1.6'/%3E%3C/pattern%3E%3C/defs%3E%3Cellipse cx='180' cy='55' rx='168' ry='6' fill='%2306030e' fill-opacity='.45'/%3E%3Cpath d='M4 24Q4 14 15 14H345Q356 14 356 24V44Q356 54 345 54H15Q4 54 4 44Z' fill='url(%23s)'/%3E%3Cpath d='M4 33H356V44Q356 54 345 54H15Q4 54 4 44Z' fill='%23140c22' fill-opacity='.38'/%3E%3Cpath d='M15 14.700H345' stroke='%23f3e3b0' stroke-opacity='.42' stroke-width='1.300' stroke-linecap='round'/%3E%3Cpath d='M92 34V53M184 34V53M272 34V53' stroke='%230b0616' stroke-opacity='.4' stroke-width='1.200'/%3E%3Cpath d='M58 12Q180 3 302 12L308 34Q295 43 281 35 267 44 252 36 238 45 223 37 209 46 194 38 180 46 165 38 151 46 137 37 122 45 108 36 93 44 79 35 65 43 52 34Z' fill='url(%23b)'/%3E%3Cpath d='M58 12Q180 3 302 12L308 34Q295 43 281 35 267 44 252 36 238 45 223 37 209 46 194 38 180 46 165 38 151 46 137 37 122 45 108 36 93 44 79 35 65 43 52 34Z' fill='url(%23c)'/%3E%3Cpath d='M60 12.500Q180 3.500 300 12.500' fill='none' stroke='%23ffd9e2' stroke-opacity='.3' stroke-width='1.200'/%3E%3Cpath d='M30 25q5-5 9 0-3 4-9 0z' fill='%23e8486a' fill-opacity='.85'/%3E%3Cpath d='M326 44q4-6 9-2-2 5-9 2z' fill='%23ff7d95' fill-opacity='.8'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+#duo{margin-bottom:20px}
+.home .meter{position:relative;z-index:1;margin-top:4px;transform-origin:50% 50%}
 #duo .pet{will-change:transform;touch-action:none}
 .strokeglow{position:absolute;left:0;top:0;z-index:3;width:132px;height:132px;margin:-66px 0 0 -66px;border-radius:50%;pointer-events:none;opacity:0;transition:opacity .35s ease;
   background:radial-gradient(closest-side,rgba(255,222,180,.3),rgba(255,170,150,.1) 58%,rgba(255,170,150,0))}
@@ -936,8 +965,8 @@ svg.sti{width:1em;height:1em;display:block}
 @keyframes earL{30%{transform:rotate(-17deg)}65%{transform:rotate(4deg)}}
 @keyframes earR{30%{transform:rotate(17deg)}65%{transform:rotate(-4deg)}}
 .cat .paw{transform-box:fill-box;transform-origin:50% 100%}
-.cat.knead .pl{animation:knead .6s ease-in-out infinite}
-.cat.knead .pr{animation:knead .6s ease-in-out -.3s infinite}
+.cat.knead .pl,.cat.paws .pl{animation:knead .6s ease-in-out infinite}
+.cat.knead .pr,.cat.paws .pr{animation:knead .6s ease-in-out -.3s infinite}
 @keyframes knead{0%,100%{transform:none}50%{transform:translateY(-6px) scaleY(1.06)}}
 .cat.knead .eye,.cat.content .eye{transform:scaleY(.42);transition:transform .35s ease}
 .cat .yawn{transform-box:fill-box;transform-origin:50% 0;transform:scale(0)}
@@ -976,7 +1005,7 @@ svg.sti{width:1em;height:1em;display:block}
 .app.val .seasonfx i,.app.hw .seasonfx i{animation-name:rise}
 @keyframes rise{from{transform:translate(0,112vh)}to{transform:translate(-20px,-8vh)}}
 .pumpkin{position:absolute;left:-14px;top:-24px;z-index:3;width:30px;height:28px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4)) drop-shadow(0 0 10px rgba(255,160,60,.35))}
-@media (prefers-reduced-motion:reduce){.seasonfx,.app.listening #duo .cat,.cat.knead .pl,.cat.knead .pr{animation:none!important}.seasonfx{display:none}}
+@media (prefers-reduced-motion:reduce){.seasonfx,.app.listening #duo .cat,.cat.knead .pl,.cat.knead .pr,.cat.paws .pl,.cat.paws .pr{animation:none!important}.seasonfx{display:none}}
 
 /* ===== v9: симметрия, лист, праздник ===== */
 .app{max-width:none}
@@ -1228,13 +1257,20 @@ body.day .moon .phase{opacity:0}
 .wcard .group{margin:0}
 .wmini{display:flex;gap:3px;margin-left:auto;flex:none}
 .wmini i{width:17px;height:17px;border-radius:5px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);font:700 9px/17px var(--ui);text-align:center;color:#fff;font-style:normal}
-.wmini i.s0{background:#3a2d47;box-shadow:none}
+.wmini i{position:relative;overflow:hidden;border-radius:5px 5px 6px 6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.1),0 2.5px 0 rgba(8,4,18,.55)}
+.wmini{padding-bottom:3px}
+.wmini i.glint::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,236,180,0) 30%,rgba(255,236,180,.85) 50%,rgba(255,236,180,0) 70%);transform:translateX(-130%);animation:chipGlint 5.5s ease-in-out 1.2s infinite}
+@keyframes chipGlint{0%,84%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+@media (prefers-reduced-motion:reduce){.wmini i.glint::after{animation:none}}
+.wmini i.s0{background:#3a2d47}
 .wintro{text-align:center;margin-bottom:6px}
 .wleg{display:flex;justify-content:center;gap:12px;font:500 11px/1 var(--ui);color:var(--muted);margin-bottom:12px;white-space:nowrap}
 .wleg span{display:inline-flex;align-items:center;gap:5px}
 .wleg i{width:12px;height:12px;border-radius:3.5px}
 .wleg .s2,.wt.s2,.wk.s2,.wmini i.s2{background:linear-gradient(180deg,#5cb488,#367f5c);box-shadow:none}
+.wmini i.s2{box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2.5px 0 #1f5139}
 .wleg .s1,.wt.s1,.wk.s1,.wmini i.s1{background:linear-gradient(180deg,#e6bb55,#b88625);box-shadow:none}
+.wmini i.s1{box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2.5px 0 #7a5612}
 .wleg .s0,.wt.s0{background:#3a2d47}
 .wgrid{--ts:min(52px,calc((100dvh - 468px)/6.2));display:grid;gap:6px;justify-content:center;margin:0 auto;perspective:600px}
 .wrow{display:grid;grid-template-columns:repeat(5,var(--ts));gap:6px}
@@ -1296,6 +1332,13 @@ body.day .moon .phase{opacity:0}
 .cat.hunt .pup{transform:translate(var(--gx,0px),var(--gy,0px)) scale(1.45,1.06)}
 .cat.tailplay .tail{animation:tailPlay .62s ease-in-out infinite alternate}
 @keyframes tailPlay{from{transform:rotate(-16deg)}to{transform:rotate(20deg)}}
+.app.duet #duo .pet[data-cat=alisa] .turn{transform:translateX(8px) rotate(3.5deg)}
+.app.duet #duo .pet[data-cat=lapula] .turn{transform:translateX(-8px) rotate(-3.5deg)}
+/* серия: на второй и третьей ступени полоска уходит из вишнёвого в золото */
+.meter[data-streak="2"] .bar b::after{opacity:max(var(--heat,0),.55)}
+.meter[data-streak="3"] .bar b::after{opacity:1}
+.meter[data-streak="3"] .bar b{box-shadow:0 0 18px rgba(245,200,76,.8),0 0 30px rgba(245,200,76,.4),inset 0 1px 0 rgba(255,255,255,.5)}
+.meter[data-streak="2"] #purrN,.meter[data-streak="3"] #purrN{color:#ffe2a0}
 .app.cuddle #duo .pet[data-cat=alisa] .turn{transform:translateX(14px) rotate(5deg)}
 .app.cuddle #duo .pet[data-cat=lapula] .turn{transform:translateX(-14px) rotate(-5deg)}
 @media (prefers-reduced-motion:reduce){.cat.washing .wpaw,.cat.washing .tongue,.cat.tailplay .tail{animation:none!important}}
@@ -1612,6 +1655,15 @@ html,body{background:#0f0a17}
 .gift .e .icv{width:32px;height:32px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 .wit:not(.on):not(.own) .e .icv{opacity:.92}
 .perk .e .icv{width:18px;height:18px}
+/* шкала: узкая ювелирная капсула, на кончике заполнения бегает блик */
+#v-home .meter{width:min(76%,248px);padding:8px 14px 10px}
+.meter .bar b::before{content:"";position:absolute;right:-2px;top:-3px;bottom:-3px;width:16px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,0));animation:tipGlint 1.9s ease-in-out infinite;pointer-events:none}
+@keyframes tipGlint{0%,100%{opacity:.25;transform:translateX(-5px) scale(.8)}50%{opacity:1;transform:translateX(0) scale(1.1)}}
+.meter.paused .bar b::before,.app.game-on .meter .bar b::before,.app.sheet-on .meter .bar b::before{animation:none;opacity:0}
+/* созерцание: 3,5 с без касаний на главной, шкала и док отступают, сад и кошки остаются главными. Любое касание возвращает их за 140 мс */
+#v-home .meter,#v-home .dock{transition:opacity .14s ease,translate .14s ease,scale .14s ease}
+.app.gaze #v-home .meter,.app.gaze #v-home .dock{opacity:.62;translate:0 3px;scale:.97;transition:opacity 1.1s ease,translate 1.1s ease,scale 1.1s ease}
+@media (prefers-reduced-motion:reduce){.meter .bar b::before{animation:none}}
 /* док: три стеклянные кнопки с кошачьими ушками, золотым кантом и лапкой в углу. Ушки дёргаются под пальцем */
 #v-home .dock{position:relative;margin-top:22px;width:100%;max-width:340px;gap:10px;padding:0;border-radius:0;align-items:flex-end}
 #v-home .dk{flex:1 1 0;width:auto;height:60px;border-radius:22px;gap:5px;font:600 11px/1 var(--ui);color:rgba(255,255,255,.94);
@@ -2351,6 +2403,8 @@ const FX = (() => {
     if (dirty) g.clearRect(dirty[0], dirty[1], dirty[2] - dirty[0], dirty[3] - dirty[1]); else g.clearRect(0,0,W,H);
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     parts = parts.filter(p => {
+      if (p.fly){ drawFly(p, dt); if (p.life <= 0) return false; const R = 22; if (p.x - R < x0) x0 = p.x - R; if (p.y - R < y0) y0 = p.y - R; if (p.x + R > x1) x1 = p.x + R; if (p.y + R > y1) y1 = p.y + R;
+        const f = p.fly; x0 = Math.min(x0, f.x0 - R, f.x1 - R, f.cx - R); x1 = Math.max(x1, f.x0 + R, f.x1 + R, f.cx + R); y0 = Math.min(y0, f.y0 - R, f.y1 - R, f.cy - R); y1 = Math.max(y1, f.y0 + R, f.y1 + R, f.cy + R); return true; }
       p.life -= dt; if (p.life <= 0) return false;
       p.vx *= p.drag; p.vy = p.vy*p.drag + p.grav*dt; p.x += p.vx*dt; p.y += p.vy*dt; p.rot += p.vr*dt;
       const R = p.size + 6; if (p.x - R < x0) x0 = p.x - R; if (p.y - R < y0) y0 = p.y - R; if (p.x + R > x1) x1 = p.x + R; if (p.y + R > y1) y1 = p.y + R;
@@ -2363,8 +2417,24 @@ const FX = (() => {
     if (parts.length) raf = requestAnimationFrame(loop); else { raf = 0; g.clearRect(0,0,W,H); }
   }
   function start(){ if (!raf){ last = performance.now(); raf = requestAnimationFrame(loop); } }
+  /* капля летит по квадратичной кривой Безье: вверх и вбок, потом в чип. Рисуется свечением и ядром, за ней короткий хвост */
+  function drawFly(p, dt){
+    const f = p.fly; f.t += dt; if (f.t < 0){ p.life = 1; return; }
+    const u = Math.min(1, f.t/f.dur), e = u*u*(3 - 2*u), w = 1 - e;
+    const bx = (q) => w*w*f.x0 + 2*w*q*f.cx + q*q*f.x1, by = (q) => w*w*f.y0 + 2*w*q*f.cy + q*q*f.y1;
+    p.x = bx(e); p.y = by(e); p.size = 16; p.life = 1;
+    const r = 5.5*(1 - .35*e) + 1.5*Math.sin(Math.min(1, u*6)*Math.PI/2);
+    for (let k = 3; k >= 1; k--){ const ue = Math.max(0, u - k*.045), ee = ue*ue*(3 - 2*ue), ww = 1 - ee; g.globalAlpha = .16*(4 - k)/3; g.fillStyle = "#ff5d7a"; g.beginPath(); g.arc(ww*ww*f.x0 + 2*ww*ee*f.cx + ee*ee*f.x1, ww*ww*f.y0 + 2*ww*ee*f.cy + ee*ee*f.y1, r*(1 - k*.16), 0, 7); g.fill(); }
+    g.globalAlpha = 1; const rg = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, r*2.6); rg.addColorStop(0, "rgba(255,120,150,.75)"); rg.addColorStop(1, "rgba(255,60,100,0)"); g.fillStyle = rg; g.beginPath(); g.arc(p.x, p.y, r*2.6, 0, 7); g.fill();
+    g.fillStyle = "#e8486a"; g.beginPath(); g.arc(p.x, p.y, r, 0, 7); g.fill(); g.fillStyle = "rgba(255,235,240,.9)"; g.beginPath(); g.arc(p.x - r*.3, p.y - r*.35, r*.32, 0, 7); g.fill();
+    if (u >= 1){ p.life = 0; f.done && f.done(); }
+  }
   const local = (x,y) => { const r = app.getBoundingClientRect(); return [x - r.left, y - r.top]; };
   return {
+    fly(ax, ay, bx, by, {delay = 0, dur = .48, done} = {}){
+      const [x0, y0] = local(ax, ay), [x1, y1] = local(bx, by), side = (Math.random() - .5)*90;
+      parts.push({fly: {x0, y0, x1, y1, cx: (x0 + x1)/2 + side - (x1 - x0)*.25, cy: Math.min(y0, y1) + (y0 - y1)*.15 - 30, t: -delay, dur, done}, x: x0, y: y0, life: 1, max: 1, size: 16}); start();
+    },
     burst(cx, cy, {emojis=["✨"], n=10, speed=[140,320], spread=Math.PI*2, dir=-Math.PI/2, size=[16,26], life=[.6,1.1], grav=500, drag=.98}={}){
       if (reduced()) n = Math.min(n, 3);
       const [x,y] = local(cx, cy);
@@ -2387,9 +2457,9 @@ const FX = (() => {
   };
 })();
 function centerOf(el){ const r = el.getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height/2]; }
-function popNum(text, cx, cy){
+function popNum(text, cx, cy, kind){
   const r = app.getBoundingClientRect(), d = document.createElement("div");
-  d.className = "pop-num"; d.textContent = text; d.style.left = (cx - r.left - 16) + "px"; d.style.top = (cy - r.top - 20) + "px";
+  d.className = "pop-num" + (kind ? " " + kind : ""); d.textContent = text; d.style.left = (cx - r.left - 16) + "px"; d.style.top = (cy - r.top - 20) + "px";
   app.appendChild(d);
   d.animate([{transform:"translateY(0) scale(.6)",opacity:0},{transform:"translateY(-18px) scale(1.15)",opacity:1,offset:.25},{transform:"translateY(-60px) scale(1)",opacity:0}],{duration:900,easing:"cubic-bezier(.2,.8,.2,1)"}).onfinish = () => d.remove();
 }
@@ -2399,17 +2469,12 @@ function shake(el, power=8){
   k.push({transform:"none"}); el.animate(k, {duration:320, easing:"linear"});
 }
 function bumpChip(){ const c = $("#chipDrops"); c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); }
+/* капли летят по холсту частиц в чип баланса: 0,48 с полёта, вылет через 70 мс. Каждая, долетев, щёлкает счётчик на единицу */
 function flyDrops(fromEl, n=6){
   const target = $("#chipDrops"); if (!target || !fromEl) return;
-  const [tx,ty] = centerOf(target), [fx,fy] = centerOf(fromEl), r = app.getBoundingClientRect();
-  for (let i=0;i<n;i++){
-    const d = document.createElement("div"); d.innerHTML = '<svg class="icf" style="width:22px;height:22px;display:block"><use href="#i-drop"/></svg>';
-    d.style.cssText = `position:absolute;z-index:66;left:${fx-r.left-11}px;top:${fy-r.top-11}px;pointer-events:none`;
-    app.appendChild(d);
-    const mx = (Math.random()-.5)*120, my = -60 - Math.random()*60;
-    d.animate([{transform:"translate(0,0) scale(.4)",opacity:0},{transform:`translate(${mx}px,${my}px) scale(1.1)`,opacity:1,offset:.35},{transform:`translate(${tx-fx}px,${ty-fy}px) scale(.6)`,opacity:.9}],
-      {duration:750 + i*60, easing:"cubic-bezier(.5,0,.6,1)", delay:i*40}).onfinish = () => { d.remove(); snd.coin(); bumpChip(); };
-  }
+  const [tx,ty] = centerOf(target), [fx,fy] = centerOf(fromEl);
+  if (reduced()){ hud(true); return; }
+  for (let i=0;i<n;i++) FX.fly(fx, fy, tx, ty, {delay: i*.07, dur: .48, done: () => { snd.coin(); hudStep(); }});
 }
 /* нажатия: визуал + звук + хаптика */
 document.addEventListener("pointerdown", e => {
@@ -2555,15 +2620,21 @@ function applyEvent(){
   if ($("#v-home").classList.contains("on")) $("#ctitle").textContent = S.event === "quarrel" ? "ссора" : "";
 }
 let shownDrops = null;
+/* число в чипе меняется перекатом: старое уезжает (его рисует ::before из data-old), новое въезжает. Настоящий текст сразу новый */
+function rollNum(el, v, quick){
+  v = String(v); const old = el.dataset.v; if (old === v) return; el.dataset.v = v; el.textContent = v;
+  if (old == null || reduced() || !el.animate) return;
+  const up = +v >= +old; el.dataset.old = old; el.classList.remove("roll", "rollup", "rolldn"); void el.offsetWidth; el.classList.add("roll", up ? "rollup" : "rolldn"); el.style.setProperty("--rt", quick ? ".2s" : ".34s");
+  clearTimeout(el._rl); el._rl = setTimeout(() => el.classList.remove("roll", "rollup", "rolldn"), quick ? 220 : 360);
+}
+/* капля долетела до чипа: счётчик прибавляет ровно одну, пока не догонит настоящий баланс */
+function hudStep(){ if (shownDrops === null || shownDrops >= S.drops) return; shownDrops++; rollNum($("#hDrops"), shownDrops, true); bumpChip(); }
 function hud(animate){
   const el = $("#hDrops"), to = S.drops;
-  if (animate && shownDrops !== null && to !== shownDrops){
-    const from = shownDrops, t0 = performance.now();
-    const step = t => { const k = Math.min(1,(t-t0)/700); el.textContent = Math.round(from + (to-from)*(1-Math.pow(1-k,3))); if (k < 1) requestAnimationFrame(step); };
-    requestAnimationFrame(step); bumpChip();
-  } else el.textContent = to;
+  if (animate && shownDrops !== null && to !== shownDrops){ rollNum(el, to); bumpChip(); }
+  else { el.dataset.v = String(to); el.textContent = to; }
   shownDrops = to;
-  $("#hStars").textContent = totalStars();
+  if (animate) rollNum($("#hStars"), totalStars()); else { $("#hStars").dataset.v = String(totalStars()); $("#hStars").textContent = totalStars(); }
 }
 
 /* ---------- достижения ---------- */
@@ -2708,6 +2779,9 @@ function speakFx(side){
 }
 /* взгляд: зрачки следят за пальцем */
 let gazeT = 0, gazeRaf = 0;
+/* режим созерцания на главной */
+{ let gz = 0; const arm = () => { clearTimeout(gz); app.classList.remove("gaze"); gz = setTimeout(() => { if (homeLive() && !over && S.event !== "quarrel") app.classList.add("gaze"); else arm(); }, 3500); };
+  ["pointerdown", "keydown"].forEach(t => addEventListener(t, arm, {passive: true, capture: true})); setTimeout(arm, 0); }
 function homeLive(){ return $("#v-home").classList.contains("on") && !$("#game").classList.contains("on") && !openSh && !document.querySelector("#splash:not(.off)") && !$("#viewer").classList.contains("on"); }
 function setGaze(c, x, y){ if (!c) return; c.style.setProperty("--gx", x.toFixed(2) + "px"); c.style.setProperty("--gy", y.toFixed(2) + "px"); c.style.setProperty("--gn", (x/3.6).toFixed(3)); c.style.setProperty("--gm", (y/2.8).toFixed(3)); }
 function lookAt(x, y){
@@ -2832,6 +2906,8 @@ function renderPurr(){
   $("#purrK").textContent = q ? "мурр-шкала · на паузе" : (moonNow() ? "мурр-шкала · полнолуние" : "мурр-шкала"); m.classList.toggle("moonx", moonNow() && !q);
 }
 const renderMoon = renderPurr;
+const petFx = {who: null, at: 0, duet: false, dew: false, dewAt: -1e9, streak: 1, endAt: 0, counted: true, cool: 0, dt: 0};
+function applyStreak(){ const m = $("#purr"); if (m) m.dataset.streak = petFx.streak; }
 function pet(el, e, soft){
   /* три способа: тап, удержание (soft) и свайп по шерсти (stroke). У свайпа свои пружины, поэтому приседание от тапа ему не нужно */
   const stroke = soft === "stroke"; if (stroke) soft = false;
@@ -2839,17 +2915,37 @@ function pet(el, e, soft){
   if (S.event === "quarrel") return soft ? null : sulk(el, who);
   const ov = over;
   S.pets++; if (!ov) S.purr++; if (who === "alisa") S.petA++; else S.petL++; note(who === "alisa" ? "pa" : "pl");
-  let said = false;
+  let said = false, zone = 1;
   cat.classList.add("happy"); clearTimeout(cat._hp); cat._hp = setTimeout(() => cat.classList.remove("happy"), 2600);
   /* где гладят: уши дёргаются, под подбородком довольный прищур, живот иногда ловушка */
   if (e && e.clientX && !reduced() && !soft){
     const r0 = cat.getBoundingClientRect(), rx = (e.clientX - r0.left)/r0.width, ry = (e.clientY - r0.top)/r0.height;
-    if (ry < .34){ const k = rx < .5 ? "flickL" : "flickR"; cat.classList.remove(k); void cat.offsetWidth; cat.classList.add(k); setTimeout(() => cat.classList.remove(k), 460); }
-    else if (ry < .62){ cat.classList.add("content"); clearTimeout(cat._ct); cat._ct = setTimeout(() => cat.classList.remove("content"), 1200); }
+    zone = ry < .35 ? 0 : ry < .7 ? 1 : 2;
+    if (zone === 0){ const k = rx < .5 ? "flickL" : "flickR"; cat.classList.remove(k); void cat.offsetWidth; cat.classList.add(k); setTimeout(() => cat.classList.remove(k), 460); }
+    else if (zone === 1){ cat.classList.add("content"); clearTimeout(cat._ct); cat._ct = setTimeout(() => cat.classList.remove("content"), 1200); }
     else if (ry > .68 && rx > .28 && rx < .72 && sinceLine >= 5 && Math.random() < .3){
       cat.animate([{transform:"none"}, {transform:`translateX(${who === "alisa" ? 4 : -4}px) rotate(${who === "alisa" ? 4 : -4}deg)`, offset:.25}, {transform:"none"}], {duration:380, easing:"ease-out"});
       snd.hmph(); setBubble(pick(BELLY[who]), who); said = true;
     }
+    if (zone === 2){
+      /* лапки и животик: лапки мнут, а раз за шкалу из-под пальца может выкатиться янтарная росинка, +1 капля. Не чаще раза в 25 с */
+      cat.classList.add("paws"); clearTimeout(cat._kn); cat._kn = setTimeout(() => cat.classList.remove("paws"), 900);          /* свой класс: «knead» занят удержанием */
+      const now = performance.now();
+      if (!ov && !petFx.dew && now - petFx.dewAt > 25000 && Math.random() < .15){ petFx.dew = true; petFx.dewAt = now; S.drops++; S.dews = (S.dews || 0) + 1;
+        popNum("+1", e.clientX, e.clientY - 18, "gold"); FX.burst(e.clientX, e.clientY, {emojis: ["✨"], n: 5, size: [9, 14], speed: [80, 170], grav: 120});
+        FX.fly(e.clientX, e.clientY, ...centerOf($("#chipDrops")), {dur: .48, done: () => { snd.coin(); hudStep(); }}); if (ensureRunning()) fmBell({f: 1318.5, dur: .7, peak: .07, send: .4}); haptic([6, 30, 10]); }
+    }
+  }
+  /* дуэт ласки: обе кошки поглажены с разрывом меньше 1,4 с. Раз за шкалу: кошки наклоняются друг к другу, между ними искра, шкала получает шаг */
+  { const now = performance.now();
+    if (!ov && !petFx.duet && petFx.who && petFx.who !== who && now - petFx.at < 1400){ petFx.duet = true; S.purr++;
+      if (!reduced()){ app.classList.add("duet"); clearTimeout(petFx.dt); petFx.dt = setTimeout(() => app.classList.remove("duet"), 620); const d = $("#duo").getBoundingClientRect(); FX.burst(d.left + d.width/2, d.top + d.height*.42, {emojis: ["✨"], n: 3, size: [12, 18], speed: [40, 110], grav: -30, life: [.6, .9]}); }
+      if (ensureRunning()) fmBell({f: 987.77, dur: .5, peak: .05, send: .35}); }
+    petFx.who = who; petFx.at = now;
+    /* серия: новая шкала начата не позже 3,5 с после прошлой, ступень нагрева растёт до третьей. 4 с без поглаживаний остужают */
+    if (!ov && S.purr <= 2 && petFx.endAt && !petFx.counted){ petFx.counted = true; petFx.streak = now - petFx.endAt <= 3500 ? Math.min(3, petFx.streak + 1) : 1; applyStreak(); }
+    clearTimeout(petFx.cool); petFx.cool = setTimeout(() => { petFx.streak = 1; applyStreak(); }, 4000);
+    if (!ov && petFx.streak > 1 && !reduced()) $("#purrN").animate([{transform: "none"}, {transform: `scale(1.14) rotate(${who === "alisa" ? -5 : 5}deg)`, offset: .3}, {transform: "none"}], {duration: 260, easing: "ease-out"});
   }
   if (MILES[S.pets]){ celebrate(S.pets, who); said = true; }
   if (!reduced() && !soft){
@@ -2864,7 +2960,7 @@ function pet(el, e, soft){
     m.style.setProperty("--px", Math.max(0, Math.min(mr.width, px - mr.left)).toFixed(0) + "px"); m.style.setProperty("--py", "0px");
     m.style.setProperty("--ex", Math.max(0, Math.min(mr.width, px - mr.left)).toFixed(0) + "px"); m.style.setProperty("--ey", "0px");
     m.classList.add("lit", "edged"); clearTimeout(m._lit); m._lit = setTimeout(() => m.classList.remove("lit", "edged"), 260); }
-  if (ov) snd.over(1 - (ov.left - 1)/ov.need); else snd.tick(Math.min(1, S.purr/perDrop()));
+  if (ov) snd.over(1 - (ov.left - 1)/ov.need); else snd.tick(Math.min(1, S.purr/perDrop() + (zone === 0 ? .14 : 0)));      /* по ушам тон чуть выше */
   haptic(stroke ? 4 : 6);
   if (!purr) purr = startPurr(.22);
   clearTimeout(purrT); purrT = setTimeout(() => { if (purr){ purr.stop(); purr = null; } }, 1500);
@@ -2891,6 +2987,7 @@ function pet(el, e, soft){
     setTimeout(() => { flyDrops(m.querySelector(".dropl"), pay); setTimeout(() => hud(true), 800); }, 380);
     if (pay > 1){ const [mx, my] = centerOf(m); setTimeout(() => popNum("+" + pay, mx + 70, my - 14), 380); }
     setTimeout(() => { dropFlash(); }, 300);
+    petFx.endAt = performance.now(); petFx.counted = false; petFx.dew = false; petFx.duet = false;
     overStart(pay, who);
   } else renderPurr();
   checkAch(); save();
@@ -2909,7 +3006,7 @@ function overStep(who, x, y){
   overEnd(true, who);
 }
 function overEnd(win, who){
-  const o = over; if (!o) return; over = null; clearTimeout(o.t);
+  const o = over; if (!o) return; over = null; clearTimeout(o.t); petFx.endAt = performance.now();
   const m = $("#purr"), bar = $("#purrBar"), back = () => { m.classList.remove("over", "overwin"); bar.style.transition = "none"; renderPurr(); void bar.offsetWidth; bar.style.transition = ""; };
   if (!win){ back(); return; }
   S.drops += o.pay; S.overs = (S.overs || 0) + 1; S.overSeen = 1; save();
@@ -3342,6 +3439,10 @@ function wearGrid(box, mode){
         S.drops -= w.price; S.owned[w.id] = 1; tg.forEach(k => putOn(k, w.id, true)); snd.purchase(); haptic([12,40,18]); const [x,y] = centerOf(b); FX.burst(x,y,{emojis:[w.e,"✨"],n:10});
       } else { shake(b, 4); snd.wrong(); const [x, y] = centerOf(b); popNum(w.s, x - 50, y - 20); return; }
       save(); hud(true); applyLook(); checkAch(); box.querySelectorAll(".wit").forEach(x => x._paint && x._paint()); if (mode !== "shared") renderLooksState();
+      /* вещь качается на вешалке, кошка коротко подпрыгивает и щурится */
+      if (!reduced() && wears(w.id)){ b.querySelector(".e").animate([{rotate: "0deg"}, {rotate: "16deg", offset: .14}, {rotate: "-11deg", offset: .34}, {rotate: "7deg", offset: .54}, {rotate: "-3.5deg", offset: .74}, {rotate: "0deg"}], {duration: 1100, easing: "ease-out"});
+        tg.forEach(k => document.querySelectorAll(`#duo .cat[data-k="${k}"]`).forEach(c => { c.classList.add("content"); clearTimeout(c._ct); c._ct = setTimeout(() => c.classList.remove("content"), 900);
+          c.parentElement.animate([{transform: "none"}, {transform: "translateY(-10px) scale(.97,1.04)", offset: .3}, {transform: "translateY(0) scale(1.04,.96)", offset: .6}, {transform: "none"}], {duration: 520, easing: "ease-out"}); })); }
       paintSets();
       /* сет только что собрался: плашка вспыхивает, подпись объясняет, что он даёт */
       const fresh = OUTFIT_SETS.find(st => setOn(st.id) && !was.includes(st.id) && st.need.includes(w.id));
@@ -3445,12 +3546,15 @@ function showTicket(it){
   closeSheet();
   setTimeout(() => {
     openSheet("Твоё", b => {
-      const t = document.createElement("div"); t.className = "ticket";
-      t.innerHTML = '<span class="te e"></span><b></b><span class="tt"></span>';
+      const t = document.createElement("div"); t.className = "ticket tear";
+      t.innerHTML = '<div class="tk-main"><span class="te e"></span><b></b></div><div class="tk-stub"><span class="tt"></span></div>';
       t.querySelector(".te").textContent = it.e; t.querySelector("b").textContent = it.title; t.querySelector(".tt").textContent = it.text;
       b.appendChild(t);
     }, null);
     setTimeout(() => { const t = $(".ticket"); if (t){ const [x,y] = centerOf(t); FX.confetti(x, y, 50); snd.fanfare(); } }, 450);
+    /* корешок надрывается: щелчок бумаги и золотая пыль вдоль линии отрыва */
+    setTimeout(() => { const st = $(".ticket .tk-stub"); if (!st) return; const r = st.getBoundingClientRect(); snd.ratchet && snd.ratchet(.4); haptic([8, 24, 8]);
+      [.2, .5, .8].forEach(k => FX.burst(r.left + r.width*k, r.top, {emojis: ["✨"], n: 4, size: [8, 13], speed: [60, 160], grav: 260, life: [.5, .9]})); }, 620);
   }, 380);
 }
 
@@ -3516,15 +3620,16 @@ function drawTrail(m, cur){
   if (pts.length < 2) return;
   const seg = (a, b, off=0) => { const my = (a[1] + b[1])/2; return `M${a[0]+off} ${a[1]} C${a[0]+off} ${my} ${b[0]+off} ${my} ${b[0]+off} ${b[1]}`; };
   const doneTo = cur ? LEVELS.indexOf(cur) : pts.length - 1;
-  let base = "", done = "", evt = "";
+  let base = "", done = "", evt = "", run = "", gap = true;
   for (let i=1;i<pts.length;i++){
-    if (i === 10){ evt += `<path d="${seg(pts[9], pts[10], -3)}" stroke="rgba(130,165,255,.75)" stroke-width="3" fill="none" stroke-linecap="round"/><path d="${seg(pts[9], pts[10], 3)}" stroke="rgba(255,165,90,.75)" stroke-width="3" fill="none" stroke-linecap="round"/>`; continue; }
+    if (i === 10){ gap = true; evt += `<path d="${seg(pts[9], pts[10], -3)}" stroke="rgba(130,165,255,.75)" stroke-width="3" fill="none" stroke-linecap="round"/><path d="${seg(pts[9], pts[10], 3)}" stroke="rgba(255,165,90,.75)" stroke-width="3" fill="none" stroke-linecap="round"/>`; continue; }
     base += seg(pts[i-1], pts[i]) + " ";
-    if (i <= doneTo) done += seg(pts[i-1], pts[i]) + " ";
+    if (i <= doneTo){ const sg = seg(pts[i-1], pts[i]); done += sg + " "; run += (gap ? sg : sg.slice(sg.indexOf("C"))) + " "; gap = false; }
   }
   svg.innerHTML = `<defs><linearGradient id="trailG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3e3b0"/><stop offset="1" stop-color="#ff9aa8"/></linearGradient></defs>
     <path d="${base}" fill="none" stroke="rgba(243,227,176,.28)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 11"/>
-    <path d="${done}" fill="none" stroke="url(#trailG)" stroke-width="3" stroke-linecap="round" opacity=".85" style="filter:drop-shadow(0 0 6px rgba(243,227,176,.6))"/>${evt}`;
+    <path d="${done}" fill="none" stroke="url(#trailG)" stroke-width="3" stroke-linecap="round" opacity=".85" style="filter:drop-shadow(0 0 6px rgba(243,227,176,.6))"/>${evt}
+    ${run ? `<path class="tpulse" d="${run}" pathLength="100" fill="none" stroke="#fff3c9" stroke-width="4.500" stroke-linecap="round" stroke-dasharray="5 100"/>` : ""}`;
 }
 addEventListener("resize", () => { const m = $("#map"); if ($("#v-map").classList.contains("on")) drawTrail(m, LEVELS.find(L => unlocked(L.n) && !(S.stars[L.n] > 0))); });
 /* какие надетые вещи помогут на этом уровне: игрок видит это до старта */
@@ -3540,6 +3645,11 @@ function openEpisode(L){
     const p = document.createElement("div"); p.className = "poster"; p.style.setProperty("--poster", posterBg(L.n)); p.style.setProperty("--glow", POSTER[L.n][3]);
     p.innerHTML = '<span class="glow"></span>' + SIL + '<span class="shine"></span><span class="art e"></span><div class="pm"><div class="tag"></div><h3></h3></div>';
     p.querySelector(".art").textContent = L.e; p.querySelector(".tag").textContent = L.tag; p.querySelector("h3").textContent = L.t;
+    /* постер наклоняется за пальцем, рисунок и подпись едут на разную глубину */
+    if (!reduced()){ const tilt = e => { const r = p.getBoundingClientRect(), nx = Math.max(-1, Math.min(1, ((e.clientX - r.left)/r.width - .5)*2)), ny = Math.max(-1, Math.min(1, ((e.clientY - r.top)/r.height - .5)*2));
+        p.classList.add("tilt"); p.style.setProperty("--prx", (-ny*7).toFixed(2) + "deg"); p.style.setProperty("--pry", (nx*9).toFixed(2) + "deg"); p.style.setProperty("--ptx", (nx*8).toFixed(1) + "px"); p.style.setProperty("--pty", (ny*6).toFixed(1) + "px"); };
+      const flat = () => { p.classList.remove("tilt"); ["--prx", "--pry", "--ptx", "--pty"].forEach(k => p.style.removeProperty(k)); };
+      p.addEventListener("pointerdown", tilt); p.addEventListener("pointermove", e => { if (e.buttons || e.pointerType === "touch") tilt(e); }); ["pointerup", "pointercancel", "pointerleave"].forEach(t => p.addEventListener(t, flat)); p.style.touchAction = "pan-y"; }
     const d = document.createElement("p"); d.className = "epdesc"; d.textContent = L.s.charAt(0).toUpperCase() + L.s.slice(1) + ".";
     const st = document.createElement("div"); st.className = "epst"; st.innerHTML = '<span class="stars3"></span><span></span>';
     for (let k=0;k<3;k++){ const x = document.createElement("span"); x.className = "s" + (k < (S.stars[L.n]||0) ? "" : " off"); x.innerHTML = '<svg class="sti"><use href="#i-star"/></svg>'; st.firstChild.appendChild(x); }
@@ -4986,6 +5096,7 @@ function renderWordCard(){
   const W = wdToday(), last = W.g[W.g.length - 1], sc = last ? wdScore(last, W.ans) : null;
   const tiles = document.createElement("span"); tiles.className = "wmini"; tiles.setAttribute("aria-hidden", "true");
   for (let i = 0; i < 5; i++){ const t = document.createElement("i"); if (W.st === 1){ t.className = "s2"; t.textContent = W.ans[i]; } else if (sc) t.className = "s" + sc[i]; tiles.appendChild(t); }
+  if (!W.st){ const em = [...tiles.children].find(t => !t.className || t.className === "s0"); if (em) em.classList.add("glint"); }
   const n = W.g.length, sub = W.st === 1 ? `с ${n}-й попытки · +${W.r} капель` : W.st === 2 ? "сегодня не далось · завтра новое слово" : n ? `попытка ${n + 1} из 6` : "пять букв · каждый день новое слово";
   const g = group(), r = li("#i-grid:#f3d27a", "Загадка дня", sub, tiles);
   if (!W.st && !n){ const dot = document.createElement("span"); dot.className = "ndot"; r.querySelector(".tx b").appendChild(dot); }
