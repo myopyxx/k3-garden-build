@@ -53,7 +53,7 @@ const {open} = require('./helper.js');
   const gz = await p.evaluate(() => { const c = document.querySelector('#duo .cat'), pu = getComputedStyle(c.querySelector('.pup')), tu = getComputedStyle(c.querySelector('.turn'));
     return {pup: pu.transitionDuration, turnProp: tu.transitionProperty, turnDelay: tu.transitionDelay}; });
   ok('зрачки 0,16 с, корпус с задержкой 0,06 с', gz.pup === '0.16s' && /translate/.test(gz.turnProp) && /0\.06s/.test(gz.turnDelay), JSON.stringify(gz));
-  await p.mouse.move(60, 320); await p.mouse.move(40, 300, {steps: 4}); await p.waitForTimeout(650);
+  for (let i = 0; i < 14; i++){ await p.mouse.move(60 - i, 320 - i); await p.waitForTimeout(45); }      /* палец всё время в движении: взгляд не успевает вернуться */
   const lean = await p.evaluate(() => getComputedStyle(document.querySelector('#duo .pet[data-cat="lapula"] .turn')).rotate);
   ok('корпус наклоняется к пальцу', lean !== 'none' && parseFloat(lean) < -.3, lean);
 

@@ -636,6 +636,15 @@ body.day .moon .shade{opacity:0}
 .oset.on{color:#2a1a08;background:linear-gradient(180deg,#ffe9a8,#e9b949);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 4px rgba(120,70,0,.3),0 6px 14px rgba(245,200,76,.22)}
 .oset.on .e{filter:none}
 .oset.lit{animation:osetFlash .9s var(--spring-pop)}
+/* сеты на главной. «Королевы Выпускного»: короны и бантики вспыхивают раз в 4 с. «Дневные Бродяги»: по очкам пробегает солнечный зайчик */
+.cat .sglint{opacity:0}
+#duo.set-prom .cat.wear-tiara .acc-tiara,#duo.set-prom .cat.wear-bow .acc-bow{animation:promGlint 4s ease-in-out infinite}
+@keyframes promGlint{0%,78%,100%{filter:none}86%{filter:brightness(1.55) drop-shadow(0 0 5px rgba(255,236,170,.95))}}
+#duo.set-day .cat.wear-shades .sglint{animation:dayGlint 5.2s ease-in-out infinite}
+#duo.set-day .pet[data-cat="lapula"] .cat.wear-shades .sglint{animation-delay:.5s}
+@keyframes dayGlint{0%,70%{opacity:0;transform:translateX(-7px)}78%{opacity:.7}90%,100%{opacity:0;transform:translateX(15px)}}
+.app.game-on #duo .cat :is(.acc-tiara,.acc-bow,.sglint),.app.sheet-on #duo.set-day .sglint{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){#duo .cat :is(.acc-tiara,.acc-bow,.sglint){animation:none!important}}
 @keyframes osetFlash{0%{transform:scale(.9);filter:brightness(1.8)}100%{transform:none;filter:none}}
 .perk.set{box-shadow:inset 0 0 0 1px rgba(245,200,76,.55)}
 .epst{display:flex;align-items:center;justify-content:space-between;margin:0 4px 16px;font-size:10.5px;color:var(--muted)}
@@ -2464,7 +2473,7 @@ function catSVG(c, opts={}){
   <path d="M100 125 Q94 134 86 130 M100 125 Q106 134 114 130" fill="none" stroke="${c.nose}" stroke-width="2" stroke-linecap="round"/>
   ${fangs ? '<path d="M92 129 L96 129 L94 137 Z M104 129 L108 129 L106 137 Z" fill="#fff"/>' : ""}
   <g stroke="#ecebef" stroke-width="1.6" stroke-linecap="round" opacity=".75"><path d="M64 122 L36 116 M64 127 L36 130 M136 122 L164 116 M136 127 L164 130"/></g></g>
-  <g class="hl hl-eyes"><g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
+  <g class="hl hl-eyes"><g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><g class="sglint"><path d="M67 110 L74 92 M120 110 L127 92" fill="none" stroke="#fff6cf" stroke-width="3.2" stroke-linecap="round"/></g><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
   <g class="acc acc-mask"><path fill-rule="evenodd" d="M56 98 Q60 82 80 86 Q92 88 100 96 Q108 88 120 86 Q140 82 144 98 Q142 114 122 116 Q108 116 100 108 Q92 116 78 116 Q58 114 56 98 Z M70 101 Q74 93 82 93 Q90 94 91 101 Q88 108 80 108 Q72 108 70 101 Z M109 101 Q110 94 118 93 Q126 93 130 101 Q128 108 120 108 Q112 108 109 101 Z" fill="#17101a" stroke="#d9b45a" stroke-width="1.8"/><path d="M144 96 Q158 74 150 58 M146 92 Q160 80 162 66" fill="none" stroke="#b01e33" stroke-width="3" stroke-linecap="round"/></g></g>
   <g class="hl hl-muz"><path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/></g>
   <g class="wpaw"><ellipse cx="0" cy="0" rx="17" ry="11.5" fill="${c.fur}"/><ellipse cx="0" cy="4" rx="13" ry="6" fill="${c.shade}" opacity=".22"/><path d="M-7 -10 q2 5 0 10 M1 -11 q2 5 0 11 M9 -9 q2 4 0 9" stroke="${c.shade}" stroke-width="1.6" fill="none" opacity=".4" stroke-linecap="round"/></g>
@@ -2531,6 +2540,14 @@ function applyLook(){
   lastWear = now;
   TEAMS.forEach(t => document.body.classList.toggle("team-"+t.id, S.team === t.id && t.id !== "damon"));
   document.body.classList.toggle("day", !!S.day);
+  { const duo = $("#duo"); if (duo) OUTFIT_SETS.forEach(st => duo.classList.toggle("set-" + st.id, setOn(st.id))); }
+}
+/* собранный сет слегка оживляет главную. Частиц не больше трёх за раз и не чаще раза в 0,45 с: телефон этого не заметит */
+let setFxAt = 0;
+function setFx(x, y, stroke){
+  const now = performance.now(); if (reduced() || now - setFxAt < 450) return;
+  if (stroke && setOn("ball")){ setFxAt = now; FX.burst(x, y, {emojis: ["♦️"], n: 3, speed: [90, 190], spread: 1.1, size: [9, 13], grav: 240, life: [.5, .8]}); }      /* «Бал у Сальваторе»: рубиновые искры из-под плаща */
+  else if (setOn("forks")){ setFxAt = now + 450; FX.burst(x, y - 8, {emojis: ["🌹"], n: 1, speed: [40, 70], spread: 2.4, size: [13, 16], grav: 46, life: [1.5, 1.9]}); }   /* «Полночь в Форксе»: один медленный лепесток */
 }
 function applyEvent(){
   app.classList.toggle("quarrel", S.event === "quarrel"); if ($("#purr")) renderPurr();
@@ -2855,6 +2872,7 @@ function pet(el, e, soft){
   const r = el.getBoundingClientRect();
   const x = e && e.clientX ? e.clientX : r.left + r.width/2, y = e && e.clientY ? e.clientY : r.top + r.height/3;
   FX.burst(x, y, {emojis: ov ? ["✨","⭐"] : ["💕","💗","✨"], n: soft || stroke ? 2 : 4, speed:[120,240], spread:1.4, size:[16,24], grav:-60, life:[.8,1.2]});
+  setFx(x, y, stroke);
   sinceLine++;
   if (said){ sinceLine = 0; phraseIn = 5 + Math.floor(Math.random()*5); }
   else if (!soft && sinceLine >= phraseIn){
@@ -6136,7 +6154,9 @@ function lvlSun(area, done){
   function cloudCover(t, a){ const [sx, sy] = sunPos(a); for (const c of CLOUDS){ const [x, y] = cloudAt(c, t); if (Math.abs(sx - x) < c.w*.36 && Math.abs(sy - y) < c.h*.55) return true; } return false; }
 
   let a = 90*D2R, target = a, t = 0, burn = 0, expT = 0, alive = false, ended = false, last = 0, raf, exposed = false, flash = 0;
-  const GRACE = setOn("day") ? 1.2 : 0; let sunT = 0;          /* сет «Дневные Бродяги»: первые 1,2 с на солнце не жгут */
+  const GRACE = setOn("day") ? 1.2 : 0; let sunT = 0;
+  /* на середине пути небо на 6 с затягивает туча: солнце не жжёт, ожог остывает вдвое быстрее. Одна передышка перед рывком к дому */
+  const STORM_AT = START + (END - START)*.5, STORM_DUR = 6; let storm = -1;      /* -1 ещё не было, 0..STORM_DUR идёт, 99 прошла */          /* сет «Дневные Бродяги»: первые 1,2 с на солнце не жгут */
   const smoke = [];
   let hissL = { set(){}, stop(){} };
   const catX = () => Math.min(END, START + SPEED*t);
@@ -6201,7 +6221,15 @@ function lvlSun(area, done){
       g.fillStyle = mixHex("#e7a9b8", "#ffffff", k).replace("rgb", "rgba").replace(")", ",.82)");
       g.beginPath(); g.ellipse(cx2, cy2, c.w*.5, c.h*.42, 0, 0, 7); g.ellipse(cx2 - c.w*.22, cy2 - c.h*.22, c.w*.26, c.h*.4, 0, 0, 7); g.ellipse(cx2 + c.w*.18, cy2 - c.h*.28, c.w*.22, c.h*.36, 0, 0, 7); g.fill(); });
     // солнце и блики
+    const sk = storm >= 0 && storm < STORM_DUR ? Math.min(1, storm/.8, (STORM_DUR - storm)/.8) : 0;      /* насколько туча закрыла небо, 0..1 */
     g.fillStyle = "#fffaf0"; g.beginPath(); g.arc(sx, sy, 15, 0, 7); g.fill();
+    if (sk > 0){
+      g.fillStyle = `rgba(38,30,62,${(.34*sk).toFixed(3)})`; g.fillRect(0, 0, W, G + 40);
+      const tx = W*1.25 - (W*1.5)*(storm/STORM_DUR), ty = G*.2, tw = W*.95, th = 92;
+      g.fillStyle = `rgba(58,48,84,${(.93*sk).toFixed(3)})`; g.beginPath();
+      [[0, 0, .5, .44], [-.27, -.1, .28, .46], [.2, -.2, .27, .5], [.38, .06, .22, .36], [-.42, .1, .2, .32], [-.05, -.3, .2, .38]].forEach(([dx, dy, rw, rh]) => { g.moveTo(tx + dx*tw + rw*tw, ty + dy*th); g.ellipse(tx + dx*tw, ty + dy*th, rw*tw, rh*th, 0, 0, 7); }); g.fill();
+      g.fillStyle = `rgba(120,104,160,${(.3*sk).toFixed(3)})`; g.beginPath(); g.ellipse(tx - tw*.05, ty - th*.34, tw*.3, th*.16, 0, 0, 7); g.fill();
+    }
     const fx = (cxS - sx), fy = (G*.55 - sy);
     [[.55, 10, .1], [.9, 22, .06], [1.35, 6, .14], [1.7, 34, .04]].forEach(([m, r, al]) => { g.fillStyle = `rgba(255,236,200,${al})`; g.beginPath(); g.arc(sx + fx*m, sy + fy*m, r, 0, 7); g.fill(); });
     // дуга-подсказка и цель
@@ -6275,9 +6303,12 @@ function lvlSun(area, done){
       t += dt;
       const da = target - a, step = OMEGA*dt; a += Math.abs(da) <= step ? da : Math.sign(da)*step;
       const x = catX();
-      exposed = !(shadedAt(x, a) || cloudCover(t, a));
+      if (storm === -1 && x >= STORM_AT){ storm = 0; flashBanner(area, "Набежала туча: можно отдышаться", 2600); if (ensureRunning()) noise({type: "lowpass", freq: 180, Q: .7, envOpts: {a: .3, d: 1.5, peak: .07}}); haptic([8, 60, 8]); }
+      else if (storm >= 0 && storm < STORM_DUR){ storm += dt; if (storm >= STORM_DUR) storm = 99; }
+      const stormy = storm >= 0 && storm < STORM_DUR;
+      exposed = !(stormy || shadedAt(x, a) || cloudCover(t, a));
       sunT = exposed ? sunT + dt : 0; const burning = exposed && sunT > GRACE;
-      if (burning){ burn += BURN_UP*dt; expT += dt; } else if (!exposed) burn = Math.max(0, burn - BURN_DOWN*dt);
+      if (burning){ burn += BURN_UP*dt; expT += dt; } else if (!exposed) burn = Math.max(0, burn - BURN_DOWN*dt*(stormy ? 2 : 1));
       hissL.set(burning ? .05 + burn*.05 : 0);
       updT -= dt; if (updT <= 0){ upd(); updT = .2; }
       if (burn >= 1) return end(false);
@@ -6409,6 +6440,19 @@ function lvlMask(area, done){
     BOKEH.forEach(b => { const al = .10 + .08*Math.sin(t*1.3 + b.f); const gx = b.x*W, gy = b.y*H, rg = c.createRadialGradient(gx, gy, 0, gx, gy, b.r);
       rg.addColorStop(0, `rgba(255,200,130,${al + .1})`); rg.addColorStop(1, "rgba(255,200,130,0)"); c.fillStyle = rg; c.fillRect(gx - b.r, gy - b.r, b.r*2, b.r*2); });
     guests.forEach(gu => drawGuest(c, gu));
+    /* третий раунд: когда прослушаны двое с одинаковым ритмом, между их сердцами натягивается нить, по ней бежит волна в такт. Обоих выбрали: нить золотая */
+    if (ROUNDS[round] && ROUNDS[round].kind === "pair"){
+      const kn = guests.filter(gu => gu.known && gu.state !== "out" && gu.bpm > 0);
+      for (let i = 0; i < kn.length; i++) for (let j = i + 1; j < kn.length; j++){ const p = kn[i], q = kn[j]; if (p.bpm !== q.bpm) continue;
+        const hy = gu => gu.y - 46*gu.s - (gu.hair === 2 ? 16*gu.s : gu.hair === 0 ? 6*gu.s : 0);
+        const x1 = p.x, y1 = hy(p), x2 = q.x, y2 = hy(q), len = Math.hypot(x2 - x1, y2 - y1), nx = -(y2 - y1)/len, ny = (x2 - x1)/len, gold = p.sel && q.sel;
+        const ph = (t*p.bpm/60) % 1, N = 36;
+        c.save(); c.lineCap = "round"; c.lineJoin = "round"; c.strokeStyle = gold ? "rgba(255,222,140,.95)" : "rgba(255,150,170,.7)"; c.lineWidth = gold ? 2.2 : 1.4; c.shadowColor = gold ? "rgba(255,222,140,.9)" : "rgba(255,120,150,.7)"; c.shadowBlur = gold ? 12 : 7;
+        c.beginPath();
+        for (let k = 0; k <= N; k++){ const u = k/N, d = u - ph, bump = Math.exp(-d*d*90)*Math.sin(d*46)*(gold ? 9 : 6)*Math.sin(Math.PI*u), sag = Math.sin(Math.PI*u)*len*.05;
+          const px = x1 + (x2 - x1)*u + nx*bump, py = y1 + (y2 - y1)*u + ny*bump - sag; k ? c.lineTo(px, py) : c.moveTo(px, py); }
+        c.stroke(); c.restore(); }
+    }
   }
   function drawTrace(){
     const W = C.W, H = C.H, x0 = 16, w = W - 32, h = 58, y0 = H - h - 14, base = y0 + h*.62, pps = w/3.2;
