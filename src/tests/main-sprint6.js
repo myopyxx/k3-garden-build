@@ -63,7 +63,7 @@ const {open} = require('./helper.js');
   const roll = await p.evaluate(() => ({cls: document.querySelector('#hDrops').className, old: document.querySelector('#hDrops').dataset.old, txt: document.querySelector('#hDrops').textContent, drops: S.drops}));
   ok('баланс перекатывается вниз при покупке', /rolldn/.test(roll.cls) && +roll.old === d0 && +roll.txt === roll.drops && roll.drops < d0, JSON.stringify(roll));
   await p.waitForTimeout(1500);
-  const tk = await p.evaluate(() => { const t = document.querySelector('.ticket'); if (!t) return null; const m = t.querySelector('.tk-main'), s = t.querySelector('.tk-stub'); return {main: !!m, stub: !!s, mask: /radial/.test(getComputedStyle(m).webkitMaskImage || getComputedStyle(m).maskImage), dash: getComputedStyle(s, '::before').borderTopStyle, tear: t.classList.contains('tear'), title: m.querySelector('b').textContent}; });
+  const tk = await p.evaluate(() => { const t = document.querySelector('.ticket'); if (!t) return null; const m = t.querySelector('.tk-main'), s = t.querySelector('.tk-stub'); return {main: !!m, stub: !!s, mask: /radial/.test(getComputedStyle(m).webkitMaskImage || getComputedStyle(m).maskImage), dash: getComputedStyle(s, '::before').borderTopStyle, tear: t.classList.contains('live') || t.classList.contains('torn'), title: m.querySelector('b').textContent}; });
   ok('купон: вырезы, пунктир и отрывной корешок', tk && tk.main && tk.stub && tk.mask && tk.dash === 'dashed' && tk.tear, JSON.stringify(tk));
   await shot('ticket'); await p.click('#sheetDone'); await p.waitForTimeout(800);
 

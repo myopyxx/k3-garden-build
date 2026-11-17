@@ -1961,6 +1961,7 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3.6v11M8.2 7.2L12 3.4l3.8 3.8"/><path d="M8 10.6H6.6A1.6 1.6 0 0 0 5 12.2v7a1.6 1.6 0 0 0 1.6 1.6h10.8a1.6 1.6 0 0 0 1.6-1.6v-7a1.6 1.6 0 0 0-1.6-1.6H16"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.6 7h14.8M9.6 7V5h4.8v2M6.6 7l.9 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l.9-12"/></symbol>
   <symbol id="i-dropm" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 2.6c-.3 0-.6.2-.8.5C9.4 5.7 5.4 10.6 5.4 14.6a6.6 6.6 0 0 0 13.2 0c0-4-4-8.9-5.8-11.5-.2-.3-.5-.5-.8-.5z"/></symbol>
+  <symbol id="i-tilt" viewBox="0 0 24 24"><rect x="7.4" y="3.6" width="9.2" height="16.8" rx="2.2" transform="rotate(-14 12 12)"/><path d="M2.8 9a10 10 0 0 0 .4 6.6M21.2 9a10 10 0 0 1-.4 6.6"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.4" y="3.4" width="7.4" height="7.4" rx="1.8"/><rect x="13.2" y="3.4" width="7.4" height="7.4" rx="1.8"/><rect x="3.4" y="13.2" width="7.4" height="7.4" rx="1.8"/><rect x="13.2" y="13.2" width="7.4" height="7.4" rx="1.8"/><path d="M5.8 8.6l1.3-3 1.3 3M6.2 7.6h1.8"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.4s-8.2-4.8-8.2-10.6A4.5 4.5 0 0 1 12 7.1a4.5 4.5 0 0 1 8.2 2.7c0 5.8-8.2 10.6-8.2 10.6z"/></symbol>
@@ -2182,7 +2183,7 @@ const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ---------- состояние ---------- */
 const KEY = "alisa-diaries-v3";
-const DEF = {drops:0,pets:0,petA:0,petL:0,roses:0,stars:{},legacy:{},ach:{},owned:{},wear:{},bought:{},team:"damon",day:false,sound:true,music:true,vibe:true,bestShot:0,wearA:{},wearL:{},looks:[],egg:{},seenPh:0};
+const DEF = {drops:0,pets:0,petA:0,petL:0,roses:0,stars:{},legacy:{},ach:{},owned:{},wear:{},bought:{},team:"damon",day:false,sound:true,music:true,vibe:true,bestShot:0,wearA:{},wearL:{},looks:[],egg:{},seenPh:0,torn:{},setAt:{},stampSeen:{},tilt:false};
 const fresh = () => JSON.parse(JSON.stringify(DEF));
 let S;
 try { S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch(e) { S = fresh(); }
@@ -2204,7 +2205,10 @@ const runTotal = () => { let t = 0; for (let n=1;n<=11;n++) t += runS(n); return
 
 /* =================== ЗВУК =================== */
 const ACtor = window.AudioContext || window.webkitAudioContext;
-let ctx, master, sfxBus, musicBus, revSend, noiseBuf;
+let ctx, master, sfxBus, musicBus, musicLP, revSend, noiseBuf;
+/* шкатулка за мокрым стеклом: в дождь и снег её слышно глуше. Уровень 11 раскрывает звук по мере примирения */
+let muffleBase = 0;
+function musicMuffle(v, tau = 1.2){ if (!ctx || !musicLP) return; const f = 20000*Math.pow(700/20000, Math.max(0, Math.min(1, v))); musicLP.frequency.setTargetAtTime(f, ctx.currentTime, tau); }
 const musicVol = 0.32;
 function initAudio(){
   if (ctx) return ctx;
@@ -2218,7 +2222,9 @@ function initAudio(){
   master = ctx.createGain(); master.gain.value = .85;
   glue.connect(lim).connect(master).connect(ctx.destination);
   sfxBus = ctx.createGain(); sfxBus.gain.value = .9; sfxBus.connect(glue);
-  musicBus = ctx.createGain(); musicBus.gain.value = .0001; musicBus.connect(glue);
+  musicBus = ctx.createGain(); musicBus.gain.value = .0001;
+  musicLP = ctx.createBiquadFilter(); musicLP.type = "lowpass"; musicLP.Q.value = .6; musicLP.frequency.value = 20000*Math.pow(700/20000, muffleBase);
+  musicBus.connect(musicLP).connect(glue);
   const conv = ctx.createConvolver(); conv.buffer = makeImpulse(1.8, 2.5);
   const wetLP = ctx.createBiquadFilter(); wetLP.type = "lowpass"; wetLP.frequency.value = 5000;
   revSend = ctx.createGain(); revSend.connect(conv).connect(wetLP).connect(glue);
@@ -2427,6 +2433,26 @@ const snd = {
     noise({t,type:"lowpass",freq:220,Q:.7,envOpts:{a:.02,d:1.6,peak:.5}});
     noise({t:t+.05,type:"lowpass",freq:600,Q:.5,envOpts:{a:.005,d:.3,peak:.25}});
     voice({type:"sine",f:55,f2:38,glide:1.2,t,envOpts:{a:.02,d:1.4,peak:.3}}); },
+  /* короткий сухой «мяв»: недовольство без растяжки */
+  mew(who){ if (!canPlay("mew", 700)) return; const t = ctx.currentTime, k = (who === "lapula" ? .86 : 1.06)*rnd(.04);
+    voice({type:"sawtooth", f:620*k, f2:470*k, glide:.16, t, lp:2200, send:.08, envOpts:{a:.012, d:.17, peak:.07}});
+    noise({t, type:"bandpass", freq:1500*k, Q:2.5, envOpts:{a:.01, d:.12, peak:.025}}); },
+  /* перфорация билета: сухой бумажный щелчок, с каждым шагом выше */
+  paper(k){ if (!canPlay("paper", 35)) return; const t = ctx.currentTime;
+    noise({t, type:"bandpass", freq:2400 + k*2600, Q:6, envOpts:{a:.001, d:.014, peak:.07}});
+    noise({t:t + .012, type:"highpass", freq:5200, Q:.8, envOpts:{a:.001, d:.02, peak:.025}}); },
+  tear(){ if (!canPlay("tear", 400)) return; const t = ctx.currentTime;
+    noise({t, type:"bandpass", freq:3200, Q:1.4, envOpts:{a:.004, d:.16, peak:.1}});
+    [783.99, 987.77, 1174.66, 1567.98].forEach((f, i) => fmBell({f, t:t + .08 + i*.05, ratio:3.5, index:1.4, dur:.7, peak:.08, send:.3})); },
+  snap(){ if (!canPlay("snap", 250)) return; const t = ctx.currentTime;
+    noise({t, type:"highpass", freq:3800, Q:.9, envOpts:{a:.001, d:.06, peak:.12}});
+    voice({type:"triangle", f:880, f2:330, glide:.18, t, lp:2400, envOpts:{a:.002, d:.2, peak:.07}}); },
+  /* мягкий басовый аккорд: половинки снимка защёлкнулись */
+  bassChord(){ if (!canPlay("bass", 600)) return; const t = ctx.currentTime;
+    [65.41, 98, 130.81].forEach((f, i) => voice({type:"sine", f, t:t + i*.02, lp:600, send:.3, envOpts:{a:.02, d:.3, sus:.6, hold:.5, r:.9, peak:.16}}));
+    [523.25, 659.25, 783.99].forEach((f, i) => fmBell({f, t:t + .1 + i*.06, ratio:2, index:.8, dur:1.2, peak:.06, send:.4})); },
+  stamp(){ if (!canPlay("stamp", 150)) return; const t = ctx.currentTime;
+    voice({type:"sine", f:140, f2:60, glide:.06, t, envOpts:{a:.001, d:.09, peak:.22}}); noise({t, type:"lowpass", freq:900, Q:.7, envOpts:{a:.001, d:.05, peak:.08}}); },
   hiss(){ if (!canPlay("hiss",300)) return; const t = ctx.currentTime;
     noise({t,type:"highpass",freq:3500,Q:.6,envOpts:{a:.02,d:.5,peak:.16}}); }
 };
@@ -2463,7 +2489,12 @@ function startPurr(level=.24){
   };
   /* мурчание крепнет, пока палец держат на котике */
   P.swell = (lvl, hz, tau = 1) => { if (P.stopped) return; const n = ctx.currentTime; out.gain.setTargetAtTime(lvl, n, tau); lp.frequency.setTargetAtTime(hz, n, tau); };
-  P.stop = () => { if (P.stopped) return; P.stopped = true; clearTimeout(P.timer); out.gain.setTargetAtTime(.0001, ctx.currentTime, .15); [src,lfo,body].forEach(n => n.stop(ctx.currentTime+.8)); };
+  /* под подбородком мурчание уходит вниз: под ритм подмешивается тон 52–58 Гц */
+  let deepO = null, deepG = null;
+  P.deep = on => { if (P.stopped) return; const n = ctx.currentTime;
+    if (on && !deepO){ deepO = ctx.createOscillator(); deepO.type = "sine"; deepO.frequency.value = 52 + Math.random()*6; deepG = ctx.createGain(); deepG.gain.value = .0001; deepO.connect(deepG).connect(am); deepO.start(n); }
+    if (deepG) deepG.gain.setTargetAtTime(on ? .55 : .0001, n, on ? .25 : .4); lp.frequency.setTargetAtTime(on ? 380 : 520, n, .4); };
+  P.stop = () => { if (P.stopped) return; P.stopped = true; clearTimeout(P.timer); out.gain.setTargetAtTime(.0001, ctx.currentTime, .15); [src,lfo,body].concat(deepO ? [deepO] : []).forEach(n => n.stop(ctx.currentTime+.8)); };
   src.start(t); lfo.start(t); body.start(t); cycle();
   return P;
 }
@@ -2655,15 +2686,25 @@ function flyDrops(fromEl, n=6){
 }
 /* нажатия: визуал + звук + хаптика */
 document.addEventListener("pointerdown", e => {
-  const b = e.target.closest(".btn,.round,.hbtn,.node,.pola,.tab,.dk,.mini,.medal,.wit,.look,.crest,[role=radio],.li[role=button]"); if (!b || b.disabled) return;
-  if (b.matches(".btn,.round,.hbtn,.node,.pola,.tab,.dk,.mini,.medal,.wit,.look,.crest,.snode,.desk")) b.classList.add("pressed");
-  if (b.matches(".btn,.round,.dk,.mini")){ const r = b.getBoundingClientRect(); b.style.setProperty("--px", (e.clientX - r.left) + "px"); b.style.setProperty("--py", (e.clientY - r.top) + "px"); b.classList.add("lit"); }
+  const b = e.target.closest(".btn,.round,.hbtn,.node,.pola,.tab,.dk,.mini,.medal,.wit,.look,.crest,.stamp,.gslot,[role=radio],.li[role=button]"); if (!b || b.disabled) return;
+  if (b.matches(".btn,.round,.hbtn,.node,.pola,.tab,.dk,.mini,.medal,.wit,.look,.crest,.snode,.desk,.stamp,.gslot")) b.classList.add("pressed");
+  if (b.matches(".btn,.round,.dk,.mini")){ const r = b.getBoundingClientRect(); b.style.setProperty("--px", (e.clientX - r.left) + "px"); b.style.setProperty("--py", (e.clientY - r.top) + "px"); b.classList.add("lit");
+    /* светлая точка кромки поворачивается к пальцу: самый яркий участок градиента стоит на 32° от его начала */
+    const rim = b.querySelector(":scope > .rim"); if (rim){ const a = Math.atan2(e.clientX - (r.left + r.width/2), -(e.clientY - (r.top + r.height/2)))*180/Math.PI; rim.style.setProperty("--rat", (a - 32).toFixed(0) + "deg"); } }
   if (b.id === "gClose") return;
   snd.tap(); haptic(8);
 }, {passive:true});
 const unpress = () => document.querySelectorAll(".pressed,.lit").forEach(b => b.classList.remove("pressed", "lit"));
 document.addEventListener("pointerup", unpress, {passive:true});
 document.addEventListener("pointercancel", unpress, {passive:true});
+
+/* голографический блик на купленных вещах гардероба: идёт за пальцем, пока он на карточке */
+{ let cur = null; const off = () => { if (cur){ cur.style.setProperty("--fo", 0); cur = null; } };
+  const mv = e => { const w = e.target.closest && e.target.closest(".wit"); if (w !== cur) off(); if (!w || !w.querySelector(".foil-glare") || reduced()) return; cur = w;
+    const r = w.getBoundingClientRect(), nx = (e.clientX - r.left)/r.width - .5, ny = (e.clientY - r.top)/r.height - .5;
+    w.style.setProperty("--fx", (50 - nx*70).toFixed(0) + "%"); w.style.setProperty("--fy", (50 - ny*70).toFixed(0) + "%"); w.style.setProperty("--fbx", (50 + nx*80).toFixed(0) + "%"); w.style.setProperty("--fby", (50 + ny*80).toFixed(0) + "%"); w.style.setProperty("--fo", 1); };
+  document.addEventListener("pointerdown", mv, {passive: true}); document.addEventListener("pointermove", mv, {passive: true});
+  ["pointerup", "pointercancel"].forEach(t => document.addEventListener(t, off, {passive: true})); }
 
 /* =================== КОТИКИ =================== */
 function catSVG(c, opts={}){
@@ -2779,6 +2820,8 @@ function applyLook(){
   document.querySelectorAll(".cat[data-k]").forEach(el => { const w = wearOf(el.dataset.k); ACCS.forEach(x => el.classList.toggle("wear-" + x, !!w[x])); });
   if (lastWear && !reduced()) ["a","l"].forEach(k => now[k].filter(x => !lastWear[k].includes(x)).forEach(x =>
     document.querySelectorAll(`.cat[data-k="${k}"] .acc-${x}`).forEach(el => el.animate([{transform:"scale(.2) rotate(-14deg)", opacity:0}, {transform:"scale(1) rotate(0)", opacity:1}], {duration:850, easing:springPop()}))));
+  { S.setAt = S.setAt || {}; let nw = null; OUTFIT_SETS.forEach(st => { if (setOn(st.id) && !S.setAt[st.id]){ S.setAt[st.id] = Date.now(); nw = st; } });
+    if (nw){ save(); if (lastWear) toast({k: "полевой журнал", e: setEmoji(nw), t: nw.t, s: "новый штамп в шкатулке"}); } }
   lastWear = now;
   TEAMS.forEach(t => document.body.classList.toggle("team-"+t.id, S.team === t.id && t.id !== "damon"));
   document.body.classList.toggle("day", !!S.day);
@@ -2831,7 +2874,7 @@ const ACH = [
   {id:"photo", e:"📷", t:"Выдержка",          s:"кадр с совпадением от 90%",       ok:()=>(S.bestShot||0)>=90},
   {id:"split", e:"🎀", t:"Всё не для всех",   s:"три звезды в «Лазерной точке»",   ok:()=>runS(10)>=3},
   {id:"makeup",e:"🫂", t:"Под одним пледом",  s:"помирить Алису и Лапулю",         ok:()=>runS(11)>=1},
-  {id:"quiet", e:"⛈️", t:"Тише мыши",         s:"«Гроза» без единого шипения",     ok:()=>runS(11)>=3},
+  {id:"quiet", e:"⛈️", t:"Тише мыши",         s:"«Гроза»: нить рвётся не больше раза",     ok:()=>runS(11)>=3},
   {id:"box",   e:"🎁", t:"Шкатулка полна",    s:"собрать все семь подарков котиков", ok:()=>giftKinds()>=7, p:()=>[giftKinds(), 7]},
   {id:"all",   e:"⭐", t:"Сезон закрыт",      s:"собрать все звёзды",              ok:()=>runTotal()>=LEVELS.length*3, p:()=>[runTotal(), LEVELS.length*3]},
   {id:"blood", e:"🌕", t:"Кровавая луна",     s:"трижды коснуться луны",           secret:true, h:"луна не любит, когда её трогают", ok:()=>!!S.egg.blood},
@@ -2964,7 +3007,8 @@ function homeLive(){ return $("#v-home").classList.contains("on") && !$("#game")
 function setGaze(c, x, y){ if (!c) return; c.style.setProperty("--gx", x.toFixed(2) + "px"); c.style.setProperty("--gy", y.toFixed(2) + "px"); c.style.setProperty("--gn", (x/3.6).toFixed(3)); c.style.setProperty("--gm", (y/2.8).toFixed(3)); }
 function lookAt(x, y){
   if (S.event === "quarrel" || reduced()) return;
-  document.querySelectorAll("#duo .cat").forEach(c => { if (c.classList.contains("sleep")) return; const r = c.getBoundingClientRect(), dx = x - (r.left + r.width*.5), dy = y - (r.top + r.height*.43), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d/150); setGaze(c, dx/d*k*3.6, dy/d*k*2.8); });
+  const tnow = performance.now();
+  document.querySelectorAll("#duo .cat").forEach(c => { if (c.classList.contains("sleep") || (c._away || 0) > tnow) return; const r = c.getBoundingClientRect(), dx = x - (r.left + r.width*.5), dy = y - (r.top + r.height*.43), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d/150); setGaze(c, dx/d*k*3.6, dy/d*k*2.8); });
   clearTimeout(gazeT); gazeT = setTimeout(lookHome, 1900);
 }
 function lookHome(){ document.querySelectorAll("#duo .cat").forEach(c => setGaze(c, 0, 0)); }
@@ -3096,18 +3140,22 @@ function pet(el, e, soft){
   const ov = over;
   S.pets++; if (!ov) S.purr++; if (who === "alisa") S.petA++; else S.petL++; note(who === "alisa" ? "pa" : "pl");
   let said = false, zone = 1;
+  const meta = petMeta; petMeta = null;
   cat.classList.add("happy"); clearTimeout(cat._hp); cat._hp = setTimeout(() => cat.classList.remove("happy"), 2600);
-  /* где гладят: уши дёргаются, под подбородком довольный прищур, живот иногда ловушка */
+  /* четыре зоны, как у живой кошки: макушка и уши, щёки и подбородок, спина по шерсти, против шерсти.
+     Капель зоны не меняют: шкала растёт одинаково, отличается только ответ кошки */
+  if (e && e.clientX && !soft){
+    const r0 = cat.getBoundingClientRect(), rx = (e.clientX - r0.left)/r0.width, ry = (e.clientY - r0.top)/r0.height;
+    zone = stroke && meta && meta.against ? 3 : ry < .32 ? 0 : ry < .52 && Math.abs(rx - .5) < .34 ? 1 : 2;
+    if (!reduced() && petZone(cat, who, zone, rx, ry, stroke)) said = true;
+  }
   if (e && e.clientX && !reduced() && !soft){
     const r0 = cat.getBoundingClientRect(), rx = (e.clientX - r0.left)/r0.width, ry = (e.clientY - r0.top)/r0.height;
-    zone = ry < .35 ? 0 : ry < .7 ? 1 : 2;
-    if (zone === 0){ const k = rx < .5 ? "flickL" : "flickR"; cat.classList.remove(k); void cat.offsetWidth; cat.classList.add(k); setTimeout(() => cat.classList.remove(k), 460); }
-    else if (zone === 1){ cat.classList.add("content"); clearTimeout(cat._ct); cat._ct = setTimeout(() => cat.classList.remove("content"), 1200); }
-    else if (ry > .68 && rx > .28 && rx < .72 && sinceLine >= 5 && Math.random() < .3){
+    if (zone !== 3 && ry > .68 && rx > .28 && rx < .72 && sinceLine >= 5 && !said && Math.random() < .3){
       cat.animate([{transform:"none"}, {transform:`translateX(${who === "alisa" ? 4 : -4}px) rotate(${who === "alisa" ? 4 : -4}deg)`, offset:.25}, {transform:"none"}], {duration:380, easing:"ease-out"});
       snd.hmph(); setBubble(pick(BELLY[who]), who); said = true;
     }
-    if (zone === 2){
+    if (ry >= .7){
       /* лапки и животик: лапки мнут, а раз за шкалу из-под пальца может выкатиться янтарная росинка, +1 капля. Не чаще раза в 25 с */
       cat.classList.add("paws"); clearTimeout(cat._kn); cat._kn = setTimeout(() => cat.classList.remove("paws"), 900);          /* свой класс: «knead» занят удержанием */
       const now = performance.now();
@@ -3118,6 +3166,9 @@ function pet(el, e, soft){
   }
   /* дуэт ласки: обе кошки поглажены с разрывом меньше 1,4 с. Раз за шкалу: кошки наклоняются друг к другу, между ними искра, шкала получает шаг */
   { const now = performance.now();
+    /* ревность: одну гладят дольше 5 с подряд, вторая обижается по-своему. Не чаще раза в 20 с */
+    if (petFx.soloWho !== who || now - petFx.at > 1600){ petFx.soloWho = who; petFx.soloAt = now; }
+    else if (now - petFx.soloAt > 5000 && (!petFx.jealAt || now - petFx.jealAt > 20000) && !reduced() && !ov){ petFx.jealAt = now; jealous(who === "alisa" ? "lapula" : "alisa"); }
     if (!ov && !petFx.duet && petFx.who && petFx.who !== who && now - petFx.at < 1400){ petFx.duet = true; S.purr++;
       if (!reduced()){ app.classList.add("duet"); clearTimeout(petFx.dt); petFx.dt = setTimeout(() => app.classList.remove("duet"), 620); const d = $("#duo").getBoundingClientRect(); FX.burst(d.left + d.width/2, d.top + d.height*.42, {emojis: ["✨"], n: 3, size: [12, 18], speed: [40, 110], grav: -30, life: [.6, .9]}); }
       if (ensureRunning()) fmBell({f: 987.77, dur: .5, peak: .05, send: .35}); }
@@ -3143,11 +3194,13 @@ function pet(el, e, soft){
   if (ov) snd.over(1 - (ov.left - 1)/ov.need); else snd.tick(Math.min(1, S.purr/perDrop() + (zone === 0 ? .14 : 0)));      /* по ушам тон чуть выше */
   haptic(stroke ? 4 : 6);
   if (!purr) purr = startPurr(.22);
+  if (petFx.deep){ petFx.deep = false; if (purr && purr.deep){ purr.deep(true); clearTimeout(petFx.deepT); petFx.deepT = setTimeout(() => purr && purr.deep && purr.deep(false), 1400); } }
   clearTimeout(purrT); purrT = setTimeout(() => { if (purr){ purr.stop(); purr = null; } }, 1500);
   if (!reduced() && !soft && !stroke) el.querySelector(".cat").animate([{transform:"scale(1,1)"},{transform:"scale(1.1,.86)",offset:.18},{transform:"scale(.95,1.07)",offset:.45},{transform:"scale(1.02,.98)",offset:.72},{transform:"scale(1,1)"}],{duration:620,easing:"ease-out"});
   const r = el.getBoundingClientRect();
   const x = e && e.clientX ? e.clientX : r.left + r.width/2, y = e && e.clientY ? e.clientY : r.top + r.height/3;
-  FX.burst(x, y, {emojis: ov ? ["✨","⭐"] : ["💕","💗","✨"], n: soft || stroke ? 2 : 4, speed:[120,240], spread:1.4, size:[16,24], grav:-60, life:[.8,1.2]});
+  if (zone === 3) FX.burst(x, y, {emojis: ["💢"], n: 1, speed: [60, 110], size: [16, 20], grav: -40, life: [.6, .8]});
+  else FX.burst(x, y, {emojis: ov ? ["✨","⭐"] : ["💕","💗","✨"], n: soft || stroke ? 2 : 4, speed:[120,240], spread:1.4, size:[16,24], grav:-60, life:[.8,1.2]});
   setFx(x, y, stroke);
   sinceLine++;
   if (said){ sinceLine = 0; phraseIn = 5 + Math.floor(Math.random()*5); }
@@ -3171,6 +3224,43 @@ function pet(el, e, soft){
     overStart(pay, who);
   } else renderPurr();
   checkAch(); save();
+}
+let petMeta = null;
+const AGAINST = {alisa: ["против шерсти? серьёзно?", "я тебе не щётка"], lapula: ["шерсть растёт в другую сторону", "эй. гладь обратно"]};
+/* ответ на зону: уши, подбородок, спина, против шерсти. Возвращает true, если кошка что-то сказала */
+function petZone(cat, who, zone, rx, ry, stroke){
+  const now = performance.now(), tmp = (k, ms) => { cat.classList.add(k); clearTimeout(cat["_z" + k]); cat["_z" + k] = setTimeout(() => cat.classList.remove(k), ms); };
+  if (zone === 0){
+    tmp("earflat", 1100);
+    if (!stroke && Math.random() < .3){ const k = rx < .5 ? "flickL" : "flickR"; cat.classList.remove(k); void cat.offsetWidth; cat.classList.add(k); setTimeout(() => cat.classList.remove(k), 460); }
+    if (Math.random() < .22 && !cat.classList.contains("slowblink")){ cat.classList.add("slowblink"); setTimeout(() => cat.classList.remove("slowblink"), 1600); }
+    if (ensureRunning() && canPlay("ztop", 260)) fmBell({f: PENTA[7 + Math.floor(Math.random()*4)], dur: .35, peak: .035, send: .3});
+  } else if (zone === 1){
+    tmp("chin", 1300); tmp("content", 1300);
+    /* голова тянется навстречу пальцу */
+    cat.style.setProperty("--hx", ((rx - .5)*18).toFixed(1) + "px"); cat.style.setProperty("--hy", ((ry - .42)*12).toFixed(1) + "px"); cat.style.setProperty("--hr", ((rx - .5)*16).toFixed(1) + "deg");
+    clearTimeout(cat._hd); cat._hd = setTimeout(() => ["--hx", "--hy", "--hr"].forEach(v => cat.style.removeProperty(v)), 1200);
+    petFx.deep = true;
+  } else if (zone === 2){ if (stroke || ry < .7) tmp("arch", 700); }
+  else {
+    cat.classList.remove("happy");
+    if (now - (cat._ruf || 0) < 2500) return false; cat._ruf = now;
+    tmp("ruffle", 520); snd.mew(who); haptic([4, 20, 4]);
+    cat._away = now + 800; setGaze(cat, (who === "alisa" ? -1 : 1)*3.4, -.6);
+    setTimeout(() => { if ((cat._away || 0) <= performance.now() + 5) setGaze(cat, 0, 0); }, 820);
+    if (sinceLine >= 3 && Math.random() < .35){ setBubble(pick(AGAINST[who]), who); return true; }
+  }
+  return false;
+}
+/* вторая кошка замечает, что гладят не её: смотрит, зевает напоказ или подвигается ближе */
+function jealous(other){
+  const c = catOf(other), p = document.querySelector(`#duo .pet[data-cat="${other}"]`); if (!c || !p || c.classList.contains("sleep") || busyAct) return;
+  const dir = other === "alisa" ? 1 : -1, kind = pick(["look", "yawn", "scoot"]);
+  if (kind === "look"){ setGaze(c, dir*3.6, .3); c._away = performance.now() + 2600; setTimeout(() => setGaze(c, 0, 0), 2600);
+    if (Math.random() < .5) setTimeout(() => setBubble(other === "lapula" ? "а меня?" : "я тоже тут сижу", other), 400); }
+  else if (kind === "yawn"){ glance(c, dir, 1200); yawn(other, 500); setTimeout(() => setBubble(other === "lapula" ? "скучно. очень" : "зеваю демонстративно", other), 1900); }
+  else { p.style.setProperty("--scoot", (dir*(6 + Math.random()*4)).toFixed(1) + "px"); glance(c, dir, 1800); snd.pat(); clearTimeout(p._sc); p._sc = setTimeout(() => p.style.removeProperty("--scoot"), 4500); }
+  noteList("jl", other);
 }
 function overStart(pay, who){
   const m = $("#purr"), bar = $("#purrBar"), MS = overMs(), o = over = {left: overNeed(), need: overNeed(), pay: Math.max(1, cyclePay(true) - pay)};
@@ -3436,6 +3526,13 @@ function group(){ const g = document.createElement("div"); g.className = "group"
 function label(t){ const d = document.createElement("div"); d.className = "glabel"; d.textContent = t; return d; }
 function para(t){ const p = document.createElement("p"); p.className = "t"; p.textContent = t; return p; }
 
+function tiltRow(){
+  const sw = swEl(!!S.tilt, "Наклон телефона", v => {
+    if (!v){ S.tilt = false; save(); tiltOff(); return; }
+    tiltOn(true).then(ok => { S.tilt = ok; save(); if (!ok){ sw.setAttribute("aria-checked", "false"); toast({k: "наклон", e: "📱", t: "Датчик недоступен", s: "телефон не дал доступ к наклону"}); } });
+  });
+  return li("#i-tilt:#9fe0ea", "Наклон телефона", "небо, сад и котики сдвигаются слоями", sw);
+}
 function openSettings(){
   openSheet("Настройки", body => {
     if (S.event === "quarrel"){
@@ -3455,7 +3552,8 @@ function openSettings(){
       li("#i-speaker:#9fc3ff", "Звуки", null, swEl(S.sound, "Звуки", v => { S.sound = v; save(); if (!v) Music.stop(); else if (S.music) Music.start(0); })),
       li("#i-vibe:#c9a7ff", "Вибрация", "на iPhone лёгкий щелчок", swEl(S.vibe, "Вибрация", v => { S.vibe = v; save(); })),
       li("#i-drop:#bfe0ff", "Эффект жидкого стекла", "шкала и кнопки преломляют небо. выключи, если игра идёт рывками",
-        swEl(!glassOff(), "Эффект жидкого стекла", v => { S.glass = v; if (v) try { sessionStorage.removeItem(GLASS_KEY); } catch(e){} save(); applyGlass(); }))
+        swEl(!glassOff(), "Эффект жидкого стекла", v => { S.glass = v; if (v) try { sessionStorage.removeItem(GLASS_KEY); } catch(e){} save(); applyGlass(); })),
+      tiltRow()
     );
     const crests = document.createElement("div"); crests.className = "crests"; crests.setAttribute("role","radiogroup"); crests.setAttribute("aria-label","Команда");
     TEAMS.forEach(t => {
@@ -3605,7 +3703,7 @@ function wearGrid(box, mode){
     const paint = () => {
       const tg = mode === "shared" ? ["a","l"] : wTargets(), on = S.owned[w.id] && tg.every(k => wearOf(k)[w.id]);
       b.className = "wit" + (on ? " on" : "") + (!S.owned[w.id] && !w.price ? " lock" : "");
-      b.innerHTML = '<span class="e"></span><span class="n"></span>' + (S.owned[w.id] ? "" : w.price ? `<span class="pr num"><svg class="icf cur"><use href="#i-drop"/></svg>${w.price}</span>` : '<span class="pr">награда</span>');
+      b.innerHTML = '<span class="e"></span><span class="n"></span>' + (S.owned[w.id] ? '<i class="foil-glare" aria-hidden="true"></i>' : w.price ? `<span class="pr num"><svg class="icf cur"><use href="#i-drop"/></svg>${w.price}</span>` : '<span class="pr">награда</span>');
       setIco(b.querySelector(".e"), w.e, "w-" + w.id); b.querySelector(".n").textContent = w.t;
       b.setAttribute("aria-label", w.t + (S.owned[w.id] ? (on ? ", надето" : "") : w.price ? `, ${w.price} капель` : ", " + w.s) + (w.p ? ". " + w.p : ""));
       b.setAttribute("aria-pressed", on ? "true" : "false");
@@ -3725,17 +3823,41 @@ function openShop(){
 function showTicket(it){
   closeSheet();
   setTimeout(() => {
+    S.torn = S.torn || {}; const torn = !!S.torn[it.id];
     openSheet("Твоё", b => {
-      const t = document.createElement("div"); t.className = "ticket tear";
-      t.innerHTML = '<div class="tk-main"><span class="te e"></span><b></b></div><div class="tk-stub"><span class="tt"></span></div>';
+      const t = document.createElement("div"); t.className = "ticket " + (torn ? "torn" : "live");
+      t.innerHTML = '<div class="tk-main"><span class="te e"></span><b></b></div><div class="tk-perf">'
+        + (torn ? "" : '<div class="tear-hint">проведи по линии, чтобы оторвать</div><div class="tear-track" role="button" tabindex="0" aria-label="Оторвать корешок"><i class="tline"></i><i class="tknob" aria-hidden="true">✂️</i></div>')
+        + '</div><div class="tk-stub"><span class="tt"></span></div>';
       t.querySelector(".te").textContent = it.e; t.querySelector("b").textContent = it.title; t.querySelector(".tt").textContent = it.text;
       b.appendChild(t);
+      if (!torn) tearTrack(t, it);
     }, null);
-    setTimeout(() => { const t = $(".ticket"); if (t){ const [x,y] = centerOf(t); FX.confetti(x, y, 50); snd.fanfare(); } }, 450);
-    /* корешок надрывается: щелчок бумаги и золотая пыль вдоль линии отрыва */
-    setTimeout(() => { const st = $(".ticket .tk-stub"); if (!st) return; const r = st.getBoundingClientRect(); snd.ratchet && snd.ratchet(.4); haptic([8, 24, 8]);
-      [.2, .5, .8].forEach(k => FX.burst(r.left + r.width*k, r.top, {emojis: ["✨"], n: 4, size: [8, 13], speed: [60, 160], grav: 260, life: [.5, .9]})); }, 620);
+    setTimeout(() => { const m = $(".ticket .tk-main"); if (m && !torn){ const [x, y] = centerOf(m); FX.burst(x, y, {emojis: ["✨"], n: 8, size: [10, 16], grav: 80}); } }, 450);
   }, 380);
+}
+/* корешок отрывают пальцем вдоль перфорации: бумага сопротивляется, каждые 12 % пути сухой щелчок, на 85 % корешок отходит.
+   Тап по линии отрывает сам, для одной руки на бегу */
+function tearTrack(t, it){
+  const tr = t.querySelector(".tear-track"); let k = 0, drag = null, clicks = 0, gone = false;
+  const set = v => { k = v; t.style.setProperty("--tk", v.toFixed(3)); const c = Math.floor(v/.12); if (c > clicks){ clicks = c; snd.paper(v); haptic(3); } };
+  const tearOff = () => { if (gone) return; gone = true; t.classList.remove("live", "drag"); t.classList.add("torn"); S.torn[it.id] = Date.now(); save();
+    snd.tear(); haptic([12, 40, 18]);
+    const r = t.querySelector(".tk-stub").getBoundingClientRect(); for (let i = 0; i < 5; i++) FX.burst(r.left + r.width*(.1 + i*.2), r.top, {emojis: ["✨"], n: 4, size: [7, 12], speed: [50, 150], grav: 300, life: [.6, 1]});
+    const [x, y] = centerOf(t); FX.confetti(x, y, 40); };
+  const auto = () => { if (gone) return; if (reduced()){ set(1); tearOff(); return; } t.classList.add("drag"); const t0 = performance.now(), k0 = k;
+    const step = now => { if (gone) return; const u = Math.min(1, (now - t0)/650), e = 1 - Math.pow(1 - u, 2); set(k0 + (1 - k0)*e); if (u < 1) requestAnimationFrame(step); else tearOff(); }; requestAnimationFrame(step); };
+  const at = e => { const r = tr.getBoundingClientRect(); return Math.max(0, Math.min(1, (e.clientX - r.left - 14)/(r.width - 28))); };
+  tr.addEventListener("pointerdown", e => { if (gone) return; e.stopPropagation(); drag = {id: e.pointerId, x: e.clientX, t: performance.now(), k0: k, a0: at(e), moved: 0}; t.classList.add("drag"); try { tr.setPointerCapture(e.pointerId); } catch(_){} });
+  tr.addEventListener("pointermove", e => { if (!drag || e.pointerId !== drag.id || gone) return; drag.moved = Math.max(drag.moved, Math.abs(e.clientX - drag.x));
+    /* натяжение: разрез идёт за пальцем чуть медленнее, а порванное назад не срастается */
+    set(Math.max(k, Math.min(1, drag.k0 + (at(e) - drag.a0)*.92))); if (k >= .85) tearOff(); });
+  const end = e => { if (!drag || (e && e.pointerId !== drag.id)) return; const d = drag; drag = null; if (gone) return;
+    if (d.moved < 6 && performance.now() - d.t < 400) return auto();
+    t.classList.remove("drag"); };
+  tr.addEventListener("pointerup", end); tr.addEventListener("pointercancel", end);
+  tr.addEventListener("click", e => e.stopPropagation());
+  tr.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); auto(); } });
 }
 
 /* ---------- уровни: тропа ---------- */
@@ -3750,7 +3872,7 @@ const LEVELS = [
   {n:8, e:"🎭",tag:"Дневники вампира",t:"Маскарад",        s:"слушай сердца гостей и найди, кто не дышит",          run:lvlMask},
   {n:9, e:"📷",tag:"Финал сезона",    t:"Длинная выдержка",s:"рисуй светом на ночной фотографии",                   run:lvlShot},
   {n:10,e:"🔴",tag:"Ивент · ссора",   t:"Лазерная точка",  s:"одна точка на двоих. Играешь за Алису",               run:lvlLaser},
-  {n:11,e:"⛈️",tag:"Ивент · ссора",   t:"Гроза",           s:"двигай одну, пока другая не смотрит",                 run:lvlStorm}
+  {n:11,e:"⛈️",tag:"Ивент · ссора",   t:"Гроза",           s:"веди тёплую нить от одной к другой. Медленно",        run:lvlStorm}
 ];
 const unlocked = n => n === 1 || (S.stars[n-1] || 0) > 0;
 const POSTER = {
@@ -3872,7 +3994,8 @@ function darkroom(f, ph, idx, have){
   }
   S.darkSeen = {i: idx, have}; save();
 }
-/* новый снимок проявляют руками: трут слой проявителя, пока не откроется больше 60 % кадра. С клавиатуры хватает Enter */
+/* новый снимок проявляют руками: трут слой проявителя, пока не откроется 55 % кадра. Под слоем снимок сначала в сепии и набирает цвет.
+   На пороге вспышка и пружинная отдача. С клавиатуры хватает Enter */
 function scratchDevelop(f, ph, backs, onDone){
   const dev = f.querySelector(".ph.dev"); if (!dev) return onDone();
   f.classList.add("scratch"); const im = dev.querySelector("img"); if (im) im.alt = "";
@@ -3894,15 +4017,17 @@ function scratchDevelop(f, ph, backs, onDone){
   };
   const finish = () => { if (done) return; done = true;
     c.style.pointerEvents = "none"; c.animate([{opacity: 1}, {opacity: 0}], {duration: reduced() ? 1 : 520, easing: "ease-out", fill: "forwards"}).onfinish = () => c.remove();
-    tag.remove(); f.classList.remove("scratch"); shutterSnd(true); snd.collect(true); haptic([12, 40, 18]);
+    tag.remove(); f.style.setProperty("--sep", 0); f.classList.remove("scratch"); shutterSnd(true); snd.collect(true); haptic([12, 40, 18]);
+    if (!reduced()){ f.classList.add("devflash"); setTimeout(() => f.classList.remove("devflash"), 800); }
     const [x, y] = centerOf(f); FX.burst(x, y, {emojis: ["✨"], n: 12, size: [12, 20], grav: 120});
     setTimeout(onDone, 560); };
   const at = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left)/r.width*W, (e.clientY - r.top)/r.height*H]; };
   const stroke = e => { const [x, y] = at(e);
     if (lastP){ const d = Math.hypot(x - lastP[0], y - lastP[1]), n = Math.max(1, Math.ceil(d/(BR*.45))); for (let i = 1; i <= n; i++) rub(lastP[0] + (x - lastP[0])*i/n, lastP[1] + (y - lastP[1])*i/n); } else rub(x, y);
     lastP = [x, y]; const k = cleared/(N*N);
-    if (++rubs % 5 === 0){ snd.tick(Math.min(.97, k/.62)); snd.splash(); haptic(4); }
-    if (k >= .62) finish(); };
+    f.style.setProperty("--sep", Math.max(0, 1 - k/.55).toFixed(3));
+    if (++rubs % 5 === 0){ snd.tick(Math.min(.97, k/.55)); snd.splash(); haptic(4); }
+    if (k >= .55) finish(); };
   c.addEventListener("pointerdown", e => { e.stopPropagation(); down = true; lastP = null; try { c.setPointerCapture(e.pointerId); } catch(_){} stroke(e); });
   c.addEventListener("pointermove", e => { if (down && !done) stroke(e); });
   ["pointerup", "pointercancel"].forEach(t => c.addEventListener(t, () => { down = false; lastP = null; }));
@@ -3961,13 +4086,16 @@ function openViewer(ph){
   const v = $("#viewer"); v.innerHTML = "";
   const list = [ph].concat((ph.more || []).map(src => ({src, caption: "", nocap: true})));
   const deck = document.createElement("div"); deck.className = "deck";
-  const cards = list.map((p, i) => { const c = polaroid(p, "open"); c.classList.add("card", i ? "under" : "top"); c.style.zIndex = list.length - i; deck.appendChild(c); return c; });
+  const cards = list.map((p, i) => { const c = polaroid(p, "open"); c.classList.add("card", i ? "under" : "top"); c.style.zIndex = list.length - i; deck.appendChild(c);
+    const ph = c.querySelector(".ph"); if (ph) ph.insertAdjacentHTML("beforeend", '<i class="foil-glare" aria-hidden="true"></i>'); return c; });
   v.appendChild(deck);
   /* снимок как настоящая карточка в руке: наклоняется за пальцем, по глянцу скользит блик */
   if (!reduced()){
     const tilt = e => { const r = deck.getBoundingClientRect(), nx = Math.max(-1, Math.min(1, ((e.clientX - r.left)/r.width - .5)*2)), ny = Math.max(-1, Math.min(1, ((e.clientY - r.top)/r.height - .5)*2));
-      deck.style.setProperty("--vry", (nx*8).toFixed(2) + "deg"); deck.style.setProperty("--vrx", (-ny*8).toFixed(2) + "deg"); deck.style.setProperty("--vsx", (50 + nx*38).toFixed(1) + "%"); deck.style.setProperty("--vsh", "1"); };
-    const flat = () => { deck.style.setProperty("--vry", "0deg"); deck.style.setProperty("--vrx", "0deg"); deck.style.setProperty("--vsh", "0"); };
+      deck.style.setProperty("--vry", (nx*8).toFixed(2) + "deg"); deck.style.setProperty("--vrx", (-ny*8).toFixed(2) + "deg"); deck.style.setProperty("--vsx", (50 + nx*38).toFixed(1) + "%"); deck.style.setProperty("--vsh", "1");
+      /* голограмма бежит против наклона */
+      deck.style.setProperty("--fx", (50 - nx*35).toFixed(1) + "%"); deck.style.setProperty("--fy", (50 - ny*35).toFixed(1) + "%"); deck.style.setProperty("--fbx", (50 + nx*40).toFixed(1) + "%"); deck.style.setProperty("--fby", (50 + ny*40).toFixed(1) + "%"); deck.style.setProperty("--fo", "1"); };
+    const flat = () => { deck.style.setProperty("--vry", "0deg"); deck.style.setProperty("--vrx", "0deg"); deck.style.setProperty("--vsh", "0"); deck.style.setProperty("--fo", "0"); };
     v.onpointermove = tilt; v.onpointerdown = tilt; v.onpointerup = flat; v.onpointerleave = flat; v.onpointercancel = flat;
   }
   if (list.length > 1){
@@ -4201,6 +4329,7 @@ document.querySelectorAll(".view").forEach(v => v.addEventListener("scroll", () 
 function camTo(view, sheet){ if (view) camTo.view = view; if (sheet !== undefined) camTo.sheet = sheet; $("#world").dataset.cam = camTo.sheet || camTo.view || "v-home"; }
 function showView(id){
   if (id === "v-wardrobe" && !S.splitWear) id = "v-home";
+  const prevV = showView.last;
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.v === id));
   moveInd();
   document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === id));
@@ -4214,7 +4343,8 @@ function showView(id){
   if (id === "v-wardrobe") renderWardrobe();
   rainSound(id === "v-home" && app.classList.contains("rainy"));
   if (id !== "v-home") app.classList.remove("asking");
-  if (id === "v-home"){ setTimeout(eventFx, 350); queueGift(3500); guestSoon(); requestAnimationFrame(placeBubble); if ((S.stars[10]||0) > 0 && Date.now() - preyAt > 180000 && Math.random() < .14) setTimeout(() => prey("laser"), 1400); }
+  if (id === "v-home"){ setTimeout(eventFx, 350); queueGift(3500); guestSoon(); requestAnimationFrame(placeBubble);
+    if (prevV && prevV !== "v-home" && Date.now() - vgAt > 90000 && Math.random() < .3) setTimeout(() => startBusy(null), 900); if ((S.stars[10]||0) > 0 && Date.now() - preyAt > 180000 && Math.random() < .14) setTimeout(() => prey("laser"), 1400); }
   onScroll(v);
 }
 document.querySelectorAll(".tab").forEach(t => t.onclick = () => { showView(t.dataset.v); if (t.dataset.v === "v-home") queueSpecial(); });
@@ -4242,8 +4372,21 @@ function eventFx(){
   else if (S.fxSplit){ S.fxSplit = 0; save(); revealWardrobeTab(); }
   else if (S.fxEpi){ S.fxEpi = 0; save(); setTimeout(() => { if (homeLive()) playEpilogue(); else S.fxEpi = 1; }, 900); }
 }
+/* комикс-вспышка: три диагональные панели в ключевые моменты ивента. Закрывается касанием или сама через 4,6 с */
+function comic(panels){
+  const c = $("#comic"); if (!c) return; c.innerHTML = ""; clearTimeout(c._t);
+  panels.forEach((p, i) => { const d = document.createElement("div"); d.className = "cp cp" + (i + 1) + (i % 2 ? " r" : "");
+    d.innerHTML = `<div class="art">${p.art}</div>` + (p.cap ? '<div class="cap"></div>' : "") + (p.fx ? '<div class="fx" aria-hidden="true"></div>' : "");
+    if (p.cap) d.querySelector(".cap").textContent = p.cap; if (p.fx) d.querySelector(".fx").textContent = p.fx; c.appendChild(d);
+    setTimeout(() => { d.classList.add("in"); if (ensureRunning()) noise({type: "bandpass", freq: 900 + i*400, Q: 1, envOpts: {a: .002, d: .08, peak: .05}}); haptic(6); }, 80 + i*360); });
+  const hint = document.createElement("div"); hint.className = "ctap"; hint.textContent = "коснись, чтобы закрыть"; c.appendChild(hint);
+  c.querySelectorAll(".cat").forEach(x => x.setAttribute("aria-hidden", "true"));
+  c.setAttribute("aria-label", panels.map(p => p.cap).filter(Boolean).join(". "));
+  c.classList.add("on"); const close = () => { clearTimeout(c._t); c.classList.remove("on"); c.innerHTML = ""; }; c.onclick = close; c._t = setTimeout(close, 4600);
+}
 function quarrelStart(){
   app.classList.remove("quarrel"); void app.offsetWidth;
+  comic([{art: '<span class="big">🔴</span>' + catBox("a"), cap: "Лазер был мой"}, {art: catBox("l"), cap: "Нет, мой", fx: "ШШШ!"}, {art: catBox("a") + '<span class="big">💔</span>' + catBox("l"), cap: "Теперь мы не разговариваем"}]);
   setTimeout(() => {
     app.classList.add("quarrel"); snd.crack(); shake($("#stage"), 6); haptic(30);
     toast({k:"ивент", e:"💔", t:"Ссора", s:"Алиса и Лапуля не разговаривают"});
@@ -4254,6 +4397,7 @@ function quarrelStart(){
 }
 function makeup(){
   app.classList.add("quarrel"); void app.offsetWidth;
+  comic([{art: '<span class="big">⛈️</span>', cap: "Гроза. Обеим страшно"}, {art: catBox("a") + '<span class="big">🧶</span>' + catBox("l"), cap: "Тёплая нить дошла"}, {art: catBox("a") + catBox("l") + '<span class="big">🫂</span>', cap: "Плед общий"}]);
   setTimeout(() => {
     app.classList.remove("quarrel"); app.classList.add("makeup"); applyEvent();
     const pets = document.querySelectorAll("#duo .pet"), [a, b] = [...pets].map(p => centerOf(p));
@@ -4269,13 +4413,43 @@ function revealWardrobeTab(){
   toast({k:"новая вкладка", e:"🎀", t:"Гардероб", s:"наряжай каждую отдельно и сохраняй образы"});
 }
 
+/* ---------- наклон телефона ---------- */
+/* сцена смещается слоями, когда наклоняешь телефон. Разрешение на датчик iOS спрашивает только из нажатия, поэтому наклон включается в настройках.
+   Сглаживание: смещение каждый кадр проходит 8 % пути к цели. При экономии кадров и уменьшенном движении сцена стоит */
+const PAR = {x: 0, y: 0, tx: 0, ty: 0, base: null, on: false, raf: 0, apply: () => {}};
+function tiltLive(){ return S.tilt && !reduced() && !app.classList.contains("lowfx") && homeLive(); }
+function onOrient(e){
+  if (e.gamma == null || e.beta == null) return; if (!PAR.base) PAR.base = [e.gamma, e.beta];
+  PAR.tx = Math.max(-16, Math.min(16, (e.gamma - PAR.base[0])*1.1)); PAR.ty = Math.max(-10, Math.min(10, (e.beta - PAR.base[1])*.7));
+  /* ноль медленно переезжает: как телефон держат дольше нескольких секунд, так и считается ровно */
+  PAR.base[0] += (e.gamma - PAR.base[0])*.004; PAR.base[1] += (e.beta - PAR.base[1])*.004;
+  if (!PAR.raf) PAR.raf = requestAnimationFrame(tiltFrame);
+}
+function tiltFrame(){
+  PAR.raf = 0; const live = tiltLive(), tx = live ? PAR.tx : 0, ty = live ? PAR.ty : 0;
+  PAR.x += (tx - PAR.x)*.08; PAR.y += (ty - PAR.y)*.08; PAR.apply();
+  if (Math.abs(tx - PAR.x) + Math.abs(ty - PAR.y) > .05) PAR.raf = requestAnimationFrame(tiltFrame);
+}
+function tiltOn(ask){
+  if (!("DeviceOrientationEvent" in window)) return Promise.resolve(false);
+  const go = () => { if (!PAR.on){ addEventListener("deviceorientation", onOrient, {passive: true}); PAR.on = true; } PAR.base = null; return true; };
+  const rq = DeviceOrientationEvent.requestPermission;
+  if (typeof rq === "function"){ if (!ask) return Promise.resolve(false); return rq.call(DeviceOrientationEvent).then(r => r === "granted" ? go() : false).catch(() => false); }
+  return Promise.resolve(go());
+}
+function tiltOff(){ if (PAR.on){ removeEventListener("deviceorientation", onOrient); PAR.on = false; } PAR.tx = PAR.ty = 0; if (!PAR.raf) PAR.raf = requestAnimationFrame(tiltFrame); }
+/* на iPhone разрешение живёт до закрытия Safari: включённый наклон переспрашиваем первым касанием */
+addEventListener("click", () => { if (S.tilt && !PAR.on) tiltOn(true); }, {capture: true, passive: true});
+
 /* ---------- пасхалки главного экрана ---------- */
 const inRect = (e, r, pad=0) => e.clientX >= r.left - pad && e.clientX <= r.right + pad && e.clientY >= r.top - pad && e.clientY <= r.bottom + pad;
 function egg(id){ S.egg = S.egg || {}; if (!S.egg[id]){ S.egg[id] = 1; note("egg"); checkAch(); save(); } }
 (function eggs(){
-  const home = $("#v-home"), world = $("#world"), moon = $("#moon");
+  const home = $("#v-home"), world = $("#world"), moon = $("#moon"), stage = $("#stage");
   let drag = null, dx = 0, dy = 0, vx = 0, vy = 0, spring = 0;
-  const setPar = () => { world.style.setProperty("--dx", dx.toFixed(1)); world.style.setProperty("--dy", dy.toFixed(1)); };
+  /* смещение пишется на сцену: от него зависят небо, хребты, котики и лепестки, каждый со своим множителем. К пальцу добавляется наклон телефона */
+  const setPar = () => { stage.style.setProperty("--dx", (dx + PAR.x).toFixed(1)); stage.style.setProperty("--dy", (dy + PAR.y).toFixed(1)); };
+  PAR.apply = setPar;
   const springBack = () => { cancelAnimationFrame(spring); let last = performance.now();
     const step = t => { const h = Math.min(.033, (t - last)/1000); last = t; vx += (-170*dx - 22*vx)*h; vy += (-170*dy - 22*vy)*h; dx += vx*h; dy += vy*h; setPar();
       if (Math.abs(dx) + Math.abs(dy) + Math.abs(vx) + Math.abs(vy) > .05) spring = requestAnimationFrame(step); else { dx = dy = vx = vy = 0; setPar(); } };
@@ -4495,12 +4669,17 @@ function diaryLines(e, first){
     msk: "Над домом подняли флаг, а потом его унесло ветром. Это Лапуля опять про Москву.",
     si: "Лапуля опять скучала по Stone Island, и наши плащи стали флагами НАТО."}[id]));
   if (e.nap) P("nap", "Уснула у тебя на пальце, а проснулась, когда ты его убрала.");
+  (e.vg || []).slice(0, 2).forEach(id => P("vg_" + id, VG_DIARY[id]));
+  if (e.jl && e.jl.length) P("jl", e.jl.includes("lapula") ? "Гладили меня, а Лапуля делала вид, что ей всё равно." : "Гладили Лапулю, а я сидела рядом. Просто сидела.");
   if (e.epi) P("epi", "Смотрели эпилог про нас на крыше. Луна там огромная.");
   if (!L.length) P("empty", "Ты заходила ненадолго. Мы были дома.");
   return L;
 }
 /* пометки Лапули на полях: на одну запись не больше двух, выбор стабильный, чтобы не прыгал при каждом открытии */
-const LNOTES = {first: "и с ошибками", late: "а я спала", early: "я тоже", s_hw: "и мой", s_ny: "а я рыбку", s_val: "особенно я",
+const VG_DIARY = {plaid: "Делили с Лапулей плед. Ну как делили.", fly: "Следили за светлячком, пока он не улетел.", scope: "Смотрели в телескоп. Лапуля нашла среди звёзд рыбу.",
+  note: "Спрятала под лапу записку. Что в ней, не скажу.", tail: "Дул ветер, и Лапуля села так, что мне не дуло.", nod: "Качали головами под шкатулку. Лапуля сбивалась."};
+const LNOTES = {vg_plaid: "плед был мой", vg_fly: "я почти поймала", vg_scope: "она там есть", vg_note: "я прочитала", vg_tail: "случайно", vg_nod: "это синкопа", jl: "мне правда всё равно",
+  first: "и с ошибками", late: "а я спала", early: "я тоже", s_hw: "и мой", s_ny: "а я рыбку", s_val: "особенно я",
   pa: "пересчитаю", pl: "сиди где сидишь", eq: "я считала по-другому", lv3: "я болела", lv1: "в следующий раз три", lv0: "завтра получится",
   lvN: "я смотрела все", ach: "это и моя награда", egg: "уже прочитала", q: "точку первой увидела я", mk: "я первая подвинулась",
   giftA: "я бы подарила рыбку", giftL: "надо быстрее", moon: "мне нечем", snap: "я моргнула", sp_love: "это правда",
@@ -4583,7 +4762,7 @@ function openDiary(){
       diaryLines(S.diary[k], k === firstK).forEach(({k: key, t}) => {
         const p = document.createElement("p"); p.textContent = t; day.appendChild(p);
         const n = LNOTES[key];
-        if (n && notes < 2 && hashStr(k + key) % 10 < 5){ notes++; const m = document.createElement("span"); m.className = "lnote"; m.textContent = n;
+        if (n && (key.startsWith("vg_") ? notes < 3 : notes < 2 && hashStr(k + key) % 10 < 5)){       /* у сценок пометка Лапули всегда */ notes++; const m = document.createElement("span"); m.className = "lnote"; m.textContent = n;
           m.style.setProperty("--r", ((hashStr(key + k) % 7) - 3) * .9 + "deg"); p.appendChild(m); }
       });
       box.appendChild(day);
@@ -4820,26 +4999,50 @@ function openGiftBox(){
     });
     body.append(grid, cap);
     if (giftKinds() >= GIFTS.length) cap.textContent = "все семь. котики довольны собой";
-    /* гости в полнолуние: силуэт на фоне луны, пока не встретили — пустая луна */
-    const met = S.guests || {}, gg = document.createElement("div"); gg.className = "gbox guests";
+    /* полевой журнал: гости полнолуния и собранные сеты оттисками штампов */
     const gc = document.createElement("div"); gc.className = "gcap"; gc.setAttribute("aria-live", "polite");
-    GUESTS.forEach(G => {
-      const got = met[G.id], b = document.createElement("button"); b.className = "gslot gg" + (got ? "" : " empty");
-      b.setAttribute("aria-label", got ? G.n : "Гость ещё не приходил");
-      b.innerHTML = `<svg viewBox="-11 -22 22 22" aria-hidden="true"><clipPath id="gclip-${G.id}"><circle cx="0" cy="-11" r="10"/></clipPath><circle class="gm" cx="0" cy="-11" r="10"/>`
-        + (got ? `<g clip-path="url(#gclip-${G.id})"><g fill="#1a1024" transform="${G.id === "bat" ? "translate(0 -11.5) scale(.82)" : G.id === "bcat" ? "translate(0 -.5)" : "translate(0 .4)"}">${GART[G.id]}</g></g>` : "") + "</svg><small></small>";
-      b.querySelector("small").textContent = got ? fmtDay(got.t) : "?";
-      b.onclick = () => {
-        if (!got){ shake(b, 4); snd.tap(); gc.textContent = "этот гость ещё не приходил"; return; }
-        snd.collect(); haptic(8);
-        gc.innerHTML = ""; const w = document.createElement("b"); w.textContent = G.n;
-        gc.append(w, document.createTextNode(" · впервые " + fmtDay(got.t, true) + (got.n > 1 ? ", встречали " + got.n + " " + plural(got.n, "раз", "раза", "раз") : "")));
-      };
-      gg.appendChild(b);
-    });
-    body.append(label("Гости в полнолуние"), gg, gc);
+    body.append(label("Полевой журнал"), stampsEl(gc), gc);
     const nx = para(nextFullText()); nx.classList.add("gnext"); body.appendChild(nx);
   }, null, {medium: true});
+}
+
+/* =================== ПОЛЕВОЙ ЖУРНАЛ =================== */
+/* оттиск штампа за каждого гостя полнолуния и каждый собранный сет: дата первой встречи, звуковой отпечаток, галочка и пометка Лапули */
+const STAMP_NOTE = {filin: "он моргнул первым", bat: "мышь не считается", bcat: "я его не видела", day: "солнце мне к лицу", ball: "я танцевала лучше", prom: "корона мне шире", forks: "лес пах рыбой"};
+function stampList(){
+  const g = S.guests || {}, st = S.setAt || {};
+  return GUESTS.map(G => ({id: G.id, n: G.n, e: G.e, at: g[G.id] && g[G.id].t, kind: "g", arc: "НОЧНОЙ ГОСТЬ"}))
+    .concat(OUTFIT_SETS.map(O => ({id: O.id, n: O.t, e: setEmoji(O), at: st[O.id], kind: "s", arc: "СЕТ СОБРАН"})));
+}
+function stampSound(s){
+  if (s.kind === "g"){ if (s.id === "filin") snd.hoot(); else if (s.id === "bat") snd.chirp(); else snd.meow("guest"); return; }
+  if (!ensureRunning()) return; const base = {day: 0, ball: 2, prom: 4, forks: 1}[s.id] || 0;
+  [0, 2, 4].forEach((d, i) => fmBell({f: PENTA[base + d], t: ctx.currentTime + i*.09, dur: .45, peak: .07, send: .3}));
+}
+function stampsEl(cap){
+  S.stampSeen = S.stampSeen || {}; const box = document.createElement("div"); box.className = "stamps"; let fresh = 0;
+  stampList().forEach(s => {
+    const got = !!s.at, isNew = got && !S.stampSeen[s.id], b = document.createElement("button"); b.type = "button";
+    b.className = "stamp" + (s.kind === "s" ? " set" : "") + (got ? "" : " empty") + (isNew ? " fresh" : "");
+    const h = hashStr(s.id), waves = Array.from({length: 11}, (_, j) => `<i style="--h:${(.25 + ((h >>> ((j*3) % 27)) & 7)/9.5).toFixed(2)}"></i>`).join("");
+    b.style.setProperty("--r", (((h % 13) - 6)*1.1).toFixed(1) + "deg"); b.style.setProperty("--lr", (((h >>> 5) % 7) - 3) + "deg");
+    const d = got ? fmtDay(s.at) : "";
+    b.innerHTML = `<span class="ink"><svg class="arc" viewBox="0 0 74 74" aria-hidden="true"><path id="sa-${s.id}" d="M12 38a25 25 0 0 1 50 0" fill="none"/><text text-anchor="middle"><textPath href="#sa-${s.id}" startOffset="50%">${got ? s.arc : "?"}</textPath></text></svg><span class="se" aria-hidden="true"></span><span class="sd num"></span></span>`
+      + (got ? `<span class="wave" aria-hidden="true">${waves}</span>` : "") + '<span class="sn"></span>' + (got ? '<span class="ln"></span>' : "")
+      + (got ? '<span class="tick" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2.5 6.2l2.4 2.4 4.6-5"/></svg></span>' : "");
+    b.querySelector(".se").textContent = s.e; b.querySelector(".sd").textContent = d; b.querySelector(".sn").textContent = got ? s.n : (s.kind === "g" ? "гость полнолуния" : "сет нарядов");
+    if (got) b.querySelector(".ln").textContent = STAMP_NOTE[s.id] || "";
+    b.setAttribute("aria-label", got ? `${s.n}, ${s.kind === "g" ? "впервые" : "собран"} ${d}. Пометка Лапули: ${STAMP_NOTE[s.id]}` : (s.kind === "g" ? "Гость ещё не приходил" : "Сет ещё не собран"));
+    b.onclick = () => {
+      if (!got){ shake(b, 4); snd.tap(); cap.textContent = s.kind === "g" ? "этот гость ещё не приходил" : "надень обе вещи сета хотя бы раз"; return; }
+      stampSound(s); haptic(8); const gi = (S.guests || {})[s.id];
+      cap.textContent = s.kind === "g" ? `${s.n} · впервые ${fmtDay(s.at, true)}` + (gi && gi.n > 1 ? ", встречали " + gi.n + " " + plural(gi.n, "раз", "раза", "раз") : "") : `«${s.n}» · собран впервые ${fmtDay(s.at, true)}`;
+      if (!reduced()) b.querySelector(".wave").animate([{transform: "scaleY(1)"}, {transform: "scaleY(1.6)", offset: .3}, {transform: "scaleY(1)"}], {duration: 600, easing: "ease-out"});
+    };
+    if (isNew){ const n = fresh++; S.stampSeen[s.id] = Date.now(); b.querySelector(".ink").style.animationDelay = (n*.14) + "s"; setTimeout(() => { if (b.isConnected){ snd.stamp(); haptic(10); } }, 380 + n*140); }
+    box.appendChild(b);
+  });
+  if (fresh) save(); return box;
 }
 
 /* =================== ДОМ ЖИВЁТ ПО ЧАСАМ =================== */
@@ -4968,6 +5171,7 @@ function applyWeather(){
   const w = reduced() ? "" : weatherNow(); let L = $("#wx");
   if (!L){ L = document.createElement("div"); L.id = "wx"; L.className = "wx"; L.setAttribute("aria-hidden", "true"); $("#motes").before(L); }
   app.classList.toggle("rainy", w === "rain"); app.classList.toggle("snowy", w === "snow");
+  muffleBase = w === "rain" ? .55 : w === "snow" ? .35 : 0; if (!$("#game").classList.contains("on")) musicMuffle(muffleBase, 2.5);
   rainSound(w === "rain" && $("#v-home").classList.contains("on") && !document.hidden);
   if (L.dataset.w === w) return;
   L.dataset.w = w; L.className = "wx " + w; L.innerHTML = "";
@@ -5137,9 +5341,52 @@ const BUSY = {
       : Math.random() < .5 ? ["мы следим за луной. работа такая", "alisa"] : ["проверяли луну. на месте", "lapula"]
   }
 };
+/* парные сценки: пришла, а котики вдвоём заняты своим. Какая выпадет, решают час, погода и купленные наряды. Каждая пишет строку в дневник */
+const PLAID_SVG = '<svg viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="tartan" width="22" height="22" patternUnits="userSpaceOnUse"><rect width="22" height="22" fill="#7a1c2e"/><rect x="8" width="6" height="22" fill="#5c1222"/><rect y="8" width="22" height="6" fill="#5c1222" opacity=".8"/><path d="M0 3h22M3 0v22" stroke="#f5c84c" stroke-width="1" opacity=".45"/></pattern></defs>'
+  + '<path d="M6 18Q150-4 294 18L300 84Q150 92 0 84Z" fill="url(#tartan)"/><path d="M6 18Q150-4 294 18" fill="none" stroke="#a83248" stroke-width="5" stroke-linecap="round"/><g stroke="#a83248" stroke-width="2.4" stroke-linecap="round">'
+  + Array.from({length: 24}, (_, i) => `<path d="M${8 + i*12} 85v6"/>`).join("") + '</g></svg>';
+const SCOPE_SVG = '<svg viewBox="0 0 120 120" aria-hidden="true"><g stroke="#3a2a1a" stroke-width="3" stroke-linecap="round"><path d="M58 70L38 116M58 70L62 118M58 70L82 114"/></g><g transform="rotate(-38 58 66)"><rect x="18" y="56" width="84" height="18" rx="5" fill="#c9a24a"/><rect x="96" y="52" width="14" height="26" rx="4" fill="#e3c06a"/><rect x="10" y="60" width="12" height="10" rx="3" fill="#8a6a2a"/><rect x="40" y="56" width="5" height="18" fill="#8a6a2a"/></g><circle cx="58" cy="68" r="5" fill="#3a2a1a"/></svg>';
+const NOTE_SVG = '<svg viewBox="0 0 40 30" aria-hidden="true"><path d="M2 4L36 2L38 26L4 28Z" fill="#f4ead2"/><path d="M8 10h20M8 15h16M8 20h11" stroke="#9a8a7a" stroke-width="1.4"/><path d="M29 19c-1.6-2.2-4.6-.6-2.8 1.6l2.8 2.6 2.8-2.6c1.8-2.2-1.2-3.8-2.8-1.6z" fill="#c9475e"/></svg>';
+const VG_KINDS = ["plaid", "fly", "scope", "note", "tail", "nod"];
+let vgAt = 0;
+function vgOut(sel){ document.querySelectorAll("#duo " + sel).forEach(el => { if (reduced()){ el.remove(); return; } el.animate([{opacity: 1}, {opacity: 0}], {duration: 380, easing: "ease-in", fill: "forwards"}).onfinish = () => el.remove(); }); }
+function vgPool(){
+  const d = new Date(), h = d.getHours(), m = d.getMonth(), night = h >= 19 || h < 6, wet = app.classList.contains("rainy") || app.classList.contains("snowy"), o = S.owned || {}, p = [];
+  if (night || wet) p.push("plaid"); if (o.cape) p.push("plaid");
+  if ((m >= 3 && m <= 8 && (h >= 18 || h < 5)) || o.wreath) p.push("fly");
+  if ((h >= 20 || h < 5) && !wet){ p.push("scope"); if (o.shades) p.push("scope"); }
+  p.push("note"); if (o.mask) p.push("note");
+  if (wet || app.classList.contains("windy") || h >= 17) p.push("tail");
+  if (Music.playing || o.tiara) p.push("nod");
+  return p;
+}
+Object.assign(BUSY, {
+  plaid: { start(){ $("#duo").insertAdjacentHTML("beforeend", `<div class="vg vg-plaid">${PLAID_SVG}</div>`); app.classList.add("vg-lean"); ["alisa", "lapula"].forEach(w => catOf(w).classList.add("content")); busyAct.p = startPurr(.12); },
+    stop(who, b){ vgOut(".vg-plaid"); app.classList.remove("vg-lean"); ["alisa", "lapula"].forEach(w => catOf(w).classList.remove("content")); if (b && b.p) b.p.stop(); },
+    line: () => pick([["плед был общий. почти", "alisa"], ["мы грелись. тебе тоже можно", "lapula"]]) },
+  fly: { start(){ const d = $("#duo"), el = document.createElement("i"); el.className = "vg vg-fly"; d.appendChild(el); const t0 = performance.now();
+      const step = now => { if (!el.isConnected || !busyAct || busyAct.kind !== "fly") return; const D = d.getBoundingClientRect(), t = (now - t0)/1000, x = D.width*(.5 + .36*Math.sin(t*.9)*Math.cos(t*.37)), y = D.height*(.2 + .14*Math.sin(t*1.7));
+        el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`; el.style.opacity = (.55 + .45*Math.abs(Math.sin(t*2.3))).toFixed(2); gazeHold(D.left + x, D.top + y); requestAnimationFrame(step); };
+      requestAnimationFrame(step); },
+    stop(){ vgOut(".vg-fly"); },
+    line: () => pick([["светлячок. мы его не тронули", "alisa"], ["он улетел. я разрешила", "lapula"]]) },
+  scope: { start(){ $("#duo").insertAdjacentHTML("beforeend", `<div class="vg vg-scope">${SCOPE_SVG}</div>`); const l = catOf("lapula"); setGaze(l, 3.4, -2.6); l._away = performance.now() + 6000; l.classList.add("earflat"); glance(catOf("alisa"), 1, 5200); },
+    stop(){ vgOut(".vg-scope"); const l = catOf("lapula"); l.classList.remove("earflat"); l._away = 0; },
+    line: () => pick([["Лапуля нашла среди звёзд рыбу", "alisa"], ["там созвездие Рыбы. я проверила", "lapula"]]) },
+  note: { start(){ $("#duo").insertAdjacentHTML("beforeend", `<div class="vg vg-note">${NOTE_SVG}</div>`); const a = catOf("alisa"); a.classList.add("paws"); setGaze(a, 1.6, 2.4); a._away = performance.now() + 4000; glance(catOf("lapula"), -1, 5200); },
+    stop(){ vgOut(".vg-note"); const a = catOf("alisa"); a.classList.remove("paws"); a._away = 0; },
+    line: () => pick([["никакой записки не было", "alisa"], ["там было про тебя. я не читала", "lapula"]]) },
+  tail: { start(){ $("#duo").insertAdjacentHTML("beforeend", '<div class="vg vg-wind"></div>'); app.classList.add("vg-lean"); catOf("alisa").classList.add("earflat"); snd.wind(); setGaze(catOf("lapula"), -3.2, .2); },
+    stop(){ vgOut(".vg-wind"); app.classList.remove("vg-lean"); catOf("alisa").classList.remove("earflat"); },
+    line: () => pick([["Лапуля закрыла меня от ветра", "alisa"], ["я так сидела. ветер ни при чём", "lapula"]]) },
+  nod: { start(){ $("#duo").style.setProperty("--beat", (60/(Music.playing ? Music.bpm : 80)).toFixed(3) + "s"); app.classList.add("vg-nod", "vg-lean"); },
+    stop(){ app.classList.remove("vg-nod", "vg-lean"); },
+    line: () => pick([["мы слушали шкатулку. не мешай", "alisa"], ["я не сбивалась. это синкопа", "lapula"]]) }
+});
 /* взгляд без возврата: пока котики чем-то заняты, смотрят туда, куда надо */
 function gazeHold(x, y){ clearTimeout(gazeT); document.querySelectorAll("#duo .cat").forEach(c => { const r = c.getBoundingClientRect(), dx = x - (r.left + r.width*.5), dy = y - (r.top + r.height*.43), d = Math.hypot(dx, dy) || 1; setGaze(c, dx/d*3.6, dy/d*2.8); }); }
 function busyPick(){
+  { const vp = vgPool().filter(k => k !== S.lastBusy); if (vp.length && Math.random() < .55){ const k = pick(vp); S.lastBusy = k; return k; } }
   const h = new Date().getHours(), sky = fullMoon() || app.classList.contains("snowy") || app.classList.contains("rainy");
   const pool = h >= 5 && h < 12 ? ["wash", "wash", "box"] : h < 18 ? ["box", "yarn", "yarn", "wash"] : ["moon", "yarn", "wash", "box"];
   if (sky) pool.push("moon", "moon");
@@ -5149,7 +5396,7 @@ function startBusy(then){
   if (reduced() || busyAct || !homeLive() || specialBusy || idle.sleeping || idle.lapNap || S.event === "quarrel" || (knead && knead.cat)) return false;
   const kind = busyPick(), who = kind === "box" ? (Math.random() < .6 ? "lapula" : "alisa") : Math.random() < .5 ? "alisa" : "lapula";
   specialBusy = true; busyAct = {kind, who, then}; busyAct.t = setTimeout(() => endBusy(), 6500);
-  BUSY[kind].start(who); return true;
+  BUSY[kind].start(who); if (VG_KINDS.includes(kind)){ vgAt = Date.now(); noteList("vg", kind); save(); } return true;
 }
 function endBusy(){
   const b = busyAct; if (!b) return; busyAct = null; clearTimeout(b.t); clearInterval(b.iv);
@@ -7227,109 +7474,183 @@ function lvlLaser(area, done){
 }
 
 /* ---------- 11: гроза (ивент «Ссора», примирение) ---------- */
+/* три фазы. Отчуждение: кошки сидят по краям дивана, между ними холодный ветер. Тёплую нить ведут пальцем от одной к другой, резкий рывок её рвёт.
+   Сближение: каждая донесённая нить сдвигает кошек ближе, дождь редеет, шкатулка из глухой становится чистой, кончик нити идёт за пальцем всё легче.
+   Синхронность: снимок порван пополам. Половинки сводят пальцем или держат двумя пальцами сразу, и они защёлкиваются магнитом */
 function lvlStorm(area, done){
   const C = setupCanvas(area), {cv, g} = C;
-  const LIMIT = 90, THUNDER = [24, 46, 68];
-  let t = 0, last = 0, raf, alive = false, ended = false, hisses = 0, flash = 0, stage = "play", nuzzle = 0, plaid = -1, nextTh = 0, updT = 0;
-  const rnd = (a, b) => a + Math.random()*(b - a);
-  const cat = (c, side, name) => ({c, side, name, x:0, tx:0, st:"away", tm:rnd(1.8, 2.8), fake:false, puff:0, stun:0, ear:0, moved:0});
-  const L = cat(CONFIG.alisa, -1, CONFIG.alisa.name), R = cat(CONFIG.lapula, 1, CONFIG.lapula.name);
-  const other = c => c === L ? R : L;
+  const NEED = 4, GEN = {alisa: "Алисы", lapula: "Лапули"};
+  let VMAX = 1050, VDARK = 780;
+  let t = 0, last = 0, raf, alive = false, ended = false, flash = 0, stage = "thread", succ = 0, snaps = 0, from = 0, dark = 0, thunderAt = 0, updT = 0, plaid = -1, joined = 0, holdBoth = 0, helped = false, rainN = 46, flick = 0;
+  const cat = (c, side, key) => ({c, side, key, name: c.name, x: 0, tx: 0, look: 0, puff: 0, warm: 0});
+  const L = cat(CONFIG.alisa, -1, "alisa"), R = cat(CONFIG.lapula, 1, "lapula");
   let seatY = 0, sofaL = 0, sofaR = 0;
-  const geo = () => { seatY = Math.round(C.H*.66); sofaL = 14; sofaR = C.W - 14; };
-  geo(); L.x = L.tx = sofaL + 62; R.x = R.tx = sofaR - 62;
-  const gap = () => (R.x - 32) - (L.x + 32);
-  const rain = Array.from({length:46}, () => ({x:Math.random(), y:Math.random(), v:.6 + Math.random()*.6}));
-  const upd = () => stat(chip("😾", hisses) + chip("⏱️", Math.ceil(Math.max(0, LIMIT - t))));
+  const geo = () => { seatY = Math.round(C.H*.6); sofaL = 14; sofaR = C.W - 14; };
+  const spot = k => { const a0 = sofaL + 62, b0 = sofaR - 62, a1 = C.W/2 - 37, b1 = C.W/2 + 37; return [a0 + (a1 - a0)*k, b0 + (b1 - b0)*k]; };
+  geo(); { const [a, b] = spot(0); L.x = L.tx = a; R.x = R.tx = b; }
+  const rain = Array.from({length: 46}, () => ({x: Math.random(), y: Math.random(), v: .6 + Math.random()*.6}));
+  const wind = Array.from({length: 12}, () => ({x: Math.random(), y: Math.random(), v: .5 + Math.random()*.7, l: 18 + Math.random()*34}));
+  const bar = document.createElement("div"); bar.className = "phasebar"; bar.setAttribute("aria-hidden", "true"); bar.innerHTML = '<i class="on"></i><i></i><i></i>'; area.appendChild(bar);
+  const phase = n => bar.querySelectorAll("i").forEach((x, i) => x.classList.toggle("on", i <= n));
+  const upd = () => stat(chip("🧶", succ + "/" + NEED) + chip("💔", snaps));
   upd();
-  function lookDur(){ return t < 15 ? rnd(.8, 1.2) : rnd(1, 1.6); }
-  function awayDur(){ return t < 15 ? rnd(2.2, 3.4) : rnd(1.2, 2.6); }
-  function updCat(c, dt){
-    c.puff = Math.max(0, c.puff - dt*1.5); c.stun = Math.max(0, c.stun - dt); c.ear = Math.max(0, c.ear - dt*3);
-    c.x += (c.tx - c.x)*Math.min(1, dt*12);
-    if (stage !== "play") return;
-    c.tm -= dt;
-    if (c.st === "away" && c.tm <= 0){ c.fake = t > 15 && Math.random() < .3; c.st = "tele"; c.tm = .5; c.ear = 1; }
-    else if (c.st === "tele" && c.tm <= 0){ if (c.fake){ c.st = "away"; c.tm = awayDur()*.6; } else { c.st = "look"; c.tm = lookDur(); c.moved = 0; } }
-    else if ((c.st === "look" || c.st === "hiss") && c.tm <= 0){ c.st = "away"; c.tm = awayDur(); }
-    else if (c.st === "scared" && c.tm <= 0){ c.st = "away"; c.tm = awayDur(); }
-  }
-  function thunder(){
-    flash = 1; snd.thunder(); shake(area, 10); haptic(40);
-    [L, R].forEach(c => { c.st = "scared"; c.tm = 3; c.puff = 1; });
-    const step = Math.min(18, Math.max(0, gap() - 24)/2); L.tx += step; R.tx -= step;
-    lvBanner(area, "Гром! Им страшно, сейчас они не смотрят друг на друга");
-  }
-  // перетаскивание
-  let grab = null;
+  const src = () => from ? R : L, dst = () => from ? L : R;
+  const chest = c => [c.x, seatY - 46];
+  const visc = () => helped ? .5 : [.12, .18, .27, .4][Math.min(3, succ)];       /* вязкость: сначала кончик нити заметно отстаёт от пальца */
+  let th = null;
   const loc = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  /* звук ливня внутри уровня: тише и чище с каждой нитью */
+  let rs = null;
+  function rainStart(){ if (rs || !ensureRunning()) return; const s = ctx.createBufferSource(); s.buffer = noiseBuf; s.loop = true;
+    const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1300; const gg = ctx.createGain(); gg.gain.value = .0001;
+    s.connect(lp).connect(gg).connect(sfxBus); s.start(); gg.gain.setTargetAtTime(.032, ctx.currentTime, .8); rs = {s, lp, gg}; }
+  function rainLevel(k){ rainN = Math.round(46*(.2 + .8*k)); if (rs){ rs.gg.gain.setTargetAtTime(.006 + .026*k, ctx.currentTime, .9); rs.lp.frequency.setTargetAtTime(1300 + (1 - k)*2600, ctx.currentTime, .9); } }
+  function rainStop(){ if (!rs) return; const r = rs; rs = null; try { r.gg.gain.setTargetAtTime(.0001, ctx.currentTime, .4); setTimeout(() => { try { r.s.stop(); } catch(e){} }, 1600); } catch(e){} }
+  /* половинки снимка */
+  const halves = [{x: 0, y: 0, w: 70, h: 88, rot: -9, c: L, id: null, ox: 0, oy: 0}, {x: 0, y: 0, w: 70, h: 88, rot: 8, c: R, id: null, ox: 0, oy: 0}];
+  const placeHalves = () => { halves[0].x = C.W*.12; halves[0].y = C.H*.74; halves[1].x = C.W*.88 - 70; halves[1].y = C.H*.71; };
+  let joinT = null;
   cv.addEventListener("pointerdown", e => {
-    if (!alive || stage !== "play") return; const [x, y] = loc(e);
-    const c = [L, R].find(k => Math.abs(x - k.x) < 52 && y > seatY - 130 && y < seatY + 30); if (!c || c.stun > 0) return;
-    grab = {c, x0:x, cx0:c.tx}; try { cv.setPointerCapture(e.pointerId); } catch(_){}
+    if (!alive) return; const [x, y] = loc(e);
+    if (stage === "thread"){
+      if (th) return; const s = src(), [cx, cy] = chest(s);
+      if (Math.hypot(x - cx, y - cy) > 72){ s.warm = 1; return; }
+      th = {id: e.pointerId, fx: x, fy: y, tx: cx, ty: cy, v: 0, lt: performance.now(), prog: 0, step: 0, warn: 0}; try { cv.setPointerCapture(e.pointerId); } catch(_){}
+      haptic(6); if (ensureRunning()) fmBell({f: 523.25, dur: .4, peak: .05, send: .3});
+    } else if (stage === "photo"){
+      const h = halves.find(q => q.id === null && x > q.x - 16 && x < q.x + q.w + 16 && y > q.y - 16 && y < q.y + q.h + 16); if (!h) return;
+      h.id = e.pointerId; h.ox = x - h.x; h.oy = y - h.y; try { cv.setPointerCapture(e.pointerId); } catch(_){} snd.tap(); haptic(6);
+    }
   });
   cv.addEventListener("pointermove", e => {
-    if (!grab || stage !== "play") return; const c = grab.c; if (c.stun > 0){ grab = null; return; }
-    const [x] = loc(e); let nx = grab.cx0 + (x - grab.x0);
-    if (c === L) nx = Math.max(sofaL + 40, Math.min(R.tx - 64 - 8, nx)); else nx = Math.max(L.tx + 64 + 8, Math.min(sofaR - 40, nx));
-    const moved = Math.abs(nx - c.tx); c.tx = nx;
-    const o = other(c);
-    if (o.st === "look" && moved > .5){ o.moved += moved; if (o.moved > 3) hiss(c, o); }
+    if (!alive) return; const [x, y] = loc(e);
+    if (th && e.pointerId === th.id){
+      const now = performance.now(), dt = Math.max(.008, (now - th.lt)/1000), vv = Math.hypot(x - th.fx, y - th.fy)/dt; th.lt = now;
+      th.v = th.v*.6 + vv*.4; th.fx = x; th.fy = y;
+      const lim = dark > 0 ? VDARK : VMAX;
+      if (th.v > lim*.78 && !th.warn){ th.warn = 1; haptic(3); } else if (th.v < lim*.55) th.warn = 0;
+      if (th.v > lim) snapThread();
+    }
+    const h = halves.find(q => q.id === e.pointerId);
+    if (h && stage === "photo"){ h.x = Math.max(4, Math.min(C.W - h.w - 4, x - h.ox)); h.y = Math.max(C.H*.3, Math.min(C.H - h.h - 6, y - h.oy)); checkJoin(); }
   });
-  const up = () => { grab = null; };
+  const up = e => { if (th && e.pointerId === th.id) th = null; halves.forEach(h => { if (h.id === e.pointerId) h.id = null; }); };
   cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
-  function hiss(c, o){
-    hisses++; o.st = "hiss"; o.tm = .9; o.puff = 1; c.stun = .9; grab = null;
-    c.tx += c === L ? -46 : 46; c.tx = Math.max(sofaL + 40, Math.min(sofaR - 40, c.tx));
-    snd.hiss(); haptic(30); upd();
-    const r0 = cv.getBoundingClientRect(); popNum("ш-ш-ш", r0.left + o.x - 26, r0.top + seatY - 150);
+  function snapThread(){
+    if (!th) return; const r0 = cv.getBoundingClientRect(); snaps++; upd();
+    FX.burst(r0.left + th.tx, r0.top + th.ty, {emojis: ["✨"], n: 8, size: [8, 14], speed: [90, 220], grav: 260, life: [.4, .8]});
+    snd.snap(); haptic([10, 30, 10]); shake(area, 4); th = null;
+    if (snaps === 1 || snaps === 4) lvBanner(area, "Слишком резко, нить порвалась. Веди медленнее");
+  }
+  function delivered(){
+    const d = dst(), s = src(); th = null; succ++; upd(); d.look = 1; s.look = 1; d.warm = 1;
+    const r0 = cv.getBoundingClientRect(), [x, y] = chest(d);
+    FX.burst(r0.left + x, r0.top + y - 20, {emojis: ["🤍", "✨"], n: 7, size: [12, 20], speed: [60, 150], grav: -40, life: [.8, 1.2]});
+    snd.collect(succ === NEED); haptic([8, 26, 12]);
+    const [a, b] = spot(succ/NEED); L.tx = a; R.tx = b;
+    musicMuffle(1 - succ/NEED, .8); rainLevel(1 - succ/NEED);
+    from = 1 - from;
+    if (succ === 1) phase(1);
+    if (succ === 2) thunderAt = t + 1.6;
+    if (succ >= NEED){ stage = "photo"; phase(2); placeHalves(); setTimeout(() => { if (!ended) lvBanner(area, "Снимок порван пополам. Сведи половинки"); }, 600); }
+    else lvBanner(area, "Дошла. Теперь от " + GEN[src().key]);
+  }
+  /* поворот: гром гасит свет на 4,5 с, нить еле видна, рвётся легче */
+  function thunder(){
+    flash = 1; dark = 4.5; snd.thunder(); shake(area, 9); haptic(40); [L, R].forEach(c => c.puff = 1);
+    lvBanner(area, "Гром, свет погас. Веди ещё медленнее");
+  }
+  function checkJoin(){
+    if (joined) return; const [a, b] = halves, gx = b.x - (a.x + a.w), gy = Math.abs(a.y - b.y);
+    if (Math.abs(gx) < 30 && gy < 36) startJoin();
+  }
+  function startJoin(){
+    if (joined) return; joined = 1; halves.forEach(h => h.id = null); stage = "join";
+    const cx = C.W/2, cy = Math.min(C.H*.74, (halves[0].y + halves[1].y)/2); joinT = {ax: cx - 70, bx: cx, y: cy};
+    snd.bassChord(); haptic([12, 30, 20]);
+  }
+  function finishJoin(){
+    stage = "cover"; flash = .7; plaid = 0; const r0 = cv.getBoundingClientRect();
+    FX.burst(r0.left + C.W/2, r0.top + joinT.y + 44, {emojis: ["💞", "✨"], n: 14, size: [14, 24], grav: -40, life: [1, 1.6]});
+    const p1 = startPurr(.2); setTimeout(() => p1 && p1.stop(), 2600);
+    setTimeout(() => { if (!ended) lvBanner(area, "Помирились. Плед общий"); }, 300);
+    setTimeout(finishStorm, 2300);
   }
   function drawCat(c){
-    const away = c.st === "away" || c.st === "tele", scared = c.st === "scared";
-    const dir = scared ? 0 : away ? c.side : -c.side, s = 1 + c.puff*.12, x = c.x, y = seatY;
+    const look = c.look > 0, dir = look ? -c.side : c.side, s = 1 + c.puff*.12, x = c.x, y = seatY;
+    if (c.warm > 0 || (stage === "thread" && c === src() && !th)){
+      const k = c.warm > 0 ? c.warm : .55 + .45*Math.sin(t*4), gr = g.createRadialGradient(x, y - 46, 4, x, y - 46, 70);
+      gr.addColorStop(0, `rgba(255,214,140,${(.32*k).toFixed(3)})`); gr.addColorStop(1, "rgba(255,214,140,0)"); g.fillStyle = gr; g.fillRect(x - 70, y - 116, 140, 140); }
     g.save(); g.translate(x, y); g.scale(s, s);
     g.fillStyle = "rgba(0,0,0,.3)"; g.beginPath(); g.ellipse(0, 2, 36, 7, 0, 0, 7); g.fill();
     g.strokeStyle = c.c.shade; g.lineWidth = 9; g.lineCap = "round"; g.beginPath(); g.moveTo(c.side*20, -8); g.quadraticCurveTo(c.side*48, -6, c.side*40, -34); g.stroke();
     g.fillStyle = c.c.fur; g.beginPath(); g.ellipse(0, -34, 30, 34, 0, 0, 7); g.fill();
     g.fillStyle = c.c.shade; g.globalAlpha = .35; g.beginPath(); g.ellipse(dir*4, -28, 16, 20, 0, 0, 7); g.fill(); g.globalAlpha = 1;
-    const hx = dir*8, hy = -80, tw = c.ear > 0 ? Math.sin(c.ear*30)*3 : 0;
+    const hx = dir*8, hy = -80;
     g.fillStyle = c.c.fur;
-    g.beginPath(); g.moveTo(hx - 22, hy - 8); g.lineTo(hx - 20 + tw, hy - 34); g.lineTo(hx - 6, hy - 18); g.fill();
-    g.beginPath(); g.moveTo(hx + 22, hy - 8); g.lineTo(hx + 20 - tw, hy - 34); g.lineTo(hx + 6, hy - 18); g.fill();
+    g.beginPath(); g.moveTo(hx - 22, hy - 8); g.lineTo(hx - 20, hy - 34); g.lineTo(hx - 6, hy - 18); g.fill();
+    g.beginPath(); g.moveTo(hx + 22, hy - 8); g.lineTo(hx + 20, hy - 34); g.lineTo(hx + 6, hy - 18); g.fill();
     g.beginPath(); g.ellipse(hx, hy, 27, 23, 0, 0, 7); g.fill();
-    const ex = hx + dir*4, wide = scared || c.st === "hiss";
+    const ex = hx + dir*4, wide = c.puff > .3;
     g.fillStyle = c.c.eyes; g.beginPath(); g.arc(ex - 10, hy - 2, 6, 0, 7); g.arc(ex + 10, hy - 2, 6, 0, 7); g.fill();
     g.fillStyle = "#141014"; const pw = wide ? 3.6 : 1.8, px = dir*2.5;
     g.beginPath(); g.ellipse(ex - 10 + px, hy - 2, pw, 4.6, 0, 0, 7); g.ellipse(ex + 10 + px, hy - 2, pw, 4.6, 0, 0, 7); g.fill();
+    if (look && stage !== "thread"){ g.fillStyle = c.c.fur; g.fillRect(ex - 17, hy - 10, 34, 5); }          /* в конце довольный прищур */
     g.fillStyle = "#fff"; g.beginPath(); g.arc(ex - 8 + px, hy - 4, 1.4, 0, 7); g.arc(ex + 12 + px, hy - 4, 1.4, 0, 7); g.fill();
     g.fillStyle = c.c.nose; g.beginPath(); g.moveTo(ex - 3, hy + 7); g.lineTo(ex + 3, hy + 7); g.lineTo(ex, hy + 10); g.fill();
-    if (c.st === "hiss"){ g.fillStyle = "#3a0d16"; g.beginPath(); g.ellipse(ex, hy + 15, 6, 4, 0, 0, 7); g.fill(); g.fillStyle = "#fff"; g.fillRect(ex - 4, hy + 11, 1.6, 3); g.fillRect(ex + 2.4, hy + 11, 1.6, 3); }
     g.restore();
-    if (c.st === "tele" && !c.fake){ g.strokeStyle = "rgba(255,255,255,.6)"; g.lineWidth = 2; g.lineCap = "round"; g.beginPath(); g.moveTo(x + dir*8, y - 128); g.lineTo(x + dir*8, y - 118); g.moveTo(x + dir*8, y - 112); g.lineTo(x + dir*8, y - 111); g.stroke(); }
     g.font = "400 20px " + getComputedStyle(document.documentElement).getPropertyValue("--script"); g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.72)"; g.fillText(c.name, x, y + 46); g.textAlign = "left";
+  }
+  function drawHalf(h, side, joinedNow){
+    g.save(); g.translate(h.x + h.w/2, h.y + h.h/2); g.rotate(h.rot*Math.PI/180);
+    const w = h.w, H = h.h, x0 = -w/2, y0 = -H/2;
+    g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(x0 + 3, y0 + 5, w, H);
+    g.beginPath();
+    if (side === 0){ g.moveTo(x0, y0); g.lineTo(x0 + w, y0); for (let i = 1; i <= 8; i++) g.lineTo(x0 + w + (i % 2 ? -5 : 0), y0 + H*i/8); g.lineTo(x0, y0 + H); }
+    else { g.moveTo(x0 + w, y0); g.lineTo(x0, y0); for (let i = 1; i <= 8; i++) g.lineTo(x0 + (i % 2 ? -5 : 0), y0 + H*i/8); g.lineTo(x0 + w, y0 + H); }
+    g.closePath(); g.fillStyle = "#f4efe6"; g.fill();
+    const ix = side === 0 ? x0 + 8 : x0 + 2, iw = w - 10, iy = y0 + 8, ih = H - 26;
+    g.save(); g.beginPath(); g.rect(ix, iy, iw, ih); g.clip();
+    const sky = g.createLinearGradient(0, iy, 0, iy + ih); sky.addColorStop(0, "#2a2050"); sky.addColorStop(1, "#5a2f62"); g.fillStyle = sky; g.fillRect(ix, iy, iw, ih);
+    const c = h.c.c, cx = side === 0 ? ix + iw - 6 : ix + 6, cy = iy + ih - 4;
+    g.fillStyle = c.fur; g.beginPath(); g.ellipse(cx, cy, 22, 24, 0, 0, 7); g.fill();
+    g.beginPath(); g.ellipse(cx, cy - 28, 18, 15, 0, 0, 7); g.fill();
+    g.beginPath(); g.moveTo(cx - 15, cy - 34); g.lineTo(cx - 13, cy - 50); g.lineTo(cx - 4, cy - 40); g.fill(); g.beginPath(); g.moveTo(cx + 15, cy - 34); g.lineTo(cx + 13, cy - 50); g.lineTo(cx + 4, cy - 40); g.fill();
+    g.fillStyle = c.eyes; g.beginPath(); g.arc(cx - 6, cy - 29, 3.4, 0, 7); g.arc(cx + 6, cy - 29, 3.4, 0, 7); g.fill();
+    g.fillStyle = "#141014"; g.beginPath(); g.ellipse(cx - 6 + (side ? -1 : 1), cy - 29, 1.2, 2.6, 0, 0, 7); g.ellipse(cx + 6 + (side ? -1 : 1), cy - 29, 1.2, 2.6, 0, 0, 7); g.fill();
+    g.restore();
+    if (!joinedNow && stage === "photo"){ g.strokeStyle = `rgba(245,200,76,${(.35 + .3*Math.sin(t*5)).toFixed(2)})`; g.lineWidth = 2; g.strokeRect(x0 - 4, y0 - 4, w + 8, H + 8); }
+    g.restore();
   }
   function draw(){
     geo();
-    const W = C.W, H = C.H;
+    const W = C.W, H = C.H, calm = succ/NEED;
     const wall = g.createLinearGradient(0, 0, 0, H); wall.addColorStop(0, "#141228"); wall.addColorStop(.7, "#1d1530"); wall.addColorStop(1, "#0c0a14");
     g.fillStyle = wall; g.fillRect(0, 0, W, H);
-    // окно с дождём
-    const wx = W*.2, wy = H*.07, ww = W*.6, wh = H*.32;
-    const sky = g.createLinearGradient(0, wy, 0, wy + wh); sky.addColorStop(0, flash > 0 ? `rgba(220,230,255,${.3 + flash*.7})` : "#0c1430"); sky.addColorStop(1, "#1a2440");
+    const wx = W*.2, wy = H*.06, ww = W*.6, wh = H*.28;
+    const sky = g.createLinearGradient(0, wy, 0, wy + wh); sky.addColorStop(0, flash > 0 ? `rgba(220,230,255,${.3 + flash*.7})` : mixHex("#0c1430", "#2a2a5a", calm)); sky.addColorStop(1, mixHex("#1a2440", "#5a3a6a", calm));
     g.fillStyle = sky; g.fillRect(wx, wy, ww, wh);
+    if (calm >= 1){ g.fillStyle = "rgba(243,227,176,.9)"; g.beginPath(); g.arc(wx + ww*.72, wy + wh*.36, 12, 0, 7); g.fill(); }
     g.save(); g.beginPath(); g.rect(wx, wy, ww, wh); g.clip(); g.strokeStyle = "rgba(170,190,255,.35)"; g.lineWidth = 1;
-    rain.forEach(r => { const x = wx + r.x*ww, y = wy + r.y*wh; g.beginPath(); g.moveTo(x, y); g.lineTo(x - 4, y + 14); g.stroke(); }); g.restore();
+    for (let i = 0; i < rainN; i++){ const r = rain[i], x = wx + r.x*ww, y = wy + r.y*wh; g.beginPath(); g.moveTo(x, y); g.lineTo(x - 4, y + 14); g.stroke(); } g.restore();
     g.strokeStyle = "#0a0812"; g.lineWidth = 6; g.strokeRect(wx, wy, ww, wh); g.lineWidth = 3; g.beginPath(); g.moveTo(wx + ww/2, wy); g.lineTo(wx + ww/2, wy + wh); g.moveTo(wx, wy + wh/2); g.lineTo(wx + ww, wy + wh/2); g.stroke();
-    const lg = g.createLinearGradient(0, wy + wh, 0, H*.9); lg.addColorStop(0, `rgba(150,170,255,${.08 + flash*.25})`); lg.addColorStop(1, "rgba(150,170,255,0)");
-    g.fillStyle = lg; g.beginPath(); g.moveTo(wx, wy + wh); g.lineTo(wx + ww, wy + wh); g.lineTo(wx + ww*1.2, H*.9); g.lineTo(wx - ww*.2, H*.9); g.fill();
-    // диван
     const sy = seatY;
     g.fillStyle = "#3a1630"; rrect(g, sofaL, sy - 120, sofaR - sofaL, 90, 22); g.fill();
     g.fillStyle = "#4a1f3a"; rrect(g, sofaL, sy - 6, sofaR - sofaL, 58, 16); g.fill();
     g.fillStyle = "rgba(255,255,255,.05)"; g.fillRect(sofaL + 10, sy - 4, sofaR - sofaL - 20, 4);
     g.fillStyle = "#2e1026"; rrect(g, sofaL - 6, sy - 64, 30, 116, 14); g.fill(); rrect(g, sofaR - 24, sy - 64, 30, 116, 14); g.fill();
-    g.strokeStyle = "rgba(0,0,0,.25)"; g.lineWidth = 2; g.beginPath(); g.moveTo(W/2, sy - 110); g.lineTo(W/2, sy - 30); g.stroke();
+    /* холодный ветер между ними, стихает с каждой нитью */
+    if (stage === "thread"){ g.strokeStyle = `rgba(200,215,255,${(.22*(1 - calm)).toFixed(3)})`; g.lineWidth = 1.4; g.lineCap = "round";
+      wind.forEach(w => { const x = L.x + 30 + w.x*(R.x - L.x - 60), y = sy - 120 + w.y*90; g.beginPath(); g.moveTo(x, y); g.lineTo(x + w.l*(1 - calm*.6), y + 3); g.stroke(); }); }
     drawCat(L); drawCat(R);
+    if (th){
+      const [sx, sy2] = chest(src()), lim = dark > 0 ? VDARK : VMAX, ten = Math.max(0, Math.min(1, (th.v/lim - .45)/.5)), col = mixHex("#f5c84c", "#ff5a6a", ten);
+      const mx = (sx + th.tx)/2, my = (sy2 + th.ty)/2 + 26*(1 - visc()), a = dark > 0 ? .35 + flick*.65 : 1;
+      g.lineCap = "round"; g.strokeStyle = col; g.globalAlpha = .2*a; g.lineWidth = 8; g.beginPath(); g.moveTo(sx, sy2); g.quadraticCurveTo(mx, my, th.tx, th.ty); g.stroke();
+      g.globalAlpha = .95*a; g.lineWidth = 2.2; g.beginPath(); g.moveTo(sx, sy2); g.quadraticCurveTo(mx, my, th.tx, th.ty); g.stroke(); g.globalAlpha = 1;
+      const tg = g.createRadialGradient(th.tx, th.ty, 0, th.tx, th.ty, 16); tg.addColorStop(0, "rgba(255,240,200,.9)"); tg.addColorStop(1, "rgba(255,240,200,0)"); g.fillStyle = tg; g.fillRect(th.tx - 16, th.ty - 16, 32, 32);
+    }
+    if (stage === "photo" || stage === "join" || stage === "cover"){ drawHalf(halves[0], 0, stage !== "photo"); drawHalf(halves[1], 1, stage !== "photo"); }
     if (plaid >= 0){
       const k = Math.min(1, plaid), py = sy - 150 + k*100, x0 = Math.min(L.x, R.x) - 52, x1 = Math.max(L.x, R.x) + 52;
       g.save(); g.globalAlpha = Math.min(1, k*2);
@@ -7338,53 +7659,47 @@ function lvlStorm(area, done){
       for (let j = py + 16; j < py + 60; j += 18){ g.beginPath(); g.moveTo(x0 + 4, j); g.lineTo(x1 - 4, j); g.stroke(); }
       g.restore();
     }
+    if (dark > 0){ g.fillStyle = `rgba(4,3,10,${(.62*(1 - flick)*Math.min(1, dark)).toFixed(3)})`; g.fillRect(0, 0, W, H); }
     if (flash > 0){ g.fillStyle = `rgba(230,236,255,${flash*.5})`; g.fillRect(0, 0, W, H); }
   }
-  let plaidBtn = null;
   function frame(now){ try { frameBody(now); } catch(err){ console.warn(err); if (!ended) raf = requestAnimationFrame(frame); } }
   function frameBody(now){
     const dt = Math.min(.04, (now - last)/1000); last = now;
     rain.forEach(r => { r.y += r.v*dt*1.6; if (r.y > 1){ r.y = -.1; r.x = Math.random(); } });
+    wind.forEach(w => { w.x += w.v*dt*.5; if (w.x > 1){ w.x = 0; w.y = Math.random(); } });
     flash = Math.max(0, flash - dt*1.8);
     if (alive){
-      t += dt; updCat(L, dt); updCat(R, dt);
-      if (stage === "play"){
-        if (nextTh < THUNDER.length && t >= THUNDER[nextTh]){ nextTh++; thunder(); }
-        if (t >= LIMIT){ thunder(); L.tx = (L.tx + R.tx)/2 - 33; R.tx = L.tx + 66; }
-        if (gap() <= 30 || (R.tx - L.tx) <= 66){ stage = "nuzzle"; nuzzle = 0; grab = null; [L, R].forEach(c => { c.st = "look"; c.puff = 0; });
-          lvBanner(area, "Помирились. Осталось укрыть их пледом"); snd.collect(true); haptic(16);
-          const r0 = cv.getBoundingClientRect(); FX.burst(r0.left + (L.x + R.x)/2, r0.top + seatY - 110, {emojis:["💞","✨"], n:12, size:[16,26], grav:-40, life:[1,1.6]});
-          setTimeout(showPlaid, 900); }
-      }
-      if (stage === "cover"){ plaid += dt*1.6; }
+      t += dt;
+      [L, R].forEach(c => { c.x += (c.tx - c.x)*Math.min(1, dt*5); c.puff = Math.max(0, c.puff - dt*1.2); c.warm = Math.max(0, c.warm - dt*1.4); c.look = Math.max(stage === "thread" ? 0 : 1, c.look - dt*.35); });
+      if (thunderAt && t >= thunderAt){ thunderAt = 0; thunder(); }
+      if (dark > 0){ dark -= dt; flick = Math.max(0, flick - dt*3); if (Math.random() < dt*.9) flick = .8; }
+      if (!helped && t > 100 && stage === "thread"){ helped = true; VMAX = VDARK = 1e9; lvBanner(area, "Ветер стих. Теперь нить не порвётся"); }
+      if (th){ const k = 1 - Math.pow(1 - visc(), dt*60); th.tx += (th.fx - th.tx)*k; th.ty += (th.fy - th.ty)*k;
+        const [sx, sy] = chest(src()), [dx, dy] = chest(dst()), total = Math.hypot(dx - sx, dy - sy), rest = Math.hypot(dx - th.tx, dy - th.ty), p = Math.max(0, Math.min(1, 1 - rest/total));
+        const st = Math.floor(p*6); if (st > th.step){ th.step = st; snd.tick(Math.min(.97, .3 + p*.65)); haptic(3); }
+        th.prog = p; if (rest < 44) delivered(); }
+      if (stage === "photo"){ const both = halves[0].id !== null && halves[1].id !== null; holdBoth = both ? holdBoth + dt : 0; if (holdBoth > .6) startJoin(); }
+      if (stage === "join"){ const [a, b] = halves, k = Math.min(1, dt*9); a.x += (joinT.ax - a.x)*k; b.x += (joinT.bx - b.x)*k; a.y += (joinT.y - a.y)*k; b.y += (joinT.y - b.y)*k; a.rot += (0 - a.rot)*k; b.rot += (0 - b.rot)*k;
+        if (Math.abs(a.x - joinT.ax) + Math.abs(b.x - joinT.bx) + Math.abs(a.y - joinT.y) < 1.2) finishJoin(); }
+      if (stage === "cover") plaid += dt*1.6;
       updT -= dt; if (updT <= 0){ upd(); updT = .3; }
     }
     draw();
     if (!ended) raf = requestAnimationFrame(frame);
   }
-  function showPlaid(){
-    if (ended) return;
-    plaidBtn = document.createElement("button"); plaidBtn.className = "btn mconfirm"; plaidBtn.textContent = "Укрыть пледом"; area.appendChild(plaidBtn);
-    if (!reduced()) plaidBtn.animate([{transform:"translateX(-50%) scale(.6)", opacity:0}, {transform:"translateX(-50%) scale(1)", opacity:1}], {duration:700, easing:springPop()});
-    plaidBtn.onclick = () => {
-      plaidBtn.remove(); stage = "cover"; plaid = 0; snd.sheet(true);
-      const p1 = startPurr(.2); setTimeout(() => p1 && p1.stop(), 2600);
-      setTimeout(() => { const r0 = cv.getBoundingClientRect(); FX.burst(r0.left + (L.x + R.x)/2, r0.top + seatY - 70, {emojis:["💗","🤍"], n:10, size:[14,22], grav:-60, life:[1,1.4]}); }, 600);
-      setTimeout(finishStorm, 1700);
-    };
-  }
+  function restore(){ rainStop(); musicMuffle(muffleBase, .8); bar.remove(); }
   function finishStorm(){
-    if (ended) return; ended = true; alive = false; cancelAnimationFrame(raf);
-    const st = t >= LIMIT ? 1 : hisses <= 1 && t <= 50 ? 3 : hisses <= 3 ? 2 : 1;
-    const secs = Math.round(t);
-    done(st, (t >= LIMIT ? "Гроза сама их помирила." : `Помирились за ${secs} с, шипений: ${hisses}.`) + " Три звезды: не больше одного шипения и до 50 с.");
+    if (ended) return; ended = true; alive = false; cancelAnimationFrame(raf); restore();
+    const secs = Math.round(t), st = snaps <= 1 && t <= 80 ? 3 : snaps <= 3 ? 2 : 1;
+    done(st, `Помирились за ${secs} с, нить порвалась ${snaps} ${plural(snaps, "раз", "раза", "раз")}. Три звезды: не больше одного обрыва и до 80 с.`);
   }
-  area.__storm = { L, R, get seatY(){ return seatY; }, get gap(){ return gap(); }, get stage(){ return stage; }, get alive(){ return alive; }, get t(){ return t; } };
+  area.__storm = { L, R, halves, get seatY(){ return seatY; }, get stage(){ return stage; }, get succ(){ return succ; }, get snaps(){ return snaps; }, get alive(){ return alive; }, get t(){ return t; },
+    get src(){ return chest(src()); }, get dst(){ return chest(dst()); }, get thread(){ return th; }, get dark(){ return dark; } };
   raf = requestAnimationFrame(tt => { last = tt; frame(tt); });
-  intro(area, LEVELS[10], "Гроза. Алиса и Лапуля сидят по краям дивана и дуются. Тяни одну к другой, пока та отвернулась. Если смотрит, зашипит, и придётся отступить. Перед тем как повернуться, кошка дёргает ушами. Гром пугает обеих, тогда они не смотрят друг на друга.", () => {
-    alive = true; lvBanner(area, "Двигай, пока другая не смотрит");
+  intro(area, LEVELS[10], "Гроза. Алиса и Лапуля дуются по краям дивана. Зажми палец на той, что светится, и медленно веди тёплую нить к другой. Дёрнешь резко, и нить порвётся. В конце сведи половинки снимка.", () => {
+    alive = true; rainStart(); musicMuffle(1, .6); lvBanner(area, "Веди нить от Алисы. Медленно");
   });
-  return () => { alive = false; ended = true; cancelAnimationFrame(raf); removeEventListener("resize", C.fit); if (plaidBtn) plaidBtn.remove(); };
+  return () => { alive = false; ended = true; cancelAnimationFrame(raf); removeEventListener("resize", C.fit); restore(); };
 }
 
 /* =================== ЗАПУСК =================== */
@@ -7443,7 +7758,7 @@ function bindDuo(root){
     const endStroke = e => { if (st && (!e || e.pointerId === st.id)){ st = null; rig && rig.glow(null); } };
     el.addEventListener("pointerdown", e => {
       pet(el, e);
-      if (rig && S.event !== "quarrel"){ st = {id: e.pointerId, x: e.clientX, y: e.clientY, d: 0, moved: 0, last: performance.now()}; try { el.setPointerCapture(e.pointerId); } catch(_){} }
+      if (rig && S.event !== "quarrel"){ st = {id: e.pointerId, x: e.clientX, y: e.clientY, d: 0, moved: 0, last: performance.now(), lt: performance.now(), v: 0, ax: 0, ay: 0}; try { el.setPointerCapture(e.pointerId); } catch(_){} }
       if (root.id !== "duo" || S.event === "quarrel" || idle.sleeping) return;
       stopKnead(); const k = knead = {x: e.clientX, y: e.clientY, cat: el.querySelector(".cat")};
       k.t = setTimeout(() => {
@@ -7464,8 +7779,9 @@ function bindDuo(root){
       if (e.clientX < r.left - 12 || e.clientX > r.right + 12 || e.clientY < r.top - 8 || e.clientY > r.bottom + 12){ rig.glow(null); return; }   /* палец ушёл с кошки */
       rig.push(dx, dy); rig.glow(e.clientX, e.clientY);
       st.d = Math.min(STROKE_PX*1.5, st.d + step);
-      const now = performance.now();
-      if (st.d >= STROKE_PX && now - st.last >= STROKE_MS){ st.d = 0; st.last = now; pet(el, e, "stroke"); }
+      const now = performance.now(), vv = step/Math.max(.008, (now - st.lt)/1000); st.lt = now; st.v = st.v ? st.v*.55 + vv*.45 : vv; st.ax += dx; st.ay += dy;
+      /* против шерсти: резкий рывок быстрее 1100 px/с или ведут снизу вверх */
+      if (st.d >= STROKE_PX && now - st.last >= STROKE_MS){ st.d = 0; st.last = now; petMeta = {against: st.v > 1100 || (st.ay < -18 && -st.ay > Math.abs(st.ax)*1.2), v: st.v}; st.ax = st.ay = 0; pet(el, e, "stroke"); }
     });
     ["pointerup", "pointercancel", "lostpointercapture"].forEach(t => el.addEventListener(t, endStroke));
     el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); pet(el); } });
@@ -7502,6 +7818,7 @@ try { if (navigator.standalone || matchMedia("(display-mode: standalone)").match
 })();
 (function stars(){ const s = $("#stars"); for (let i=0;i<32;i++){ const e = document.createElement("i"); e.style.left = Math.random()*100+"%"; e.style.top = Math.random()*50+"%"; e.style.animationDelay = Math.random()*4+"s"; e.style.opacity = (.3 + Math.random()*.6).toFixed(2); s.appendChild(e); } })();
 $("#duo").innerHTML = duoHTML(); bindDuo($("#duo"));
+if (S.tilt) tiltOn(false);
 document.querySelectorAll("#duo .pet").forEach(p => p.insertAdjacentHTML("beforeend", '<span class="zz" aria-hidden="true">z</span><span class="zz" aria-hidden="true">z</span>'));
 $("#splashDuo").innerHTML = duoHTML(); $("#splashDuo").querySelectorAll(".cat").forEach(blinkLoop);
 $("#btnSettings").onclick = openSettings;
