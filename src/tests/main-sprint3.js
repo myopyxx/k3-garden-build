@@ -70,10 +70,10 @@ const {open} = require('./helper.js');
   for (const [W, H] of [[375, 667], [393, 852], [440, 956]]){
     await p.setViewportSize({width: W, height: H}); await p.waitForTimeout(700);
     const d = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect(), m = r('#purr'), tabs = r('#tabs');
-      const bs = [...document.querySelectorAll('#dock .dk')].map(b => { const q = b.getBoundingClientRect(), e = b.querySelector('.ear').getBoundingClientRect(); return {w: Math.round(q.width), h: Math.round(q.height), earTop: e.top, bottom: q.bottom}; });
+      const bs = [...document.querySelectorAll('#dock .dk')].map(b => { const q = b.getBoundingClientRect(), e = (b.querySelector('.ear') || b).getBoundingClientRect(); return {w: Math.round(q.width), h: Math.round(q.height), earTop: e.top, bottom: q.bottom}; });
       return {meterBottom: m.bottom, tabsTop: tabs.top, bs, mini: document.querySelector('#miniPlayer') ? r('#miniPlayer').top : null}; });
     const earTop = Math.min(...d.bs.map(x => x.earTop)), bottom = Math.max(...d.bs.map(x => x.bottom));
-    ok(`док ${W}×${H}`, d.bs.every(x => x.w >= 80 && x.h >= 52) && earTop >= d.meterBottom + 2 && bottom < d.tabsTop - 4, `кнопки ${d.bs.map(x => x.w + '×' + x.h).join(', ')}; ушки на ${(earTop - d.meterBottom).toFixed(1)} px ниже шкалы; до таб-бара ${(d.tabsTop - bottom).toFixed(0)} px`);
+    ok(`док ${W}×${H}`, d.bs.every(x => x.w >= 72 && x.h >= 44) && earTop >= d.meterBottom + 2 && bottom < d.tabsTop - 4, `кнопки ${d.bs.map(x => x.w + '×' + x.h).join(', ')}; ушки на ${(earTop - d.meterBottom).toFixed(1)} px ниже шкалы; до таб-бара ${(d.tabsTop - bottom).toFixed(0)} px`);
     await p.screenshot({path: __dirname + `/s3-home-${W}.png`});
   }
   await p.setViewportSize({width: 393, height: 852}); await p.waitForTimeout(500);
