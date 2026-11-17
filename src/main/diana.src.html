@@ -1751,6 +1751,160 @@ body.day .rays i{background:repeating-conic-gradient(from 0deg,rgba(255,224,160,
   radial-gradient(circle 80vmax at 82% -6%,rgba(255,236,190,.5),rgba(255,214,150,.16) 42%,rgba(255,214,150,0) 70%);
   -webkit-mask:linear-gradient(180deg,#000 0 46%,rgba(0,0,0,.25) 78%,transparent);mask:linear-gradient(180deg,#000 0 46%,rgba(0,0,0,.25) 78%,transparent)}
 .fgust.on{opacity:1}
+
+/* ================= v13 ================= */
+/* глубина кадра: палец по пустому месту и наклон телефона пишут --dx/--dy на сцену. Небо и луна почти стоят, хребты смещаются сильнее,
+   котики ещё сильнее, лепестки переднего плана сильнее всех. Только transform/translate, без размытия */
+#duo{translate:calc(var(--dx,0)*.62px) calc(var(--dy,0)*.42px);will-change:translate}
+.nearfx{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;translate:calc(var(--dx,0)*.84px) calc(var(--dy,0)*.56px);transition:opacity 1.2s}
+.stage:not(.home-on) .nearfx,.app.gaze .nearfx{opacity:0}
+.nearfx i{position:absolute;top:-6%;width:11px;height:7px;border-radius:70% 0 70% 0;background:linear-gradient(135deg,#ff9fb4,#b8344f);opacity:.75;
+  animation:petal linear infinite;will-change:transform}
+.nearfx i:nth-child(3n){width:8px;height:5px;opacity:.55}
+.nearfx i:nth-child(4n){background:linear-gradient(135deg,#f3e3b0,#c78f52);opacity:.45}
+@keyframes petal{0%{transform:translate3d(0,0,0) rotate(0deg)}25%{transform:translate3d(18px,27vh,0) rotate(140deg)}50%{transform:translate3d(-12px,54vh,0) rotate(250deg)}
+  75%{transform:translate3d(14px,81vh,0) rotate(390deg)}100%{transform:translate3d(-6px,110vh,0) rotate(520deg)}}
+.app.lowfx #duo,.app.lowfx .nearfx{translate:none}
+.app.lowfx .nearfx{display:none}
+@media (prefers-reduced-motion:reduce){#duo,.nearfx{translate:none}.nearfx{display:none}}
+
+/* контурный свет на шерсти: цвет и сила зависят от погоды, луны и времени суток, переходят за 3 с */
+@property --rimo{syntax:"<number>";inherits:true;initial-value:.3}
+@property --rimc{syntax:"<color>";inherits:true;initial-value:#fff}
+#duo .cat,.wstage .cat{transition:--rimo 3s ease,--rimc 3s ease}
+body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
+.app.fullmoon #duo .cat,.app.fullmoon .wstage .cat{--rimc:#f6e6b2;--rimo:.5}
+.app.rainy #duo .cat{--rimc:#a8bfff;--rimo:.2}
+.app.snowy #duo .cat{--rimc:#eef4ff;--rimo:.4}
+.app.blood #duo .cat{--rimc:#ff6a76;--rimo:.52}
+.app.rainy .world .sky,.app.snowy .world .sky{filter:saturate(.8) brightness(.92);transition:filter 3s}
+
+/* голова как одно целое: тянется к пальцу под подбородком, клонится в такт сценке */
+.cat .head{transform-box:view-box;transform-origin:100px 150px;transform:translate(var(--hx,0px),var(--hy,0px)) rotate(var(--hr,0deg));transition:transform .55s var(--spring-soft)}
+.cat .tailw{transform-box:view-box;transform-origin:150px 196px;transition:transform .5s var(--spring-soft)}
+/* зона 1, макушка и уши: уши прижаты, веки тяжелеют */
+.cat.earflat .el{transform:rotate(-24deg) scaleY(.8);transition:transform .28s ease-out}
+.cat.earflat .er{transform:rotate(24deg) scaleY(.8);transition:transform .28s ease-out}
+.cat.earflat .eye{transform:scaleY(.55);transition:transform .4s ease}
+/* зона 2, щёки и подбородок: прищур сильнее, чем от простой ласки */
+.cat.chin .eye{transform:scaleY(.3);transition:transform .35s ease}
+/* зона 3, спина по шерсти: волна по телу и хвост трубой */
+.cat.arch .tailw{transform:rotate(-17deg) scaleY(1.06)}
+.cat.arch .breathe{animation:archWave .62s ease-out}
+@keyframes archWave{0%{transform:none}28%{transform:scale(1.045,.95) translateY(1.5%)}58%{transform:scale(.975,1.035)}100%{transform:none}}
+/* зона 4, против шерсти: встряхнуться, дёрнуть ухом, отвернуться */
+.cat.ruffle .breathe{animation:ruffle .5s linear}
+.cat.ruffle .er{animation:earR .44s ease-out}
+@keyframes ruffle{0%,100%{transform:none}15%{transform:rotate(-3.5deg) translateX(-1.5%)}32%{transform:rotate(3.5deg) translateX(1.5%)}49%{transform:rotate(-2.5deg)}66%{transform:rotate(2deg)}83%{transform:rotate(-1deg)}}
+/* ревность: второй котик подвигается ближе */
+#duo .pet{translate:var(--scoot,0px) 0;transition:translate .9s var(--spring-soft)}
+@media (prefers-reduced-motion:reduce){.cat .head,.cat .tailw{transition:none}.cat.arch .breathe,.cat.ruffle .breathe{animation:none}#duo .pet{transition:none}}
+
+/* блик кромки сдвигается туда, где палец */
+.lit>.rim{animation:none;--ra:var(--rat,310deg)}
+.stamp.pressed,.gslot.pressed,.wit.pressed{scale:.96;transition:scale 60ms}
+.stamp,.gslot{transition:scale .5s cubic-bezier(.22,1,.36,1)}
+
+/* голографический блик: в просмотре снимка и на вещах гардероба. Двигается против наклона карточки */
+.foil-glare{position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;opacity:calc(var(--fo,0)*.85);transition:opacity .3s;
+  background:radial-gradient(circle at var(--fx,50%) var(--fy,50%),rgba(255,255,255,.5),rgba(255,255,255,0) 42%),
+    repeating-linear-gradient(118deg,rgba(255,120,190,0) 0%,rgba(255,120,190,.32) 5%,rgba(120,210,255,.32) 10%,rgba(255,236,140,.32) 15%,rgba(200,140,255,0) 20%);
+  background-size:100% 100%,240% 240%;background-position:center,var(--fbx,50%) var(--fby,50%);mix-blend-mode:color-dodge}
+.app.lowfx .foil-glare{mix-blend-mode:normal;opacity:calc(var(--fo,0)*.5);background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.3) 50%,transparent 70%)}
+.viewer .deck .card .ph{position:relative}
+@media (prefers-reduced-motion:reduce){.foil-glare{display:none}}
+
+/* проявка: под слоем проявителя снимок сначала в сепии, цвет набирается по мере стирания */
+.pola.scratch .ph img{filter:sepia(var(--sep,1)) saturate(calc(1 - var(--sep,1)*.5)) brightness(calc(1 + var(--sep,1)*.06))}
+.pola.devflash{animation:devKick .7s var(--spring-pop)}
+.pola.devflash::after{content:"";position:absolute;inset:-4px;border-radius:6px;pointer-events:none;background:radial-gradient(circle,rgba(255,250,235,.95),rgba(255,236,190,.4) 45%,transparent 70%);animation:devFlash .6s ease-out forwards}
+@keyframes devFlash{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
+@keyframes devKick{0%{scale:1}25%{scale:1.07}55%{scale:.97}100%{scale:1}}
+
+/* отрыв корешка: линия перфорации, ручка и золотой разрез */
+.ticket .tk-perf{position:relative;height:0;z-index:4}
+.ticket.live .tk-stub{transform-origin:100% 0;transform:translateY(calc(var(--tk,0)*9px)) rotate(calc(var(--tk,0)*3.6deg));transition:transform .5s var(--spring-soft)}
+.ticket.live.drag .tk-stub{transition:none}
+.ticket.torn .tk-stub{transform-origin:100% 0;transform:translateY(18px) rotate(2.6deg);transition:transform .9s var(--spring-pop)}
+.tear-track{position:absolute;left:4px;right:4px;top:-22px;height:44px;touch-action:none;cursor:grab}
+.tear-track .tline{position:absolute;left:14px;right:14px;top:21px;height:2.5px;border-radius:2px;background:#f5c84c;transform-origin:0 50%;transform:scaleX(var(--tk,0));box-shadow:0 0 10px rgba(245,200,76,.7)}
+.tear-track .tknob{position:absolute;top:8px;left:calc(14px + (100% - 28px)*var(--tk,0));width:28px;height:28px;margin-left:-14px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,#fff3c4,#f5c84c 55%,#b8862a);box-shadow:0 3px 10px rgba(0,0,0,.45),0 0 0 4px rgba(245,200,76,.18);font-size:14px;line-height:1}
+.ticket.live:not(.drag) .tknob{animation:knobHint 2.2s ease-in-out 1s infinite}
+@keyframes knobHint{0%,60%,100%{translate:0}75%{translate:16px}}
+.tear-hint{position:absolute;left:0;right:0;top:-44px;text-align:center;font-size:11px;color:var(--muted);pointer-events:none;transition:opacity .3s}
+.ticket.drag .tear-hint,.ticket.torn .tear-hint{opacity:0}
+.ticket.torn .tear-track{display:none}
+@media (prefers-reduced-motion:reduce){.ticket.live:not(.drag) .tknob{animation:none}.ticket.live .tk-stub,.ticket.torn .tk-stub{transition:none}}
+
+/* полевой журнал: оттиски штампов за гостей полнолуния и собранные сеты */
+.stamps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 10px;margin:4px 0 2px}
+.stamp{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px 6px;border-radius:16px;background:rgba(255,255,255,.04);color:var(--ink);font:inherit;border:0}
+.stamp .ink{position:relative;width:74px;height:74px;border-radius:50%;display:grid;place-items:center;color:var(--sc,#c9475e);rotate:var(--r,-6deg);
+  border:2.5px solid currentColor;box-shadow:0 0 0 3px transparent,0 0 0 4.5px currentColor;
+  -webkit-mask:repeating-radial-gradient(circle at 37% 53%,#000 0 2.3px,rgba(0,0,0,.66) 2.6px 3.2px);mask:repeating-radial-gradient(circle at 37% 53%,#000 0 2.3px,rgba(0,0,0,.66) 2.6px 3.2px)}
+.stamp .ink svg.arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.stamp .ink svg.arc text{font:700 8.6px var(--ui);letter-spacing:.06em;fill:currentColor}
+.stamp .ink .se{font-size:24px;line-height:1;filter:grayscale(.15) sepia(.25)}
+.stamp .ink .sd{position:absolute;bottom:13px;font:600 7.5px var(--ui);letter-spacing:.04em}
+.stamp .wave{display:flex;align-items:center;gap:1.5px;height:14px;opacity:.7}
+.stamp .wave i{width:2px;border-radius:1px;background:currentColor;height:calc(var(--h)*14px)}
+.stamp .sn{font-size:10.5px;color:var(--muted);text-align:center;line-height:1.2}
+.stamp .ln{font:400 19px/1 var(--script);color:#e8ac4c;rotate:var(--lr,-3deg);margin-top:-2px}
+.stamp .tick{position:absolute;top:4px;right:6px;width:20px;height:20px;border-radius:50%;background:#5aa36a;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.stamp .tick svg{width:12px;height:12px;stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:20;stroke-dashoffset:0}
+.stamp.fresh .tick svg{animation:tickDraw .45s ease-out .55s backwards}
+@keyframes tickDraw{from{stroke-dashoffset:20}}
+.stamp.fresh .ink{animation:stampIn .6s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes stampIn{0%{scale:1.7;opacity:0;rotate:calc(var(--r,-6deg) - 14deg)}55%{scale:.9;opacity:1}100%{scale:1;rotate:var(--r,-6deg)}}
+.stamp.empty .ink{color:rgba(255,255,255,.2);border-style:dashed;box-shadow:none;-webkit-mask:none;mask:none}
+.stamp.empty .ink .se{filter:grayscale(1) opacity(.35)}
+.stamp.set .ink{--sc:#7f5bd6}
+@media (prefers-reduced-motion:reduce){.stamp.fresh .ink,.stamp.fresh .tick svg{animation:none}}
+
+/* комикс-вспышка: три диагональные панели в ключевые моменты ивента */
+.comic{position:absolute;inset:0;z-index:72;display:none;background:rgba(8,5,14,.72)}
+.comic.on{display:block;animation:fadeIn .25s ease-out}
+.comic .cp{position:absolute;left:-6%;right:-6%;height:31%;overflow:hidden;background:var(--cpbg,#1c1230);box-shadow:inset 0 0 0 3px #f3e3b0}
+.comic .cp::before{content:"";position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.07) 0 2.5deg,transparent 2.5deg 9deg);pointer-events:none}
+.comic .cp1{top:6%;clip-path:polygon(4% 0,100% 0,96% 82%,0 100%);--cpbg:linear-gradient(160deg,#2a1838,#120a1c)}
+.comic .cp2{top:35%;clip-path:polygon(0 18%,100% 0,100% 82%,4% 100%);--cpbg:linear-gradient(200deg,#30152a,#140912)}
+.comic .cp3{top:64%;clip-path:polygon(0 18%,96% 0,100% 100%,4% 100%);--cpbg:linear-gradient(160deg,#162036,#0b0f1e)}
+.comic .cp .art{position:absolute;inset:8% 10%;display:flex;align-items:flex-end;justify-content:center;gap:4%}
+.comic .cp .art .cat{width:30%;max-width:120px}
+.comic .cp .art .big{font-size:58px;line-height:1;align-self:center}
+.comic .cp .cap{position:absolute;left:10%;top:12%;max-width:62%;padding:6px 10px;background:#f3e3b0;color:#1a1024;font:600 12px/1.3 var(--ui);rotate:-1.5deg;box-shadow:3px 3px 0 #000}
+.comic .cp.r .cap{left:auto;right:10%;rotate:1.5deg}
+.comic .cp .fx{position:absolute;right:12%;bottom:14%;font:800 30px/1 var(--ui);color:#ff6a7a;-webkit-text-stroke:2px #1a1024;rotate:-8deg}
+.comic .cp{translate:var(--from,-110%) 0;transition:translate .7s var(--spring-pop)}
+.comic .cp.r{--from:110%}
+.comic .cp.in{translate:0 0}
+.comic .ctap{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 10px);text-align:center;font-size:11px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.comic .cp{transition:none;translate:0 0}}
+
+/* сценки при входе: реквизит поверх котиков */
+.vg{position:absolute;pointer-events:none;z-index:4}
+.vg-plaid{left:6%;right:6%;bottom:2%;height:34%;transform-origin:50% 100%;animation:vgUp .9s var(--spring-soft) both}
+.vg-plaid svg{width:100%;height:100%;display:block}
+@keyframes vgUp{from{transform:translateY(30%) scaleY(.3);opacity:0}to{transform:none;opacity:1}}
+.vg-fly{left:0;top:0;width:10px;height:10px;border-radius:50%;background:#fff6b0;box-shadow:0 0 10px 4px rgba(255,236,140,.75),0 0 30px 10px rgba(255,220,120,.25);will-change:transform}
+.vg-scope{right:-4%;bottom:26%;width:38%;transform-origin:20% 90%;animation:vgUp .8s var(--spring-soft) both}
+.vg-note{left:34%;bottom:6%;width:15%;rotate:-9deg;animation:vgNote 3.6s ease-in-out both}
+@keyframes vgNote{0%{transform:translate(-40%,8%) scale(.7);opacity:0}15%{transform:none;opacity:1}70%{transform:none;opacity:1}100%{transform:translate(-55%,14%) scale(.4);opacity:0}}
+.vg-wind{left:-10%;right:-10%;top:24%;height:40%;background:repeating-linear-gradient(176deg,transparent 0 18px,rgba(230,236,255,.18) 19px 20px,transparent 21px 44px);
+  -webkit-mask:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);mask:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);animation:vgWind 1.1s linear infinite}
+@keyframes vgWind{from{background-position:0 0}to{background-position:-180px 12px}}
+.app.vg-nod #duo .cat .head{animation:vgNod var(--beat,.75s) ease-in-out infinite alternate}
+.app.vg-nod #duo .pet[data-cat=lapula] .cat .head{animation-delay:calc(var(--beat,.75s)*-1)}
+@keyframes vgNod{from{transform:rotate(-5deg)}to{transform:rotate(5deg) translateY(2px)}}
+.app.vg-lean #duo .pet[data-cat=lapula]{--scoot:-14px}
+.app.vg-lean #duo .pet[data-cat=alisa]{--scoot:6px}
+@media (prefers-reduced-motion:reduce){.vg{animation:none!important}.app.vg-nod #duo .cat .head{animation:none}}
+
+/* уровень 11: подсказка о трёх фазах */
+.phasebar{position:absolute;left:50%;top:10px;translate:-50% 0;display:flex;gap:6px;z-index:3;pointer-events:none}
+.phasebar i{width:26px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);transition:background .4s}
+.phasebar i.on{background:#f3e3b0;box-shadow:0 0 8px rgba(243,227,176,.6)}
 </style>
 </head>
 <body>
@@ -1916,6 +2070,7 @@ body.day .rays i{background:repeating-conic-gradient(from 0deg,rgba(255,224,160,
       </section>
     </div>
 
+    <div class="nearfx" id="nearfx" aria-hidden="true"><i style="left:26.3%;animation-duration:25.2s;animation-delay:-19.2s"></i><i style="left:81.8%;animation-duration:19.2s;animation-delay:-6.5s"></i><i style="left:15.8%;animation-duration:19.7s;animation-delay:-20.6s"></i><i style="left:14.2%;animation-duration:23.4s;animation-delay:-6.0s"></i><i style="left:29.7%;animation-duration:22.2s;animation-delay:-23.5s"></i><i style="left:59.2%;animation-duration:17.2s;animation-delay:-7.7s"></i><i style="left:15.8%;animation-duration:27.5s;animation-delay:-22.7s"></i></div>
     <div class="edge-top" id="edgeTop"></div>
     <header class="hud">
       <div class="chip hudcap" aria-label="Капли и звёзды"><i class="rim" aria-hidden="true"></i>
@@ -1950,6 +2105,7 @@ body.day .rays i{background:repeating-conic-gradient(from 0deg,rgba(255,224,160,
   </div>
 
   <div class="viewer" id="viewer"></div>
+  <div class="comic" id="comic" role="dialog" aria-modal="true" aria-label="Сцена"></div>
 
   <div class="island" id="toast" role="status"><div class="ic e" id="toastI">🏆</div><div class="tx"><small id="toastK">достижение</small><b id="toastT"></b><span id="toastS"></span></div></div>
 
@@ -2514,7 +2670,7 @@ function catSVG(c, opts={}){
   const eye = cx => `<g class="eye"><circle cx="${cx}" cy="102" r="12.5" fill="${c.eyes}"/><circle cx="${cx}" cy="102" r="12.5" fill="url(#iris-${k})"/><circle cx="${cx}" cy="102" r="12.5" fill="url(#eye-${k})"/><circle cx="${cx}" cy="102" r="12" fill="none" stroke="#150c12" stroke-opacity=".4" stroke-width="1.3"/><ellipse class="pup" cx="${cx}" cy="102" rx="4" ry="9.5" fill="#141014"/><circle cx="${cx+4.5}" cy="97" r="5.2" fill="#fff" opacity=".16"/><circle cx="${cx+4.5}" cy="97" r="3.2" fill="#fff"/><circle cx="${cx+8.3}" cy="101.6" r="1.05" fill="#fff" opacity=".9"/><circle cx="${cx-4}" cy="107" r="1.4" fill="#fff" opacity=".6"/><path class="lid" d="M${cx-13.5} 102 a13.5 13.5 0 0 1 27 0 Z" fill="${c.fur}"/></g>`;
   return `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="rim-${k}" cx=".74" cy=".16" r=".78"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".45" stop-color="#fff" stop-opacity=".07"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="rim-${k}" cx=".74" cy=".16" r=".78"><stop offset="0" style="stop-color:var(--rimc,#fff);stop-opacity:var(--rimo,.3)"/><stop offset=".45" style="stop-color:var(--rimc,#fff);stop-opacity:calc(var(--rimo,.3)*.24)"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
     <radialGradient id="shd-${k}" cx=".28" cy=".92" r=".85"><stop offset="0" stop-color="#0a0612" stop-opacity=".34"/><stop offset="1" stop-color="#0a0612" stop-opacity="0"/></radialGradient>
     <radialGradient id="eg-${k}" r=".5"><stop offset=".3" stop-color="${c.eyes}" stop-opacity=".7"/><stop offset="1" stop-color="${c.eyes}" stop-opacity="0"/></radialGradient>
     <radialGradient id="eye-${k}" cx=".5" cy=".62" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
@@ -2524,7 +2680,7 @@ function catSVG(c, opts={}){
   </defs>
   <path class="acc acc-cape" d="M42 142 Q100 120 158 142 L178 234 Q100 216 22 234 Z" fill="#5c0f1d"/>
   <path class="acc acc-cape" d="M54 134 Q100 114 146 134 L152 148 Q100 130 48 148 Z" fill="#8e1c2e"/>
-  <path class="tail" d="M150 198 C200 198 206 148 176 126" fill="none" stroke="${c.shade}" stroke-width="18" stroke-linecap="round"/>
+  <g class="tailw"><path class="tail" d="M150 198 C200 198 206 148 176 126" fill="none" stroke="${c.shade}" stroke-width="18" stroke-linecap="round"/></g>
   <ellipse cx="100" cy="174" rx="60" ry="54" fill="${c.fur}"/>
   <ellipse cx="100" cy="186" rx="32" ry="34" fill="${c.shade}" opacity=".35"/>
   <ellipse cx="100" cy="174" rx="60" ry="54" fill="url(#shd-${k})"/>
@@ -2534,7 +2690,7 @@ function catSVG(c, opts={}){
   <path d="M147 141 A60 54 0 0 1 159 169" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/>
   <g class="paw pl"><ellipse cx="76" cy="222" rx="19" ry="10" fill="${c.fur}"/></g>
   <g class="paw pr"><ellipse cx="124" cy="222" rx="19" ry="10" fill="${c.fur}"/><g class="acc acc-ring"><circle cx="124" cy="216" r="6" fill="none" stroke="#f5c84c" stroke-width="3"/><rect x="121" y="206" width="6" height="6" fill="#4ea0ff" transform="rotate(45 124 209)"/></g></g>
-  <g class="hl hl-ear"><g class="ear el"><path d="M54 80 Q52 48 74 58 Z" fill="${c.fur}"/><path d="M60 72 Q60 56 72 61 Z" fill="#b99aa6"/><path d="M54.500 76 Q53 50 73 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g>
+  <g class="head"><g class="hl hl-ear"><g class="ear el"><path d="M54 80 Q52 48 74 58 Z" fill="${c.fur}"/><path d="M60 72 Q60 56 72 61 Z" fill="#b99aa6"/><path d="M54.500 76 Q53 50 73 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g>
   <g class="ear er"><path d="M146 80 Q148 48 126 58 Z" fill="${c.fur}"/><path d="M140 72 Q140 56 128 61 Z" fill="#b99aa6"/><path d="M145.500 76 Q147 50 127 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g></g>
   <ellipse cx="100" cy="104" rx="56" ry="48" fill="${c.fur}"/>
   <ellipse cx="74" cy="122" rx="20" ry="15" fill="${c.fur}"/>
@@ -2560,7 +2716,7 @@ function catSVG(c, opts={}){
   <g stroke="#ecebef" stroke-width="1.6" stroke-linecap="round" opacity=".75"><path d="M64 122 L36 116 M64 127 L36 130 M136 122 L164 116 M136 127 L164 130"/></g></g>
   <g class="hl hl-eyes"><g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><g class="sglint"><path d="M67 110 L74 92 M120 110 L127 92" fill="none" stroke="#fff6cf" stroke-width="3.2" stroke-linecap="round"/></g><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
   <g class="acc acc-mask"><path fill-rule="evenodd" d="M56 98 Q60 82 80 86 Q92 88 100 96 Q108 88 120 86 Q140 82 144 98 Q142 114 122 116 Q108 116 100 108 Q92 116 78 116 Q58 114 56 98 Z M70 101 Q74 93 82 93 Q90 94 91 101 Q88 108 80 108 Q72 108 70 101 Z M109 101 Q110 94 118 93 Q126 93 130 101 Q128 108 120 108 Q112 108 109 101 Z" fill="#17101a" stroke="#d9b45a" stroke-width="1.8"/><path d="M144 96 Q158 74 150 58 M146 92 Q160 80 162 66" fill="none" stroke="#b01e33" stroke-width="3" stroke-linecap="round"/></g></g>
-  <g class="hl hl-muz"><path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/></g>
+  <g class="hl hl-muz"><path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/></g></g>
   <g class="wpaw"><ellipse cx="0" cy="0" rx="17" ry="11.5" fill="${c.fur}"/><ellipse cx="0" cy="4" rx="13" ry="6" fill="${c.shade}" opacity=".22"/><path d="M-7 -10 q2 5 0 10 M1 -11 q2 5 0 11 M9 -9 q2 4 0 9" stroke="${c.shade}" stroke-width="1.6" fill="none" opacity=".4" stroke-linecap="round"/></g>
 </svg>`;
 }
