@@ -141,5 +141,21 @@ const {open} = require('./helper.js');
     ok('без ошибок (6)', errs.length === 0, errs.join(' | '));
     await b.close();
   }
+  // 7. ручной переключатель «Упрощённые эффекты» в настройках
+  {
+    const {b, p, errs} = await open(ROOT + '/index.html', {state: JSON.stringify(Object.assign({}, base, {pets: 50, drops: 10, stars: {1: 3}}))});
+    await start(p); await calm(p);
+    await p.click('#btnSettings'); await p.waitForTimeout(900);
+    const sw = p.locator('[role=switch][aria-label="Упрощённые эффекты, экономия заряда"]');
+    const st = () => p.evaluate(() => ({lowfx: app.classList.contains('lowfx'), glass: S.glass, sw: document.querySelector('[role=switch][aria-label="Упрощённые эффекты, экономия заряда"]').getAttribute('aria-checked')}));
+    ok('по умолчанию выключено: стекло работает', JSON.stringify(await st()) === JSON.stringify({lowfx: false, glass: undefined, sw: 'false'}), JSON.stringify(await st()));
+    await sw.click(); await p.waitForTimeout(300);
+    const on = await st(); ok('включили: lowfx и S.glass=false', on.lowfx && on.glass === false && on.sw === 'true', JSON.stringify(on));
+    ok('выбор сохранён в localStorage', await p.evaluate(() => JSON.parse(localStorage.getItem('alisa-diaries-v3')).glass === false));
+    await sw.click(); await p.waitForTimeout(300);
+    const off = await st(); ok('выключили: lowfx снят, S.glass=true', !off.lowfx && off.glass === true && off.sw === 'false', JSON.stringify(off));
+    ok('без ошибок (7)', errs.length === 0, errs.join(' | '));
+    await b.close();
+  }
   console.log('провалов:', fail); process.exit(fail ? 1 : 0);
 })();

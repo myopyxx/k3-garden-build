@@ -27,7 +27,7 @@ const SP = __dirname + '/';
       await p.evaluate(() => closeSheet()); await p.waitForTimeout(600); await p.evaluate(() => showView('v-home')); await p.waitForTimeout(700);
       // переключатель стекла
       await p.click('#btnSettings'); await p.waitForTimeout(900);
-      const sw = p.locator('[role=switch][aria-label="Эффект жидкого стекла"]'); await sw.scrollIntoViewIfNeeded(); await p.screenshot({path: SP + 's2-settings.png'});
+      const sw = p.locator('[role=switch][aria-label="Упрощённые эффекты, экономия заряда"]'); await sw.scrollIntoViewIfNeeded(); await p.screenshot({path: SP + 's2-settings.png'});
       await sw.click(); await p.waitForTimeout(300); const off = await p.evaluate(() => ({lowfx: app.classList.contains('lowfx'), glass: S.glass}));
       await sw.click(); await p.waitForTimeout(300); console.log('стекло выкл:', JSON.stringify(off), '| снова вкл:', JSON.stringify(await p.evaluate(() => ({lowfx: app.classList.contains('lowfx'), glass: S.glass}))));
       await p.click('#sheetDone'); await p.waitForTimeout(600);

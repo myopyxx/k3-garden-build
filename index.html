@@ -367,6 +367,7 @@ body.day .sparkle{display:block}
 .gstat{display:flex;gap:5px}
 .gstat .chip{height:34px;padding:0 9px 0 8px;font-size:12.5px;gap:4px}
 .gstat .chip .e{font-size:16px}
+@media (max-width:400px){.gbar{gap:6px;padding-left:10px;padding-right:10px}.gt{font-size:28px;margin-right:6px}.gstat{gap:4px}.gstat .chip{height:30px;padding:0 6px 0 5px;font-size:11.5px;gap:3px}.gstat .chip .e{font-size:13px}}
 .garea{position:relative;flex:1;overflow:hidden;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .ghint{position:absolute;left:0;right:0;top:10px;text-align:center;color:var(--muted);font-size:10.5px;pointer-events:none;padding:0 16px}
 canvas.c{display:block;width:100%;height:100%}
@@ -1056,6 +1057,8 @@ svg.sti{width:1em;height:1em;display:block}
 /* листы: одинаковые поля, плотнее материал, подпись трека по центру */
 .sheet{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom)*.5);padding:8px 20px 20px;background:linear-gradient(180deg,rgba(58,40,76,.95),rgba(30,20,44,.97))}
 .sheet.songsheet{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom)*.5)}
+.sheet{background-color:#2a1d3d}
+.sheet.fade-top{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 18px);mask-image:linear-gradient(to bottom,transparent 0,#000 18px)}
 .songsheet .shead h3 small{display:block;font:500 11px/1.2 var(--ui);color:var(--muted);letter-spacing:.02em;margin-top:2px}
 .songsheet p.t{text-align:center;margin:16px 8px 2px}
 /* латунная шкатулка */
@@ -3547,6 +3550,8 @@ function showSheetEl(sh, medium){
   sh.style.transform = ""; $("#scrim").classList.add("on"); sh.classList.add("on"); sh.scrollTop = 0; app.classList.add("sheet-on");
   snd.sheet(true);
 }
+/* прокрученный текст шторки мягко растворяется у верхней кромки, а не режется по линии */
+$("#sheet").addEventListener("scroll", () => { const sh = $("#sheet"); sh.classList.toggle("fade-top", sh.scrollTop > 8); }, {passive: true});
 function openSheet(title, build, onClose, opts={}){
   const sh = $("#sheet");
   $("#sheetTitle").textContent = title;
@@ -3635,8 +3640,8 @@ function openSettings(){
       li("#i-note:#ffc48a", "Тембр шкатулки", "авто: днём челеста, ночью фетр", presetBtn()),
       li("#i-speaker:#9fc3ff", "Звуки", null, swEl(S.sound, "Звуки", v => { S.sound = v; save(); if (!v) Music.stop(); else if (S.music) Music.start(0); })),
       li("#i-vibe:#c9a7ff", "Вибрация", "на iPhone лёгкий щелчок", swEl(S.vibe, "Вибрация", v => { S.vibe = v; save(); })),
-      li("#i-drop:#bfe0ff", "Эффект жидкого стекла", "шкала и кнопки преломляют небо. выключи, если игра идёт рывками",
-        swEl(!glassOff(), "Эффект жидкого стекла", v => { S.glass = v; if (v) try { sessionStorage.removeItem(GLASS_KEY); } catch(e){} save(); applyGlass(); })),
+      li("#i-drop:#bfe0ff", "Упрощённые эффекты", "меньше стекла и блеска, меньше расход заряда. включай, если игра идёт рывками",
+        swEl(glassOff(), "Упрощённые эффекты, экономия заряда", v => { S.glass = !v; if (!v) try { sessionStorage.removeItem(GLASS_KEY); } catch(e){} save(); applyGlass(); })),
       tiltRow()
     );
     const crests = document.createElement("div"); crests.className = "crests"; crests.setAttribute("role","radiogroup"); crests.setAttribute("aria-label","Команда");
