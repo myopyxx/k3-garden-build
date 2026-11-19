@@ -1405,9 +1405,15 @@ body.day .moon .phase{opacity:0}
 @keyframes etail{to{transform:rotate(9deg)}}
 .eline{position:absolute;left:24px;right:24px;top:31%;text-align:center;opacity:0;transform:translateY(8px)}
 .eline.on{opacity:1;transform:none;transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.8,.2,1)}
-.eline small{display:none;font:600 10px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;color:#f3e3b0}
-.eline small.alisa{color:#d6ce5e}.eline small.lapula{color:#e0a03a}
-.eline p{font:500 italic 19px/1.4 var(--serif);color:#fff6ec;text-shadow:0 2px 18px rgba(0,0,0,.6);white-space:pre-line}
+.eline small{display:block;font:600 10px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px;color:#f3e3b0;opacity:0;animation:elIn .8s cubic-bezier(.2,.8,.2,1) forwards}
+.eline small.a{color:#d6ce5e}.eline small.l{color:#e0a03a}.eline small.b{color:#f3e3b0}
+.eline small em{margin-left:6px;font:italic 500 14px/1 var(--serif);text-transform:none;letter-spacing:0;color:rgba(255,246,236,.72)}
+.ephr + .ephr{margin-top:20px}
+.eline .w{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(10px) scale(.96);animation:ewIn 1.1s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes ewIn{to{opacity:1;filter:blur(0);transform:none}}
+@keyframes elIn{from{opacity:0;transform:translateY(6px);letter-spacing:.32em}to{opacity:1;transform:none;letter-spacing:.12em}}
+.eline.gone{opacity:0;transform:translateY(-16px);filter:blur(6px);transition:opacity .8s ease,transform .9s ease,filter .8s ease}
+.eline p{font:500 italic 23px/1.3 var(--serif);color:#fff6ec;text-shadow:0 2px 18px rgba(0,0,0,.6);text-wrap:balance}
 .ecred{position:absolute;left:24px;right:24px;top:31%;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;opacity:0;transform:translateY(8px)}
 .ecred.on{opacity:1;transform:none;transition:opacity 1s ease,transform 1.2s cubic-bezier(.2,.8,.2,1)}
 .ecred.t{font:400 52px/1 var(--script);color:#fff6ec;text-shadow:0 0 24px rgba(243,227,176,.3)}
@@ -1429,11 +1435,11 @@ body.day .moon .phase{opacity:0}
 .epi.final .ecat.a .ehead{transform:rotate(12deg)}
 .epi.final .ecat.l .ehead{transform:rotate(-12deg)}
 .eword{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none}
-.eword .ed{position:absolute;opacity:0;transform:scale(.2);transition:opacity .5s ease,transform .8s var(--spring-pop)}
-.eword .ed.on{opacity:1;transform:none}
-.eword.star .ed{border-radius:50%;background:#fff3c4;box-shadow:0 0 6px 1px rgba(255,226,150,.8)}
+.eword .ed{position:absolute;will-change:transform}
+.eword.star .ed{border-radius:50%;background:#fff3c4;box-shadow:0 0 6px 1px rgba(255,226,150,.8);animation:etw2 2.8s ease-in-out infinite}
+@keyframes etw2{50%{opacity:.55}}
 .eword.heart .ed{display:grid;place-items:center;line-height:1}
-@media (prefers-reduced-motion:reduce){.emoon,.ecat .etail,.esky i{animation:none}}
+@media (prefers-reduced-motion:reduce){.emoon,.ecat .etail,.esky i,.eword.star .ed{animation:none}.eline .w,.eline small{animation:none;opacity:1;filter:none;transform:none}}
 /* iPhone: фон страницы в цвет низа игры. iOS красит им полосу, если окно приложения короче экрана */
 html,body{background:#0f0a17}
 .app{background:#0f0a17}
@@ -5143,12 +5149,18 @@ function unNap(byTap){
 
 /* =================== ЭПИЛОГ =================== */
 const EPI_NEED = () => CONFIG.photos[CONFIG.photos.length - 1].need;
-const EPI_POEM = [
-  "Над старым парапетом стихает гроза.\nВнизу засыпают ночные дома.\nДве кошки сидят на краю тишины, и в тёмных зрачках отраженье луны.",
-  "Алиса мурлычет: «все звёзды горят.»\nЛапуля смеется: «моих во сто крат»\nЗахлопнут альбом, но тепло на душе: мы столько всего пережили уже.",
-  "Как только в Сальваторе выключен свет, пока ты нас гладишь, усталости нет.\nДве мягкие лапки коснулись руки, и тают тревоги, и сны так легки.",
-  "Спасибо за каждый подаренный час, где лунное небо светило для нас.\nСезон дорисован, но двери в наш дом для новых историй открыты вдвоём."
+/* сцены поэмы: по одной-две фразы, у каждой говорящий и ремарка. a — Алиса, l — Лапуля, b — обе */
+const EPI_SCENES = [
+  [["a", "шёпотом", "Над старым парапетом стихает гроза."], ["l", "", "Внизу засыпают ночные дома."]],
+  [["b", "", "Две кошки сидят на краю тишины, и в тёмных зрачках отраженье луны."]],
+  [["a", "мурлыча", "все звёзды горят."], ["l", "смеясь", "моих во сто крат"]],
+  [["a", "", "Захлопнут альбом, но тепло на душе:"], ["l", "", "мы столько всего пережили уже."]],
+  [["l", "", "Как только в Сальваторе выключен свет,"], ["a", "", "пока ты нас гладишь, усталости нет."]],
+  [["a", "тихо", "Две мягкие лапки коснулись руки,"], ["l", "зевая", "и тают тревоги, и сны так легки."]],
+  [["b", "", "Спасибо за каждый подаренный час, где лунное небо светило для нас."]],
+  [["b", "", "Сезон дорисован, но двери в наш дом для новых историй открыты вдвоём."]]
 ];
+const EPI_WHO = {a: "Алиса", l: "Лапуля", b: "Алиса и Лапуля"};
 const EPI_CREDITS = [
   ["t", "Дневники Алисы"], ["r", "Алиса", "в роли вампирши"], ["r", "Лапуля", "в роли себя"], ["r", "Луна", "настоящая"],
   ["r", "Свет в доме Сальваторе", "выключала Лапуля"], ["r", "Капли", "заработаны честным трудом"], ["r", "Сделано", "с любовью Никитой для Дианы"],
@@ -5170,7 +5182,7 @@ function glyphDots(line, S){
   }
   return {cols, rows, dots};
 }
-/* слово из точек: сердечки или звёзды, волной слева направо */
+/* слово из точек: сердечки или звёзды, порядок слева направо, чтобы буквы собирались волной */
 function buildWord(ep, lines, kind, top, cellMax, maxW, S){
   const parts = lines.map(l => glyphDots(l, S)), cols = Math.max(...parts.map(p => p.cols)), gap = 2;
   const cell = Math.min(cellMax, maxW / cols), H = parts.reduce((t, p) => t + p.rows, 0) + gap * (parts.length - 1);
@@ -5182,21 +5194,44 @@ function buildWord(ep, lines, kind, top, cellMax, maxW, S){
   list.forEach(([x, yy, col]) => {
     const d = document.createElement(kind === "heart" ? "b" : "i"); d.className = "ed";
     const k = kind === "heart" ? 1 : .7, off = (1 - k) / 2 * cell;
-    Object.assign(d.style, {left: (x + off) + "px", top: (yy + off) + "px", width: cell*k + "px", height: cell*k + "px", transitionDelay: (col * 16) + "ms"});
+    Object.assign(d.style, {left: (x + off) + "px", top: (yy + off) + "px", width: cell*k + "px", height: cell*k + "px", animationDelay: (Math.random()*2.8).toFixed(2) + "s"});
     if (kind === "heart"){ d.textContent = "❤️"; d.style.fontSize = (cell * 1.25) + "px"; }
     block.appendChild(d);
   });
   ep.appendChild(block); return block;
 }
-/* финал: котики тянутся друг к другу, сердечками имя, звёздами фраза. Фон и луна уступают место буквам */
-function finale(ep){
+/* финал: последняя фраза гаснет, котики тянутся друг к другу, сердечки вылетают от них и складываются в имя, звёзды слетаются с неба во фразу.
+   Звук: выдох ветра, падающая звезда, восходящее арпеджио под сердечки, перезвон под звёзды, общий аккорд. onDone — когда пора титрам */
+function finale(ep, onDone){
   if (ep.classList.contains("final")) return; ep.classList.add("final");
-  const show = block => { block.querySelectorAll(".ed").forEach(d => d.classList.add("on")); };
+  const rm = reduced();
+  if (ensureRunning()) noise({type: "lowpass", freq: 650, Q: .7, envOpts: {a: .7, d: 1.8, peak: .05}});
+  setTimeout(() => { const s = ep.querySelector(".eshoot"); if (s) s.classList.add("go"); if (ensureRunning()) fmBell({f: PENTA[9], dur: 1.4, peak: .07, send: .55}); }, 500);
   const go = () => {
-    const hearts = buildWord(ep, ["ДИАНА"], "heart", 8, 13, 320, 6);
-    const stars = buildWord(ep, ["МЫ ВСЕ", "ТЕБЯ ЛЮБИМ"], "star", 20, 7, 330, 6);
-    setTimeout(() => { show(hearts); if (ensureRunning()) [523.25, 659.25, 783.99].forEach((f, j) => fmBell({f, t: ctx.currentTime + j*.15, dur: 1.8, peak: .05, send: .5})); }, 1000);
-    setTimeout(() => { show(stars); if (ensureRunning()) [659.25, 783.99, 987.77].forEach((f, j) => fmBell({f, t: ctx.currentTime + j*.2, dur: 2.2, peak: .045, send: .6})); }, 2600);
+    if (!ep.isConnected) return;
+    const hearts = buildWord(ep, ["ДИАНА"], "heart", 8, 13, 320, 6), stars = buildWord(ep, ["МЫ ВСЕ", "ТЕБЯ ЛЮБИМ"], "star", 20, 7, 330, 6);
+    const er = ep.getBoundingClientRect(), cr = ep.querySelector(".ecats").getBoundingClientRect();
+    const fly = (block, t0, step, dur, src) => {
+      const br = block.getBoundingClientRect(), list = [...block.children];
+      if (!rm && block.animate) list.forEach((d, k) => {
+        const tx = br.left + parseFloat(d.style.left), ty = br.top + parseFloat(d.style.top), [sx, sy] = src(), dx = sx - tx, dy = sy - ty;
+        const mx = dx*.45 + (Math.random() - .5)*70, my = dy*.45 - 30 - Math.random()*50;
+        d.animate([{transform: `translate(${dx}px,${dy}px) scale(.2)`, opacity: 0}, {transform: `translate(${mx}px,${my}px) scale(1.3)`, opacity: 1, offset: .55}, {transform: "none", opacity: 1}],
+          {duration: dur, delay: t0 + k*step, easing: "cubic-bezier(.25,.8,.3,1)", fill: "backwards"});
+      });
+      return t0 + list.length*step + dur;
+    };
+    const h0 = 1300, s0 = 3300;
+    const hEnd = fly(hearts, h0, 9, 1300, () => [cr.left + cr.width/2 + (Math.random() - .5)*40, cr.top + cr.height*.3]);
+    const sEnd = fly(stars, s0, 4, 1500, () => [er.left + Math.random()*er.width, er.top + Math.random()*er.height*.55]);
+    if (ensureRunning()){
+      const now = ctx.currentTime;
+      for (let n = 0; n < 11; n++) fmBell({f: PENTA[n], t: now + (h0 + 700)/1000 + n*.12, dur: .9, peak: .035, send: .5});
+      for (let n = 0; n < 16; n++) fmBell({f: PENTA[6 + Math.floor(Math.random()*5)] * (Math.random() < .3 ? 2 : 1), t: now + (s0 + 600)/1000 + Math.random()*1.9, dur: 1.1, peak: .022, send: .65});
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, j) => fmBell({f, t: now + sEnd/1000 + j*.14, dur: 2.6, peak: .05, send: .6}));
+    }
+    setTimeout(() => haptic([10, 40, 14]), rm ? 0 : hEnd);
+    setTimeout(() => { if (ep.isConnected && onDone) onDone(); }, rm ? 1200 : sEnd + 1800);
   };
   (document.fonts && document.fonts.load ? document.fonts.load("700 60px Unbounded") : Promise.resolve()).then(go, go);
 }
@@ -5226,22 +5261,19 @@ function showEpilogue(){
   ep.innerHTML = `<div class="esky">${stars}</div><div class="emoon"></div><div class="eshoot"></div>
     <svg class="ehills" viewBox="0 0 440 120" preserveAspectRatio="none" aria-hidden="true"><path fill="#2a1838" d="M0 70 Q60 40 120 62 T240 52 T360 64 T440 48 V120 H0Z"/><path fill="#1c1029" d="M0 92 L18 70 L30 92 L44 62 L58 92 L70 76 L84 92 L330 92 L344 66 L356 92 L372 58 L386 92 L400 74 L414 92 L440 80 V120 H0Z"/></svg>
     <div class="eroof"><i class="echim"></i></div><div class="ecats">${backCat(CONFIG.alisa, "a")}${backCat(CONFIG.lapula, "l")}</div>
-    <div class="eline" aria-live="polite"><small></small><p></p></div>
     <div class="ecred"></div>
     <button class="round lg eclose" aria-label="Закрыть эпилог"><svg class="ico"><use href="#i-x"/></svg></button>
     <div class="etap">коснись, чтобы дальше</div>`;
   app.appendChild(ep);
-  const line = ep.querySelector(".eline"), who = line.querySelector("small"), txt = line.querySelector("p");
-  let i = -1, timer = 0, done = false, ePurr = null;
+  let si = -1, timer = 0, done = false, ePurr = null, phase = "poem", scene = null;
   const close = () => { if (done) return; done = true; clearTimeout(timer); ePurr && ePurr.stop(); snd.sheet(false);
     app.classList.remove("epi-rise"); camTo(null, "");                                   /* камера возвращается, пока сцена гаснет */
     ep.classList.add("out"); setTimeout(() => ep.remove(), 900); };
   ep.querySelector(".eclose").onclick = e => { e.stopPropagation(); close(); };
-  /* титры по одной карточке в небе: так они не наезжают на котиков */
+  /* титры по одной карточке под словами из сердечек и звёзд */
   let ci = -1;
   const credits = () => {
-    if (!ep.classList.contains("ecr")){ ep.classList.add("ecr"); line.classList.remove("on"); ePurr = startPurr(.1);
-      setTimeout(() => { const s = ep.querySelector(".eshoot"); s.classList.add("go"); if (ensureRunning()) fmBell({f: PENTA[9], dur: 1.2, peak: .08, send: .5}); }, 1200); }
+    if (!ep.classList.contains("ecr")){ ep.classList.add("ecr"); phase = "credits"; if (!ePurr) ePurr = startPurr(.1); }
     clearTimeout(timer); if (ci >= EPI_CREDITS.length - 1) return; ci++;
     const c = ep.querySelector(".ecred"), [k, a, b] = EPI_CREDITS[ci];
     c.classList.remove("on"); void c.offsetWidth; c.innerHTML = ""; c.className = "ecred " + k;
@@ -5249,18 +5281,44 @@ function showEpilogue(){
     if (ci === EPI_CREDITS.length - 1){
       const stay = document.createElement("button"); stay.className = "btn"; stay.textContent = "Остаться с ними"; stay.onclick = e => { e.stopPropagation(); close(); }; c.appendChild(stay);
       if (ensureRunning()) [523.25, 659.25, 783.99, 1046.5].forEach((f, j) => fmBell({f, t: ctx.currentTime + j*.12, dur: 1.6, peak: .06, send: .5}));
-      finale(ep);
     } else timer = setTimeout(credits, k === "t" ? 3400 : 2700);
     c.classList.add("on");
   };
+  const talk = w => ep.querySelectorAll(".ecat").forEach(c => c.classList.toggle("talk", w === "b" || (!!w && c.classList.contains(w))));
+  const fade = () => { if (!scene) return; const old = scene; scene = null; old.classList.add("gone"); setTimeout(() => old.remove(), 900); };
+  /* сцена: подпись говорящего проявляется, слова всплывают по одному из размытия, вторая фраза ждёт первую. Возвращает длительность, мс */
+  const showScene = lines => {
+    fade();
+    const el = document.createElement("div"); el.className = "eline on"; scene = el;
+    let t = 450;
+    lines.forEach(([w, mood, text]) => {
+      const ph = document.createElement("div"); ph.className = "ephr";
+      const sm = document.createElement("small"); sm.className = w; sm.style.animationDelay = t + "ms";
+      const nm = document.createElement("span"); nm.textContent = EPI_WHO[w]; sm.appendChild(nm);
+      if (mood){ const m = document.createElement("em"); m.textContent = "(" + mood + ")"; sm.appendChild(m); }
+      const p = document.createElement("p"), words = text.split(" ");
+      words.forEach((wd, j) => { const sp = document.createElement("span"); sp.className = "w"; sp.textContent = wd; sp.style.animationDelay = (t + 300 + j*110) + "ms"; p.appendChild(sp); if (j < words.length - 1) p.appendChild(document.createTextNode(" ")); });
+      ph.append(sm, p); el.appendChild(ph);
+      const at = t; setTimeout(() => { if (done || scene !== el) return; talk(w); if (ensureRunning()) fmBell({f: PENTA[(w === "l" ? 2 : w === "a" ? 4 : 6) + (si % 3)], dur: 1.2, peak: .06, send: .5}); }, at);
+      t += 300 + words.length*110 + 900;
+    });
+    ep.appendChild(el);
+    return t;
+  };
+  const startFinale = () => {
+    phase = "finale"; clearTimeout(timer); ep.querySelector(".etap").classList.add("off"); fade(); talk("");
+    setTimeout(() => { if (!done && !ePurr) ePurr = startPurr(.1); }, 1000);
+    finale(ep, () => { if (!done && phase === "finale") credits(); });
+  };
   const next = () => {
-    clearTimeout(timer); if (done) return; if (ep.classList.contains("ecr")) return credits();
-    i++; if (i >= EPI_POEM.length) return credits();
-    line.classList.remove("on"); void line.offsetWidth;
-    txt.textContent = EPI_POEM[i];
-    line.classList.add("on");
-    if (ensureRunning()) fmBell({f: PENTA[(i % 4) + 2], dur: 1.2, peak: .06, send: .5});
-    timer = setTimeout(next, 5200 + EPI_POEM[i].length * 28);
+    clearTimeout(timer); if (done) return;
+    if (phase === "credits") return credits();
+    if (phase === "finale") return;
+    if (si >= EPI_SCENES.length - 1) return startFinale();
+    si++; const ms = showScene(EPI_SCENES[si]);
+    /* последняя фраза ждёт касания: финал только по тапу */
+    if (si === EPI_SCENES.length - 1) timer = setTimeout(() => { if (!done && phase === "poem") ep.querySelector(".etap").classList.remove("off"); }, ms);
+    else timer = setTimeout(next, ms + 2600);
   };
   ep.onclick = () => { ep.querySelector(".etap").classList.add("off"); next(); };
   if (!app.classList.contains("epi-rise")) snd.sheet(true);
