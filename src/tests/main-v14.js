@@ -83,7 +83,7 @@ const {open} = require('./helper.js');
   // 6. Подпись «Гардероб»: 10 px, внутри капсулы
   const lab = await p.evaluate(() => { const b = document.querySelector('#btnWardrobe'), s = b.querySelector('span:nth-child(2)'), r = b.getBoundingClientRect(), t = s.getBoundingClientRect();
     return {fs: getComputedStyle(s).fontSize, inside: t.left - r.left, right: r.right - t.right}; });
-  ok('подпись «Гардероб» 10 px и есть отступ по краям', lab.fs === '10px' && lab.inside >= 12 && lab.right >= 12, JSON.stringify(lab));
+  ok('подпись «Гардероб» 9 px, по краям запас не меньше 16 px', lab.fs === '9px' && lab.inside >= 16 && lab.right >= 16, JSON.stringify(lab));
 
   ok('без ошибок в консоли', errs.length === 0, errs.join(' | '));
   console.log('провалов: ' + fail);
