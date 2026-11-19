@@ -157,5 +157,25 @@ const {open} = require('./helper.js');
     ok('без ошибок (7)', errs.length === 0, errs.join(' | '));
     await b.close();
   }
+  // 8. лунная рябь, сдвиг котов под шторками, «Кровавая луна» в Эпизоде 1
+  {
+    const {b, p, errs} = await open(ROOT + '/index.html', {state: JSON.stringify(Object.assign({}, base, {pets: 50, drops: 10, stars: {1: 3}}))});
+    await start(p); await calm(p);
+    await p.mouse.click(120, 300); await p.waitForTimeout(60);
+    ok('касание оставляет лунное кольцо', await p.evaluate(() => !!document.querySelector('.tap-ring')));
+    await p.waitForTimeout(900);
+    ok('кольцо убирается само', await p.evaluate(() => !document.querySelector('.tap-ring')));
+    await p.evaluate(() => openWardrobe()); await p.waitForTimeout(900);
+    const lift = await p.evaluate(() => { const d = document.querySelector('#duo'); return {v: d.style.getPropertyValue('--lift'), h: d.offsetHeight}; });
+    ok('гардероб поднимает котов на ~20% высоты', lift.v && parseInt(lift.v) < 0 && Math.abs(parseInt(lift.v) + lift.h * .2) <= 1, JSON.stringify(lift));
+    await p.evaluate(() => closeSheet()); await p.waitForTimeout(900);
+    ok('после закрытия котики на месте', await p.evaluate(() => document.querySelector('#duo').style.getPropertyValue('--lift') === '0px'));
+    await p.evaluate(() => startLevel(LEVELS[0])); await p.waitForTimeout(900); await p.click('.overlay .go'); await p.waitForTimeout(1500);
+    ok('в начале уровня луны ещё нет', await p.evaluate(() => !document.querySelector('.garea.bloodmoon')));
+    await p.waitForTimeout(23000);
+    ok('за 12 секунд до конца: «Кровавая луна» и отсвет по краям', await p.evaluate(() => !!document.querySelector('.garea.bloodmoon')));
+    ok('без ошибок (8)', errs.length === 0, errs.join(' | '));
+    await b.close();
+  }
   console.log('провалов:', fail); process.exit(fail ? 1 : 0);
 })();

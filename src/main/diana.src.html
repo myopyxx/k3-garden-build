@@ -368,6 +368,7 @@ body.day .sparkle{display:block}
 .gstat .chip{height:34px;padding:0 9px 0 8px;font-size:12.5px;gap:4px}
 .gstat .chip .e{font-size:16px}
 @media (max-width:400px){.gbar{gap:6px;padding-left:10px;padding-right:10px}.gt{font-size:28px;margin-right:6px}.gstat{gap:4px}.gstat .chip{height:30px;padding:0 6px 0 5px;font-size:11.5px;gap:3px}.gstat .chip .e{font-size:13px}}
+.garea.bloodmoon{box-shadow:inset 0 0 90px rgba(190,16,44,.55)}
 .garea{position:relative;flex:1;overflow:hidden;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .ghint{position:absolute;left:0;right:0;top:10px;text-align:center;color:var(--muted);font-size:10.5px;pointer-events:none;padding:0 16px}
 canvas.c{display:block;width:100%;height:100%}
@@ -907,6 +908,12 @@ svg.sti{width:1em;height:1em;display:block}
 #duo{margin-bottom:20px}
 .home .meter{position:relative;z-index:1;margin-top:4px;transform-origin:50% 50%}
 #duo .pet{will-change:transform;touch-action:none}
+.tap-ring{position:fixed;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;pointer-events:none;z-index:45;
+  border:1.5px solid rgba(243,227,176,.75);box-shadow:0 0 14px rgba(243,227,176,.35);opacity:0;transform:scale(.2);animation:tapRing .55s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes tapRing{0%{opacity:.8;transform:scale(.2)}100%{opacity:0;transform:scale(1.5)}}
+@media (prefers-reduced-motion:reduce){.tap-ring{display:none}}
+#duo{position:relative;top:var(--lift,0px);transition:top .7s var(--spring-soft)}
+@media (prefers-reduced-motion:reduce){#duo{transition:none}}
 .onb-halo{position:absolute;left:-9%;top:-3%;width:118%;aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:0;opacity:.45;
   background:radial-gradient(circle closest-side,rgba(243,227,176,0) 0,rgba(243,227,176,0) 50%,rgba(243,227,176,.62) 63%,rgba(243,227,176,.2) 82%,rgba(243,227,176,0) 100%);will-change:transform,opacity;animation:onbBreath 2.2s ease-in-out infinite}
 @keyframes onbBreath{0%,100%{transform:scale(.95);opacity:.25}50%{transform:scale(1.08);opacity:.65}}
@@ -3133,6 +3140,13 @@ function wakeCats(who){
   setTimeout(() => setBubble(line[0], line[1]), 260);
   return true;
 }
+/* лунная рябь в точке касания: одно кольцо, только transform и opacity. В игре и при reduce motion не показываем */
+app.addEventListener("pointerdown", e => {
+  if (reduced() || app.classList.contains("game-on") || e.pointerType === "mouse" && e.button !== 0) return;
+  const r = document.createElement("i"); r.className = "tap-ring"; r.setAttribute("aria-hidden", "true");
+  r.style.left = e.clientX + "px"; r.style.top = e.clientY + "px"; document.body.appendChild(r);
+  r.addEventListener("animationend", () => r.remove(), {once: true}); setTimeout(() => r.remove(), 800);
+}, {passive: true});
 app.addEventListener("pointerdown", e => {
   idle.last = performance.now(); idle.lines = 0; idle.moth = 0; idle.duo = 0; idle.asked = 0;
   if (idle.lapNap && !idle.sleeping){ const p = e.target.closest && e.target.closest("#duo .pet"); unNap(!!p && p.dataset.cat === "lapula"); }
@@ -3543,8 +3557,9 @@ function sulk(el, who){
 
 /* ---------- листы ---------- */
 let sheetClose = null, openSh = null;
+function liftDuo(on){ const d = $("#duo"); if (!d) return; d.style.setProperty("--lift", on ? -Math.round(d.offsetHeight*.2) + "px" : "0px"); }
 function showSheetEl(sh, medium){
-  openSh = sh;
+  openSh = sh; liftDuo(sh.classList.contains("songsheet") || $("#sheetTitle").textContent === "Гардероб");
   sh.classList.toggle("medium", !!medium); app.classList.toggle("medium", !!medium); $("#scrim").classList.toggle("light", !!medium);
   sh.style.transform = ""; $("#scrim").classList.add("on"); sh.classList.add("on"); sh.scrollTop = 0; app.classList.add("sheet-on");
   snd.sheet(true);
@@ -3562,7 +3577,7 @@ function openSheet(title, build, onClose, opts={}){
 function closeSheet(){
   const sh = openSh; if (!sh || !sh.classList.contains("on")) return;
   sh.style.transform = ""; $("#scrim").style.opacity = "";
-  $("#scrim").classList.remove("on"); sh.classList.remove("on"); app.classList.remove("sheet-on", "medium"); snd.sheet(false);
+  $("#scrim").classList.remove("on"); sh.classList.remove("on"); app.classList.remove("sheet-on", "medium"); liftDuo(false); snd.sheet(false);
   openSh = null; camTo(null, "");
   if (sheetClose){ const f = sheetClose; sheetClose = null; f(); }
 }
@@ -6095,6 +6110,8 @@ function lvlHunt(area, done){
   const DUR = 34, COMBO_T = 2.2, LAP_IN = 14, LAP_OUT = 23, FINALE = 4;
   let px = C.W/2, tx = C.W/2, items = [], score = 0, lives = 3, time = DUR, spawn = 0, last = 0, raf, keys = {}, freeze = 0, tilt = 0, squash = 0;
   let hurt = 0, ringFlash = 0, combo = 0, comboT = 0, bestCombo = 0, mint = 0, slow = 0, stolen = 0, goldOk = false, finale = false, clock = 0;
+  /* мини-твист на последних 12 секундах: очки ×2 и ритм быстрее (падение ×1,25, интервал ×0,6) */
+  let blood = false;
   let capeUp = perk("cape", 1);
   const mintAt = [9.5 + Math.random()*2, 18 + Math.random()*2.5], goldAt = 24.5 + Math.random()*2.5; let mintN = 0, goldN = 0;
   const lap = {x: C.W + 50, tx: C.W + 50, on: false, gone: false, out: false, squash: 0, run: 0};
@@ -6189,14 +6206,15 @@ function lvlHunt(area, done){
     if (mint > 0) mint = Math.max(0, mint - dt);
     if (slow > 0) slow = Math.max(0, slow - dt);
     const ts = slow > 0 ? .45 : 1;
+    if (!blood && time <= 12 && time > FINALE){ blood = true; area.classList.add("bloodmoon"); flashBanner(area, "Кровавая луна: очки ×2, ритм быстрее", 2200); arp([392, 523.25, 622.25], .07); haptic(12); }
     if (!finale && time <= FINALE){ finale = true; flashBanner(area, "Финал: вербены больше нет", 2000); arp([523.25, 659.25, 783.99, 1046.5], .05); }
     spawn -= dt * ts;
     if (spawn <= 0){
-      spawn = finale ? .24 : .62 - .24*k;
+      spawn = (finale ? .24 : .62 - .24*k) * (blood && !finale ? .6 : 1);
       let e2 = "🪻", v = 0;
       const verb = finale ? 0 : e < 8 ? .12 : .22;
       if (Math.random() >= verb){ const r = Math.random(), tot = TREATS.reduce((a,b)=>a+b.p,0); let acc = 0; for (const t of TREATS){ acc += t.p/tot; if (r <= acc){ e2 = t.e; v = t.v; break; } } }
-      items.push({x: 24 + Math.random()*(C.W-48), y: -20, vy: 150 + 130*k + Math.random()*40, e: e2, v, age: 0});
+      items.push({x: 24 + Math.random()*(C.W-48), y: -20, vy: (150 + 130*k + Math.random()*40) * (blood ? 1.25 : 1), e: e2, v, age: 0});
     }
     if (mintN < mintAt.length && e >= mintAt[mintN]){ mintN++; items.push({x: 40 + Math.random()*(C.W-80), y: -20, vy: 140, e: "🌿", v: 0, kind: "mint", age: 0}); }
     if (!goldN && e >= goldAt){ goldN = 1; const x0 = 60 + Math.random()*(C.W - 120); items.push({x: x0, x0, y: -20, vy: 165, e: "🐟", v: 5, kind: "gold", age: 0}); }
@@ -6215,7 +6233,7 @@ function lvlHunt(area, done){
           else { hurt = 1.1; lives--; combo = 0; comboT = 0; snd.bonk(); snd.resetCombo(); haptic(40); freeze = .07; shake(area, 9); FX.burst(r0.left+it.x, r0.top+it.y, {emojis:["💢"],n:3}); } }
         else {
           combo++; comboT = COMBO_T; bestCombo = Math.max(bestCombo, combo);
-          const m = mult(), got = it.v * m; score += got; snd.combo(); haptic(6); squash = 1;
+          const m = mult(), got = it.v * m * (blood ? 2 : 1); score += got; snd.combo(); haptic(6); squash = 1;
           if (it.kind === "gold"){ goldOk = true; slow = 2.6; haptic(20); FX.burst(r0.left+it.x, r0.top+it.y, {emojis:["✨","⭐"], n:12, size:[12,20], grav:120}); arp([1046.5, 783.99, 659.25, 523.25, 392], .08, "sine", .08); }
           else FX.burst(r0.left+it.x, r0.top+it.y, {emojis:["✨"],n:4,size:[10,16],grav:200});
           popNum("+" + got, r0.left+it.x, r0.top+it.y-20);
