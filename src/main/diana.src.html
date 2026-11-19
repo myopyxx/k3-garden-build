@@ -1701,7 +1701,7 @@ html,body{background:#0f0a17}
 .edged > .edge{opacity:1;transition-duration:.08s}
 /* ремейк нижней трети: крупная только «Играть», боковые капсулы ниже и легче, весь блок прижат к шкале */
 #v-home .dock{margin-top:24px;gap:12px;align-items:center;max-width:330px}
-#v-home .dk.side{flex:1 1 0;height:50px;border-radius:25px;flex-direction:column;gap:3px;padding:0 6px;font:600 10.5px/1 var(--ui);box-shadow:inset 0 0 0 1px rgba(245,200,76,.3),0 8px 18px rgba(8,4,18,.34)}
+#v-home .dk.side{flex:1 1 0;height:50px;border-radius:25px;flex-direction:column;gap:3px;padding:0 6px;font:600 10px/1 var(--ui);box-shadow:inset 0 0 0 1px rgba(245,200,76,.3),0 8px 18px rgba(8,4,18,.34)}
 #v-home .dk.play{flex:1.5 1 0;height:60px;min-height:60px}
 #v-home .dk .de{font-size:19px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
 #v-home .dk.play .de{font-size:20px}
@@ -1905,6 +1905,22 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 .phasebar{position:absolute;left:50%;top:10px;translate:-50% 0;display:flex;gap:6px;z-index:3;pointer-events:none}
 .phasebar i{width:26px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);transition:background .4s}
 .phasebar i.on{background:#f3e3b0;box-shadow:0 0 8px rgba(243,227,176,.6)}
+/* ---- выбор награды за загадку и окно ссоры ---- */
+.wpick{display:grid;gap:8px;padding:2px 2px 8px}
+.wpick[hidden]{display:none}
+.wpk-h{margin:0 0 0;font:600 14px/1.3 var(--ui);color:rgba(255,255,255,.92);text-align:center}
+.wpk{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;min-height:52px;padding:7px 14px;border:0;border-radius:18px;text-align:left;color:#fff;background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(245,200,76,.3);font:inherit;transition:transform .34s var(--spring-soft)}
+.wpk:active{transform:scale(.97);transition-duration:60ms}
+.wpk .e{grid-row:1 / span 2;font-size:24px;line-height:1}
+.wpk-t{font:600 16px/1.2 var(--ui)}
+.wpk-s{font:500 13px/1.3 var(--ui);color:rgba(255,255,255,.72)}
+.qpop .panel{max-height:88%;overflow:auto}
+.qpop .panel h4{font-size:40px}
+.qpop .panel .qbody{text-align:left}
+.qpop .panel p{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.9);margin:0 0 10px}
+.qpop .panel p.qx{color:rgba(255,226,150,.95)}
+.qpop .qb{flex-wrap:wrap}
+.qpop .qb .btn{min-height:50px}
 </style>
 </head>
 <body>
@@ -4366,10 +4382,12 @@ document.querySelectorAll(".tab").forEach(t => t.onclick = () => { showView(t.da
 /* ---------- ивент «Ссора» ---------- */
 function eventFx(){
   if (!$("#v-home").classList.contains("on") || $("#game").classList.contains("on")) return;
+  const animated = !!(S.fxQuarrel || S.fxMakeup);
   if (S.fxQuarrel){ S.fxQuarrel = 0; save(); quarrelStart(); }
   else if (S.fxMakeup){ S.fxMakeup = 0; save(); makeup(); }
   else if (S.fxSplit){ S.fxSplit = 0; save(); revealWardrobeTab(); }
   else if (S.fxEpi){ S.fxEpi = 0; save(); setTimeout(() => { if (homeLive()) playEpilogue(); else S.fxEpi = 1; }, 900); }
+  if (S.fxQInfo && !questOpen) setTimeout(() => quarrelPopup(), animated ? 4800 : 500);
 }
 /* комикс-вспышка: три диагональные панели в ключевые моменты ивента. Закрывается касанием или сама через 4,6 с */
 function comic(panels){
@@ -4405,6 +4423,50 @@ function makeup(){
     setTimeout(() => setBubble("ладно. плед общий", "alisa"), 900);
     setTimeout(() => { app.classList.remove("makeup"); setBubble("мурр в квадрате снова", "lapula"); }, 3400);
   }, 300);
+}
+/* ---------- окно после уровней ссоры ---------- */
+const QUEST_LV = [10, 11];
+let questOpen = false;
+/* вызывается при каждом выходе из уровня 10 или 11: по кнопке, по «назад» и после победы. Возвращает true, если следующим экраном будет главная с окном */
+function quarrelExit(){
+  const n = current && current.n; if (!QUEST_LV.includes(n)) return false;
+  document.querySelectorAll(".qpop").forEach(x => x.remove()); questOpen = false;
+  if (n === 10 && !S.event && !S.quarrelOver){ S.event = "quarrel"; S.fxQuarrel = 1; note("q"); }
+  if (n === 10 && S.event === "quarrel") S.fxQInfo = "quarrel";
+  if (n === 11 && S.event === "quarrel") S.fxQInfo = "fail";
+  if (n === 11 && S.fxMakeup) S.fxQInfo = "made";
+  save(); return !!S.fxQInfo;
+}
+const QPOP = {
+  quarrel: {e: "💔", t: "Они поссорились", p: ["Лазерная точка была одна на двоих, и каждая считала её своей. Алиса и Лапуля теперь не разговаривают."], x: "Что изменилось: мурр-шкала на паузе и не считает поглаживания. Наряды раздельные, «обе» в гардеробе не работает. Обнимашек нет.", b: ["Продолжить", "Как все исправить?"]},
+  fail: {e: "⛈️", t: "Нить не дошла", p: ["Гроза не закончилась, поэтому ссора продолжается. Шкала на паузе, наряды раздельные."], x: "Вернись в «Грозу» и пройди её хотя бы на одну звезду. Тогда они помирятся.", b: ["Продолжить", "Как все исправить?"]},
+  made: {e: "🫂", t: "Помирились", p: ["Тёплая нить дошла. Плед общий, наряды снова на обеих, мурр-шкала считает для обеих."], x: "", b: ["Продолжить"]}
+};
+function questFix(){
+  const need10 = (S.stars[10] || 0) === 0;
+  return ["Почему так вышло: на «Лазерной точке» одна точка на двоих. Каждая кошка считала её своей, и спор никто не уступил.",
+    "Что сделать: пройди «Грозу». Передай нить четыре раза, от одной кошки к другой. Рывок рвёт нить, поэтому веди её медленно. Потом сведи половинки снимка. Одной звезды хватит.",
+    need10 ? "«Гроза» откроется, когда «Лазерная точка» будет пройдена хотя бы на одну звезду." : ""];
+}
+function quarrelPopup(){
+  const k = S.fxQInfo, c = QPOP[k]; if (!c || questOpen || !homeLive()) return;
+  questOpen = true; S.fxQInfo = ""; save();
+  const d = document.createElement("div"); d.className = "overlay on qpop";
+  d.innerHTML = '<div class="panel"><span class="big e"></span><div class="ptag">Ивент · ссора</div><h4></h4><div class="qbody"></div><div class="row-btns qb"></div></div>';
+  d.querySelector(".big").textContent = c.e; d.querySelector("h4").textContent = c.t;
+  const body = d.querySelector(".qbody"), box = d.querySelector(".qb");
+  const close = () => { questOpen = false; snd.back(); if (reduced() || !d.animate) return d.remove(); d.style.pointerEvents = "none"; d.animate([{opacity:1}, {opacity:0}], {duration:260, fill:"forwards"}).onfinish = () => d.remove(); };
+  const para = (t, cls) => { if (!t) return; const p = document.createElement("p"); if (cls) p.className = cls; p.textContent = t; body.appendChild(p); };
+  const button = (label, fn, ghost) => { const b = document.createElement("button"); b.type = "button"; b.className = "btn" + (ghost ? " ghost" : ""); b.textContent = label; b.onclick = () => { snd.tap(); haptic(6); fn(); }; box.appendChild(b); return b; };
+  const first = () => { body.innerHTML = ""; c.p.forEach(t => para(t)); para(c.x, "qx"); box.innerHTML = "";
+    d.querySelector("h4").textContent = c.t; d.querySelector(".big").textContent = c.e;
+    button(c.b[0], close, false);
+    if (c.b[1]) button(c.b[1], fix, true); };
+  const fix = () => { d.querySelector("h4").textContent = "Как все исправить"; d.querySelector(".big").textContent = "🧶";
+    body.innerHTML = ""; questFix().forEach(t => para(t)); box.innerHTML = ""; button("Назад", first, true); };
+  first();
+  app.appendChild(d);
+  setTimeout(() => box.querySelector(".btn")?.focus(), 60);
 }
 function revealWardrobeTab(){
   const t = $("#tabWardrobe"); t.hidden = false; indX = null; moveInd();
@@ -5512,7 +5574,7 @@ function wdWordAt(i){
 function wdToday(){
   const today = dayKey(); let W = S.wd;
   if (!W || typeof W !== "object") W = S.wd = {start: today};
-  if (W.d !== today){ Object.assign(W, {d: today, g: [], st: 0, h: -1, r: 0}); save(); }
+  if (W.d !== today){ Object.assign(W, {d: today, g: [], st: 0, h: -1, r: 0}); if (S.wdHint){ W.h = Math.floor(Math.random()*5); S.wdHint = 0; } save(); }
   W.ans = wdWordAt(Math.max(0, wdDays(W.start, today)));
   return W;
 }
@@ -5522,13 +5584,22 @@ function wdScore(g, a){
   for (let i = 0; i < 5; i++) if (!res[i] && left[g[i]] > 0){ res[i] = 1; left[g[i]]--; }
   return res;
 }
+/* награда за загадку выбирается: W.pick — null до выбора, потом "d" (капли), "m" (мурр-шкала) или "h" (подсказка на завтра). undefined у старых побед: капли уже выданы */
+function wdPickLabel(k, r){ return k === "m" ? "+5 к мурр-шкале" : k === "h" ? "завтра Лапуля подскажет букву" : `+${r} капель`; }
+function wdApplyPick(W, k){
+  W.pick = k;
+  if (k === "d") S.drops += W.r;
+  else if (k === "m"){ S.purr = Math.min(perDrop() - 1, S.purr + 5); renderPurr(); }
+  else if (k === "h") S.wdHint = 1;
+  save(); hud(true);
+}
 function renderWordCard(){
   const box = $("#wordCard"); if (!box) return;
   const W = wdToday(), last = W.g[W.g.length - 1], sc = last ? wdScore(last, W.ans) : null;
   const tiles = document.createElement("span"); tiles.className = "wmini"; tiles.setAttribute("aria-hidden", "true");
   for (let i = 0; i < 5; i++){ const t = document.createElement("i"); if (W.st === 1){ t.className = "s2"; t.textContent = W.ans[i]; } else if (sc) t.className = "s" + sc[i]; tiles.appendChild(t); }
   if (!W.st){ const em = [...tiles.children].find(t => !t.className || t.className === "s0"); if (em) em.classList.add("glint"); }
-  const n = W.g.length, sub = W.st === 1 ? `с ${n}-й попытки · +${W.r} капель` : W.st === 2 ? "сегодня не далось · завтра новое слово" : n ? `попытка ${n + 1} из 6` : "пять букв · каждый день новое слово";
+  const n = W.g.length, sub = W.st === 1 ? `с ${n}-й попытки · ${W.pick === null ? "выбери награду" : wdPickLabel(W.pick, W.r)}` : W.st === 2 ? "сегодня не далось · завтра новое слово" : n ? `попытка ${n + 1} из 6` : "пять букв · каждый день новое слово";
   const g = group(), r = li("#i-grid:#f3d27a", "Загадка дня", sub, tiles);
   if (!W.st && !n){ const dot = document.createElement("span"); dot.className = "ndot"; r.querySelector(".tx b").appendChild(dot); }
   asButton(r, () => { snd.tap(); haptic(6); openWord(); }); g.appendChild(r);
@@ -5559,6 +5630,20 @@ function openWord(){
         k.addEventListener("click", () => press(k.dataset.k)); row.appendChild(k); });
       kb.appendChild(row); });
     body.appendChild(kb);
+    /* выбор награды: вместо клавиатуры, пока загадка не получила награду */
+    const pk = document.createElement("div"); pk.className = "wpick"; pk.hidden = true;
+    pk.innerHTML = '<p class="wpk-h">Что забрать за загадку?</p>';
+    [["d", "🩸", "Капли"], ["m", "🐾", "Мурр-шкала"], ["h", "🔍", "Подсказка"]].forEach(([k, e, t]) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "wpk"; b.dataset.k = k;
+      b.innerHTML = '<span class="e" aria-hidden="true"></span><span class="wpk-t"></span><span class="wpk-s"></span>';
+      b.querySelector(".e").textContent = e; b.querySelector(".wpk-t").textContent = t;
+      b.onclick = () => { if (W.pick !== null || W.st !== 1) return; snd.tap(); haptic(10); wdApplyPick(W, k); pk.hidden = true;
+        const [x, y] = centerOf(b); FX.burst(x, y, {emojis: [e, "✨"], n: 8, size: [14, 22]}); say(`Забрала: ${wdPickLabel(k, W.r)}`, true); renderWordCard(); };
+      pk.appendChild(b); });
+    body.insertBefore(pk, kb);
+    const showPick = () => { pk.querySelector('[data-k="d"] .wpk-s').textContent = `+${W.r} капель`;
+      pk.querySelector('[data-k="m"] .wpk-s').textContent = "+5 поглаживаний, до следующей капли";
+      pk.querySelector('[data-k="h"] .wpk-s').textContent = "завтра откроет одну букву"; kb.style.display = "none"; pk.hidden = false; };
     const say = (t, keep) => { msg.textContent = t; bar(); msg.classList.remove("on"); void msg.offsetWidth; msg.classList.add("on"); clearTimeout(msg._t);
       if (!keep) msg._t = setTimeout(() => { msg.classList.remove("on"); setTimeout(() => { if (!msg.classList.contains("on")){ msg.textContent = hintText(); bar(); } }, 250); }, 2200); };
     const hintText = () => W.h >= 0 ? `Лапуля подглядела: ${W.h + 1}-я буква «${ans[W.h]}»` : "";
@@ -5567,17 +5652,17 @@ function openWord(){
     const paintRow = (r, word, sc) => [...rows[r].children].forEach((t, i) => { t.textContent = word[i] || ""; t.className = "wt" + (word[i] ? " f" : "") + (sc ? " s" + sc[i] : ""); });
     const paint = () => { W.g.forEach((g, r) => paintRow(r, g, wdScore(g, ans))); if (!W.st && W.g.length < 6) paintRow(W.g.length, cur);
       for (let r = W.g.length + (W.st ? 0 : 1); r < 6; r++) paintRow(r, ""); paintKeys();
-      msg.textContent = W.st === 1 ? `Отгадано с ${W.g.length}-й попытки. +${W.r} капель` : W.st === 2 ? `Было слово «${ans}». Завтра будет новое` : hintText(); bar(); };
+      msg.textContent = W.st === 1 ? (W.pick === null ? "Выбери, что забрать" : `Забрала: ${wdPickLabel(W.pick, W.r)}`) : W.st === 2 ? `Было слово «${ans}». Завтра будет новое` : hintText(); bar(); };
     const finish = won => {
       const n = W.g.length; W.st = won ? 1 : 2; W.r = won ? WD_PRIZE[n - 1] : 0;
-      if (won){ S.drops += W.r; S.wdWon = (S.wdWon || 0) + 1; }
+      if (won){ W.pick = null; S.wdWon = (S.wdWon || 0) + 1; }
       dayNote().wd = {w: ans, n, ok: won ? 1 : 0, h: W.h >= 0 ? 1 : 0}; save();
       if (won){ const tiles = [...rows[n - 1].children];
         if (!reduced()) tiles.forEach((t, i) => t.animate([{transform: "none"}, {transform: "translateY(-14px)", offset: .4}, {transform: "none"}], {duration: 520, delay: i*90, easing: "ease-out"}));
         if (ensureRunning()) [1046.5, 1318.5, 1568, 2093].forEach((f, i) => fmBell({f, t: ctx.currentTime + .1 + i*.09, dur: .6, peak: .09, send: .35}));
         haptic([10, 40, 10]); setTimeout(() => { const [x, y] = centerOf(rows[n - 1]); FX.burst(x, y, {emojis: ["✨", "🩸", "⭐"], n: 16, size: [14, 22], grav: 160}); hud(true); }, 420);
       } else snd.starMiss();
-      paint(); say(won ? `Отгадано с ${n}-й попытки. +${W.r} капель` : `Было слово «${ans}». Завтра будет новое`, true); renderWordCard();
+      paint(); if (won) showPick(); say(won ? "Выбери, что забрать" : `Было слово «${ans}». Завтра будет новое`, true); renderWordCard();
     };
     function press(k){
       if (busy || W.st) return;
@@ -5615,6 +5700,7 @@ function openWord(){
       else { const ch = e.key.toUpperCase().replace("Ё", "Е"); if (/^[А-ЯЁ]$/.test(ch)) press(ch); }
     };
     paint();
+    if (W.st === 1 && W.pick === null) showPick();
   }, () => { wdKey = null; renderWordCard(); });
 }
 addEventListener("keydown", e => { if (wdKey && openSh) wdKey(e); });
@@ -5653,7 +5739,8 @@ function startLevel(L, fromEl){
 function stopLevel(){ if (cleanup){ try { cleanup(); } catch(e){} cleanup = null; } }
 function exitLevel(){
   stopLevel(); const game = $("#game"); gameTok++; app.classList.remove("game-on");
-  const fin = () => { game.classList.remove("on"); renderMap(); hud(true); applyLook(); applyEvent(); rainSound($("#v-home").classList.contains("on") && app.classList.contains("rainy")); if (S.music){ Music.start(0); $("#miniPlayer").classList.remove("playing"); } eventFx(); };
+  const toHome = quarrelExit();
+  const fin = () => { game.classList.remove("on"); renderMap(); hud(true); applyLook(); if (toHome) showView("v-home"); applyEvent(); rainSound($("#v-home").classList.contains("on") && app.classList.contains("rainy")); if (S.music){ Music.start(0); $("#miniPlayer").classList.remove("playing"); } eventFx(); };
   if (reduced() || !game.animate) return fin();
   game.animate([{opacity:1, transform:"none"}, {opacity:0, transform:"scale(.94)"}], {duration:300, easing:"cubic-bezier(.4,0,.6,1)"}).onfinish = fin;
 }
@@ -5689,7 +5776,7 @@ function finish(stars, text){
   if (n === 6 && stars > 0 && !S.owned.wreath){ grant("wreath"); extra = " Венки из роз уже на котиках."; }
   if (n === 7 && stars > 0 && !S.owned.shades){ grant("shades"); extra = " Солнечные очки уже на котиках."; }
   if (n === 8 && stars > 0 && !S.owned.mask){ grant("mask"); extra = " Маски с бала уже на котиках."; }
-  if (n === 10 && stars > 0 && !S.event && !S.quarrelOver){ S.event = "quarrel"; S.fxQuarrel = 1; note("q"); extra += " Ивент: они поссорились. Загляни к ним на главную."; }
+  if (n === 10 && !S.event && !S.quarrelOver) extra += " Ивент: они поссорились. Выйди на главную, там всё объяснят.";
   if (n === 10 && stars === 3 && !S.splitWear){ S.splitWear = 1; S.fxSplit = 1; extra += " Открыт раздельный гардероб."; }
   if (n === 11 && stars > 0 && S.event === "quarrel"){ S.event = null; S.quarrelOver = 1; S.fxMakeup = 1; note("mk"); extra += " Ивент окончен: помирились."; }
   if (!S.epi && totalStars() >= EPI_NEED()) S.fxEpi = 1;
@@ -5699,8 +5786,11 @@ function finish(stars, text){
   const rr = $("#rReward"); rr.hidden = !reward; $("#rDrops").textContent = "+0";
   const rs = $("#rStars"); rs.innerHTML = "";
   for (let i=0;i<3;i++){ const s = document.createElement("span"); s.innerHTML = '<svg class="sti"><use href="#i-star"/></svg>'; rs.appendChild(s); }
-  const hasNext = n < LEVELS.length && unlocked(n+1), rN = $("#rNext"), rA = $("#rAgain");
-  if (stars === 0){
+  const hasNext = n < LEVELS.length && unlocked(n+1), rN = $("#rNext"), rA = $("#rAgain"), rSub = rA.parentElement;
+  const solo = QUEST_LV.includes(n);
+  rSub.style.display = solo ? "none" : "";
+  if (solo){ rN.textContent = "На главную"; rN.onclick = () => { snd.back(); showView("v-home"); exitLevel(); }; }
+  else if (stars === 0){
     rN.textContent = "Ещё раз"; rN.onclick = () => startLevel(current);
     rA.querySelector("span").textContent = "К уровням"; rA.querySelector("use").setAttribute("href", "#i-map"); rA.onclick = () => exitLevel();
   } else {
