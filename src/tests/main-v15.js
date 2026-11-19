@@ -127,5 +127,19 @@ const {open} = require('./helper.js');
     ok('без ошибок (5)', errs.length === 0, errs.join(' | '));
     await b.close();
   }
+  // 6. «Играть» ведёт к текущему эпизоду, даже если карту оставили прокрученной вниз; шторки без белых полос
+  {
+    const {b, p, errs} = await open(ROOT + '/index.html', {state: JSON.stringify(Object.assign({}, base, {pets: 50, drops: 10, stars: {1: 3, 2: 2}}))});
+    await start(p); await calm(p);
+    await p.click('.tab[data-v="v-map"]'); await p.waitForTimeout(900);
+    await p.evaluate(() => { document.querySelector('#v-map').scrollTop = 99999; }); await p.waitForTimeout(300);
+    await p.click('.tab[data-v="v-home"]'); await p.waitForTimeout(900);
+    await p.click('#btnPlay'); await p.waitForTimeout(1600);
+    const r = await p.evaluate(() => { const c = document.querySelector('#map .node.current').getBoundingClientRect(); return {top: c.top, bottom: c.bottom, h: innerHeight, sb: getComputedStyle(document.querySelector('#v-map')).scrollbarWidth}; });
+    ok('«Играть»: текущий эпизод виден на экране', r.top > 60 && r.bottom < r.h - 90, JSON.stringify(r));
+    ok('полосы прокрутки скрыты', r.sb === 'none');
+    ok('без ошибок (6)', errs.length === 0, errs.join(' | '));
+    await b.close();
+  }
   console.log('провалов:', fail); process.exit(fail ? 1 : 0);
 })();
