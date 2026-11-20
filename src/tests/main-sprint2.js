@@ -44,6 +44,11 @@ const SP = __dirname + '/';
         if (!r || !r.run){ res = r; if (Date.now() - t0 > 3000) break; }
         if (r && r.gust === 1 && !shot){ shot = true; await p.waitForTimeout(1500); await p.screenshot({path: SP + 's2-gust.png'}); }
         await p.waitForTimeout(25); }
+      const skip = p.getByRole('button', {name: 'К результату'});
+      const result = p.locator('#result.on');
+      await skip.or(result).first().waitFor();
+      if (await skip.isVisible()) await skip.click();
+      await result.waitFor();
       console.log('уровень 5:', (await p.textContent('#rText')).replace(/\s+/g, ' ').trim().slice(0, 150));
       await p.evaluate(() => exitLevel()); await p.waitForTimeout(800);
       // уровень 9: один кадр, затвор

@@ -9,7 +9,11 @@ const only = (process.argv[2] || '2,3,4,6').split(',').map(Number), mode = proce
   await p.click('#btnStart'); await p.waitForTimeout(1300);
   const run = async n => { await p.evaluate(n => { for (let i=1;i<n;i++) S.stars[i] = Math.max(S.stars[i]||0, 1); save(); startLevel(LEVELS[n-1]); }, n); await p.waitForTimeout(900);
     await p.screenshot({path: SP + `lv${n}-intro.png`}); await p.click('.overlay .go'); await p.waitForTimeout(400); };
-  const result = async (n, ms) => { await p.waitForSelector('#result.on', {timeout: ms}); await p.waitForTimeout(2600); const t = await p.textContent('#rTitle'), x = await p.textContent('#rText'); console.log(`L${n} [${mode}]:`, t, '|', x); await p.screenshot({path: SP + `lv${n}-result-${mode}.png`}); };
+  const result = async (n, ms) => { const skip = p.getByRole('button', {name: 'К результату'});
+    const result = p.locator('#result.on');
+    await skip.or(result).first().waitFor({timeout: ms});
+    if (await skip.isVisible()) await skip.click();
+    await result.waitFor(); await p.waitForTimeout(2600); const t = await p.textContent('#rTitle'), x = await p.textContent('#rText'); console.log(`L${n} [${mode}]:`, t, '|', x); await p.screenshot({path: SP + `lv${n}-result-${mode}.png`}); };
   const shotAt = (n, ms, name) => setTimeout(() => p.screenshot({path: SP + `lv${n}-${name}.png`}).catch(() => {}), ms);
   if (only.includes(2)){
     await run(2); shotAt(2, 2600, 'show'); shotAt(2, 30000, 'four');

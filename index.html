@@ -1969,6 +1969,11 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 .qpop .panel p.qx{color:rgba(255,226,150,.95)}
 .qpop .qb{flex-wrap:wrap}
 .qpop .qb .btn{min-height:50px}
+
+#dailyRequest{display:block;width:min(92%,340px);margin:10px auto 0;padding:8px 12px;border-radius:16px;background:#271c3b;color:#f5e9ff;font-size:12px;text-align:center}
+#dailyRequest[hidden]{display:none}
+#duo .cat .hl-ear{rotate:var(--ear-follow,0deg);transform-box:fill-box;transform-origin:50% 100%;transition:rotate .24s ease-out}
+@media (prefers-reduced-motion:reduce){#duo .cat .hl-ear{rotate:0deg}}
 </style>
 </head>
 <body>
@@ -2088,6 +2093,7 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
             <div class="lbl"><span id="purrK">мурр-шкала</span><span class="pc"><span class="num" id="purrN">0/15</span><span class="dropl" aria-hidden="true"><span class="e0">🩸</span><span class="e1">🩸</span></span></span></div>
             <div class="bar"><b id="purrBar"></b></div><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i>
           </div>
+          <button type="button" id="dailyRequest" hidden></button>
           <div class="dock ears" id="dock">
             <button class="dk side lg" id="btnWardrobe"><span class="de" aria-hidden="true">🎀</span><span>Гардероб</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
             <button class="dk play" id="btnPlay"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><span class="de" aria-hidden="true">🌙</span>Играть<svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg></button>
@@ -3076,10 +3082,26 @@ function setBubble(txt, side, extra){
     placeBubble();
     b.classList.remove("hush", "pop"); void b.offsetWidth; b.classList.add("pop");
     speakFx(bubState.side);
+    speakBubble(txt, bubState.side);
     bubHide = setTimeout(() => { b.classList.add("hush"); app.classList.remove("asking"); }, extra ? 16000 : 9000);
   };
   if (b.classList.contains("hush") || reduced() || !$("#v-home").classList.contains("on")) show();
   else { b.classList.add("hush", "quick"); bubT = setTimeout(() => { b.classList.remove("quick"); show(); }, 150); }
+}
+function speakBubble(text, side){
+  if (!homeLive() || document.hidden || app.classList.contains("listening") || !ensureRunning()) return;
+  const syllables = text.match(/[аеёиоуыэюяaeiouy]+/gi);
+  if (!syllables) return;
+  const line = bubbleAt, count = Math.min(9, syllables.length);
+  for (let i = 0; i < count; i++){
+    setTimeout(() => {
+      if (line !== bubbleAt || !homeLive() || document.hidden || !ensureRunning()) return;
+      const lap = side === "lapula" || (side === "both" && i % 2 === 1);
+      const pitch = (lap ? 295 : 420) * (1 + .11*Math.sin(i*2.1) - .12*i/count);
+      voice({type:"triangle", f:pitch, f2:pitch*.85, glide:.05, lp:lap ? 950 : 1450,
+        envOpts:{a:.012, d:lap ? .045 : .075, peak:.034, r:.035}, send:.08});
+    }, 90 + i*85);
+  }
 }
 /* говорящая чуть подпрыгивает, вторая на неё смотрит */
 function speakFx(side){
@@ -3105,7 +3127,22 @@ function lookAt(x, y){
 }
 function lookHome(){ document.querySelectorAll("#duo .cat").forEach(c => setGaze(c, 0, 0)); }
 function glance(c, dir, ms){ if (!c || S.event === "quarrel" || c.classList.contains("sleep")) return; setGaze(c, dir*3.4, .4); clearTimeout(c._gl); c._gl = setTimeout(() => setGaze(c, 0, 0), ms); }
-app.addEventListener("pointermove", e => { if (!e.isPrimary || gazeRaf || !homeLive()) return; gazeRaf = requestAnimationFrame(() => { gazeRaf = 0; lookAt(e.clientX, e.clientY); }); }, {passive:true});
+app.addEventListener("pointermove", e => { if (!e.isPrimary || gazeRaf || !homeLive()) return; gazeRaf = requestAnimationFrame(() => { gazeRaf = 0; if (!homeLive()) return; lookAt(e.clientX, e.clientY);
+  if ((e.buttons || e.pointerType === "touch" && earPointers.has(e.pointerId)) && !reduced() && S.event !== "quarrel"){
+    document.querySelectorAll("#duo .cat:not(.sleep)").forEach(c => {
+      const rect = c.getBoundingClientRect();
+      const turn = Math.max(-10, Math.min(10, (e.clientX - rect.left - rect.width/2)/14));
+      c.style.setProperty("--ear-follow", turn + "deg");
+    });
+  } }); }, {passive:true});
+const earPointers = new Set();
+app.addEventListener("pointerdown", e => earPointers.add(e.pointerId), {passive:true});
+for (const type of ["pointerup", "pointercancel"]){
+  addEventListener(type, e => {
+    earPointers.delete(e.pointerId);
+    document.querySelectorAll("#duo .cat").forEach(c => c.style.removeProperty("--ear-follow"));
+  }, {passive:true});
+}
 /* безделье: сначала зовут, потом засыпают; касание будит */
 const IDLE = {
   alisa: ["тут кто-нибудь гладит?", "я жду. терпеливо. почти", "можно поиграть, если что", "ау"],
@@ -3244,7 +3281,7 @@ function pet(el, e, soft){
   cat.classList.add("happy"); clearTimeout(cat._hp); cat._hp = setTimeout(() => cat.classList.remove("happy"), 2600);
   /* четыре зоны, как у живой кошки: макушка и уши, щёки и подбородок, спина по шерсти, против шерсти.
      Капель зоны не меняют: шкала растёт одинаково, отличается только ответ кошки */
-  if (e && e.clientX && !soft){
+  if (e && Number.isFinite(e.clientX) && !soft){
     const r0 = cat.getBoundingClientRect(), rx = (e.clientX - r0.left)/r0.width, ry = (e.clientY - r0.top)/r0.height;
     zone = stroke && meta && meta.against ? 3 : ry < .32 ? 0 : ry < .52 && Math.abs(rx - .5) < .34 ? 1 : 2;
     if (!reduced() && petZone(cat, who, zone, rx, ry, stroke)) said = true;
@@ -3278,6 +3315,7 @@ function pet(el, e, soft){
     clearTimeout(petFx.cool); petFx.cool = setTimeout(() => { petFx.streak = 1; applyStreak(); }, 4000);
     if (!ov && petFx.streak > 1 && !reduced()) $("#purrN").animate([{transform: "none"}, {transform: `scale(1.14) rotate(${who === "alisa" ? -5 : 5}deg)`, offset: .3}, {transform: "none"}], {duration: 260, easing: "ease-out"});
   }
+  dailyAction("pet", {who, zone});
   if (MILES[S.pets]){ celebrate(S.pets, who); said = true; }
   if (!reduced() && !soft){
     const sd = who === "alisa" ? -1 : 1, other = document.querySelector(`#duo .pet:not([data-cat="${who}"])`);
@@ -3820,6 +3858,7 @@ function wearGrid(box, mode){
         if (S.drops < w.price){ shake(b, 5); snd.wrong(); haptic(30); const [x, y] = centerOf(b); popNum("ещё " + (w.price - S.drops), x - 20, y - 20); return; }
         S.drops -= w.price; S.owned[w.id] = 1; tg.forEach(k => putOn(k, w.id, true)); snd.purchase(); haptic([12,40,18]); const [x,y] = centerOf(b); FX.burst(x,y,{emojis:[w.e,"✨"],n:10});
       } else { shake(b, 4); snd.wrong(); const [x, y] = centerOf(b); popNum(w.s, x - 50, y - 20); return; }
+      dailyAction("wear");
       save(); hud(true); applyLook(); checkAch(); box.querySelectorAll(".wit").forEach(x => x._paint && x._paint()); if (mode !== "shared") renderLooksState();
       /* вещь качается на вешалке, кошка коротко подпрыгивает и щурится */
       if (!reduced() && wears(w.id)){ b.querySelector(".e").animate([{rotate: "0deg"}, {rotate: "16deg", offset: .14}, {rotate: "-11deg", offset: .34}, {rotate: "7deg", offset: .54}, {rotate: "-3.5deg", offset: .74}, {rotate: "0deg"}], {duration: 1100, easing: "ease-out"});
@@ -4403,6 +4442,10 @@ const musicBox = (() => {
     const target = Music.base + (vel >= 0 ? 32*Math.min(1, vel/1.1) : -12*Math.min(1, -vel/.8));
     const bpm = Music.bpm + (target - Music.bpm)*Math.min(1, dt*(drag ? 5 : 1.6)); Music.tempo(bpm);
     if (!drag) ang += vel*360*dt;
+    if (!document.hidden && Music.playing && ctx?.state === "running"){
+      dailyListenSeconds += dt;
+      if (dailyListenSeconds >= 15){ dailyListenSeconds = 0; dailyAction("listen"); }
+    }
     if (Music.playing) roll = (roll + dt*Music.bpm/60*22) % 44;
     el.style.setProperty("--roll", roll.toFixed(1) + "px"); el.style.setProperty("--ang", ang.toFixed(1) + "deg");
     const shown = Math.round(Music.bpm); if (shown !== frame.shown){ frame.shown = shown; el.querySelector(".mb-bpm").textContent = shown; el.querySelector(".mb-crank").setAttribute("aria-valuenow", shown); el.classList.toggle("fast", shown > 84); el.classList.toggle("slow", shown < 77); }
@@ -4425,7 +4468,7 @@ const musicBox = (() => {
     n.animate([{transform: "translate(-50%,0) scale(.6)", opacity: 0}, {transform: "translate(-50%,-14px) scale(1)", opacity: 1, offset: .25}, {transform: `translate(calc(-50% + ${(Math.random()*20 - 10).toFixed(0)}px),-46px) scale(.9)`, opacity: 0}], {duration: 900, easing: "ease-out"}).onfinish = () => n.remove();
   }
   return {
-    open(){ build(); if (!el) return; live = true; vel = 0; paint(); Music.listen(onStep); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); },
+    open(){ build(); if (!el) return; live = true; vel = 0; dailyListenSeconds = 0; paint(); wake(); Music.listen(onStep); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); },
     close(){ live = false; cancelAnimationFrame(raf); Music.listen(null); Music.tempo(Music.base); }
   };
 })();
@@ -4455,6 +4498,7 @@ document.querySelectorAll(".view").forEach(v => v.addEventListener("scroll", () 
 /* куда смотрит камера: вкладка, а поверх неё открытый лист гардероба или лавки */
 function camTo(view, sheet){ if (view) camTo.view = view; if (sheet !== undefined) camTo.sheet = sheet; $("#world").dataset.cam = camTo.sheet || camTo.view || "v-home"; }
 function showView(id){
+  if (id === "v-home") paintDailyRequest();
   if (id === "v-wardrobe" && !S.splitWear) id = "v-home";
   const prevV = showView.last;
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.v === id));
@@ -4800,6 +4844,63 @@ function dayNote(){
 }
 function note(f){ const e = dayNote(); e[f] = (e[f] || 0) + 1; }
 function noteList(f, v){ const e = dayNote(); e[f] = e[f] || []; if (!e[f].includes(v)) e[f].push(v); }
+let dailyListenSeconds = 0;
+const DAILY_PETS = [
+  {kind:"pet", who:"lapula", zone:0, target:5, text:"Погладь Лапулю за ушком пять раз"},
+  {kind:"pet", who:"alisa", zone:1, target:5, text:"Погладь Алису по щеке пять раз"}
+];
+function dailyRequest(){
+  const day = dayKey();
+  let task = S.dailyRequest;
+  const blocked = task && (task.kind === "pet" && S.event === "quarrel" ||
+    task.kind === "listen" && (!S.sound || !S.music) ||
+    task.kind === "level" && !unlocked(task.level));
+  if (task?.day === day && (task.done || !blocked)) return task;
+  const choices = S.event === "quarrel" ? [] : DAILY_PETS.slice();
+  const item = WEAR.find(w => S.owned[w.id] && !wears(w.id));
+  if (item) choices.push({kind:"wear", item:item.id, target:1, text:"Надень на кошку «" + item.t + "»"});
+  const level = LEVELS.filter(L => L.n < 10 && unlocked(L.n)).at(-1);
+  choices.push({kind:"level", level:level.n, target:1, text:"Пройди «" + level.t + "» хотя бы на одну звезду"});
+  if (S.sound && S.music) choices.push({kind:"listen", target:1, text:"Послушай с нами шкатулку 15 секунд"});
+  task = S.dailyRequest = {...choices[hashStr(day) % choices.length], day, count:0, done:false};
+  save();
+  return task;
+}
+function paintDailyRequest(announce = false){
+  const task = dailyRequest(), button = $("#dailyRequest");
+  button.hidden = false;
+  const label = task.done ? "Просьба дня выполнена ✓" :
+    task.text + " · " + task.count + "/" + task.target + " · +8 капель";
+  if (button.textContent !== label) button.textContent = label;
+  if (announce && homeLive() && !task.done && !task.shown){
+    task.shown = true; save(); setBubble(task.text, task.who || "alisa");
+  }
+}
+function dailyAction(kind, detail = {}){
+  const task = dailyRequest();
+  if (task.done || task.kind !== kind) return;
+  if (kind === "pet" && (task.who !== detail.who || task.zone !== detail.zone)) return;
+  if (kind === "wear" && !wears(task.item)) return;
+  if (kind === "level" && (task.level !== detail.level || detail.stars < 1)) return;
+  task.count++;
+  if (task.count >= task.target){
+    task.done = true;
+    dayNote().request = task.text;
+    earn(8);
+    hud(true);
+    snd.collect(true);
+  }
+  save(); paintDailyRequest();
+}
+$("#dailyRequest").onclick = () => {
+  const task = dailyRequest();
+  setBubble(task.done ? "спасибо. я записала в дневник" : task.text, task.who || "alisa");
+  if (!task.done && task.kind === "listen") $("#miniPlayer").click();
+  if (!task.done && task.kind === "wear") openWardrobe();
+  if (!task.done && task.kind === "level"){ showView("v-map"); openEpisode(LEVELS[task.level - 1]); }
+};
+addEventListener("visibilitychange", () => { if (!document.hidden) paintDailyRequest(true); });
+setInterval(() => { if (homeLive() && !document.hidden) paintDailyRequest(true); }, 30000);
 function diaryLines(e, first){
   const L = [], P = (k, t) => t && L.push({k, t}), d = new Date(e.t), h = d.getHours(), hm = h + ":" + String(d.getMinutes()).padStart(2, "0");
   const raz = n => n + " " + plural(n, "раз", "раза", "раз");
@@ -4844,6 +4945,7 @@ function diaryLines(e, first){
   if (e.nap) P("nap", "Уснула у тебя на пальце, а проснулась, когда ты его убрала.");
   (e.vg || []).slice(0, 2).forEach(id => P("vg_" + id, VG_DIARY[id]));
   if (e.jl && e.jl.length) P("jl", e.jl.includes("lapula") ? "Гладили меня, а Лапуля делала вид, что ей всё равно." : "Гладили Лапулю, а я сидела рядом. Просто сидела.");
+  if (e.request) P("request", "Ты выполнила нашу просьбу. Я записала: «" + e.request + "».");
   if (e.epi) P("epi", "Смотрели эпилог про нас на крыше. Луна там огромная.");
   if (!L.length) P("empty", "Ты заходила ненадолго. Мы были дома.");
   return L;
@@ -5967,7 +6069,8 @@ function startLevel(L, fromEl){
   const open = () => {
     game.classList.add("on"); const tok = ++gameTok; setTimeout(() => { if (tok === gameTok && game.classList.contains("on")) app.classList.add("game-on"); }, 650);
     if (S.music) Music.start(L.n * 7);
-    requestAnimationFrame(() => { cleanup = L.run(area, finish) || null; });
+    requestAnimationFrame(() => { if (tok !== gameTok) return;
+      cleanup = L.run(area, (...result) => { if (tok === gameTok) finish(...result); }) || null; });
   };
   if (!fromEl || reduced()) return open();
   // карточка эпизода раскрывается в уровень
@@ -6010,14 +6113,14 @@ function intro(area, L, text, onGo){
   setTimeout(() => go.focus(), 60);
 }
 
-function finish(stars, text){
-  stopLevel();
+function recordLevel(stars){
   const n = current.n, prev = S.stars[n] || 0, first = prev === 0 && stars > 0;
   const reward = stars * 6 + (first ? 10 : 0);
   if (stars > prev) S.stars[n] = stars;
   if (stars > runS(n)) S.runStars[n] = stars;
   { const e = dayNote(); e.lv = e.lv || {}; e.lv[n] = Math.max(e.lv[n] || 0, stars); }
   earn(reward);
+  if (stars > 0) dailyAction("level", {level:n, stars});
   let extra = "";
   const grant = id => { S.owned[id] = 1; putOn("a", id, true); putOn("l", id, true); };
   if (n === 2 && stars > 0 && !S.owned.ring){ grant("ring"); extra = " Кольца уже на котиках, день включается в настройках."; }
@@ -6029,10 +6132,16 @@ function finish(stars, text){
   if (n === 10 && stars === 3 && !S.splitWear){ S.splitWear = 1; S.fxSplit = 1; extra += " Открыт раздельный гардероб."; }
   if (n === 11 && stars > 0 && S.event === "quarrel"){ S.event = null; S.quarrelOver = 1; S.fxMakeup = 1; note("mk"); extra += " Ивент окончен: помирились."; }
   if (!S.epi && totalStars() >= EPI_NEED()) S.fxEpi = 1;
-  save(); hud(); applyLook();
+  save(); hud(); applyLook(); checkAch();
+  return {reward, extra};
+}
+function finish(stars, text, recorded, bonus = 0){
+  stopLevel();
+  const n = current.n, {reward, extra} = recorded || recordLevel(stars);
+  if (bonus) text += " За дополнительные секунды: +" + bonus + " капель.";
   $("#rTitle").textContent = stars === 0 ? "Почти" : stars === 3 ? "Идеально" : "Пройдено";
   $("#rText").textContent = (text || "") + extra;
-  const rr = $("#rReward"); rr.hidden = !reward; $("#rDrops").textContent = "+0";
+  const rr = $("#rReward"); rr.hidden = !(reward + bonus); $("#rDrops").textContent = "+0";
   const rs = $("#rStars"); rs.innerHTML = "";
   for (let i=0;i<3;i++){ const s = document.createElement("span"); s.innerHTML = '<svg class="sti"><use href="#i-star"/></svg>'; rs.appendChild(s); }
   const hasNext = n < LEVELS.length && unlocked(n+1), rN = $("#rNext"), rA = $("#rAgain"), rSub = rA.parentElement;
@@ -6053,11 +6162,41 @@ function finish(stars, text){
   }, 700 + i*420));
   setTimeout(() => {
     if (stars === 3){ const [x,y] = centerOf($("#rStars")); FX.confetti(x, y, 70); }
-    if (reward){ const el = $("#rDrops"), t0 = performance.now();
-      const step = t => { const k = Math.min(1,(t-t0)/600); el.textContent = "+" + Math.round(reward*(1-Math.pow(1-k,3))); if (k < 1){ requestAnimationFrame(step); if (Math.random() < .25) snd.coin(); } };
+    if (reward + bonus){ const el = $("#rDrops"), t0 = performance.now();
+      const step = t => { const k = Math.min(1,(t-t0)/600); el.textContent = "+" + Math.round((reward + bonus)*(1-Math.pow(1-k,3))); if (k < 1){ requestAnimationFrame(step); if (Math.random() < .25) snd.coin(); } };
       requestAnimationFrame(step); }
     checkAch();
   }, 700 + 3*420);
+}
+// Сохраняем результат до выбора. Капли за дополнительные секунды выдаются по мере сбора.
+function extraRound(area, done, rules){
+  let result = null, drops = 0;
+  return {
+    active:false, failed:false,
+    hud(normal, time){
+      stat((this.active ? chip("🩸", "+" + drops) : normal) + chip("⏱️", Math.max(0, Math.ceil(time))));
+    },
+    offer(stars, text, resume){
+      if (result || !stars){ done(stars, text); return; }
+      result = {stars, text, recorded:recordLevel(stars)};
+      const panel = document.createElement("div");
+      panel.className = "overlay on";
+      panel.innerHTML = '<div class="panel"><h4>Остаться ещё?</h4><p></p><div class="row-btns"><button class="btn">Ещё 10 секунд</button><button class="btn ghost">К результату</button></div></div>';
+      panel.querySelector("p").textContent = rules + " Звёзды уже сохранены. Ошибка завершит бонус, капли останутся.";
+      const [stay, leave] = panel.querySelectorAll("button");
+      stay.onclick = () => { panel.remove(); this.active = true; resume(); };
+      leave.onclick = () => { panel.remove(); this.end(); };
+      area.appendChild(panel);
+      stay.focus();
+    },
+    gain(n){
+      drops += n; earn(n); save();
+    },
+    end(){
+      if (!result) return;
+      done(result.stars, result.text, result.recorded, drops);
+    }
+  };
 }
 $("#rHome").onclick = () => { snd.back(); showView("v-home"); exitLevel(); };
 
@@ -6108,6 +6247,7 @@ let HUNT2 = 65, HUNT3 = 125; /* пороги звёзд: стартовые зн
 function lvlHunt(area, done){
   const C = setupCanvas(area), {cv, g} = C;
   const TREATS = [{e:"🐟",v:1,p:.55},{e:"🦐",v:2,p:.25},{e:"🍣",v:3,p:.12}];
+  const bonus = extraRound(area, done, "Вербены вдвое больше. За лакомство — 1 капля.");
   const DUR = 34, COMBO_T = 2.2, LAP_IN = 14, LAP_OUT = 23, FINALE = 4;
   let px = C.W/2, tx = C.W/2, items = [], score = 0, lives = 3, time = DUR, spawn = 0, last = 0, raf, keys = {}, freeze = 0, tilt = 0, squash = 0;
   let hurt = 0, ringFlash = 0, combo = 0, comboT = 0, bestCombo = 0, mint = 0, slow = 0, stolen = 0, goldOk = false, finale = false, clock = 0;
@@ -6121,7 +6261,7 @@ function lvlHunt(area, done){
   const kd = e => { keys[e.key] = true; }, ku = e => { keys[e.key] = false; };
   addEventListener("keydown", kd); addEventListener("keyup", ku);
   const mult = () => combo >= 10 ? 3 : combo >= 5 ? 2 : 1;
-  const upd = () => stat(chip("🍽️", score) + chip("❤️", Math.max(0,lives)) + chip("⏱️", Math.ceil(time)));
+  const upd = () => bonus.hud(chip("🍽️", score) + chip("❤️", Math.max(0,lives)), time);
   upd();
   area.__hunt = { get items(){ return items; }, get px(){ return px; }, get cy(){ return C.H - 40; }, get W(){ return C.W; }, lap, get e(){ return DUR - time; }, get slow(){ return slow; }, set tx(v){ tx = Math.max(30, Math.min(C.W-30, v)); } };
   const arp = (fs, step = .06, type = "triangle", peak = .06) => { if (!ensureRunning()) return; const t = ctx.currentTime; fs.forEach((f, i) => voice({type, f, t: t + i*step, lp: 4200, send: .18, envOpts: {a:.004, d:.16, peak}})); };
@@ -6207,13 +6347,13 @@ function lvlHunt(area, done){
     if (mint > 0) mint = Math.max(0, mint - dt);
     if (slow > 0) slow = Math.max(0, slow - dt);
     const ts = slow > 0 ? .45 : 1;
-    if (!blood && time <= 12 && time > FINALE){ blood = true; area.classList.add("bloodmoon"); flashBanner(area, "Кровавая луна: очки ×2, ритм быстрее", 2200); arp([392, 523.25, 622.25], .07); haptic(12); }
-    if (!finale && time <= FINALE){ finale = true; flashBanner(area, "Финал: вербены больше нет", 2000); arp([523.25, 659.25, 783.99, 1046.5], .05); }
+    if (!bonus.active && !blood && time <= 12 && time > FINALE){ blood = true; area.classList.add("bloodmoon"); flashBanner(area, "Кровавая луна: очки ×2, ритм быстрее", 2200); arp([392, 523.25, 622.25], .07); haptic(12); }
+    if (!bonus.active && !finale && time <= FINALE){ finale = true; flashBanner(area, "Финал: вербены больше нет", 2000); arp([523.25, 659.25, 783.99, 1046.5], .05); }
     spawn -= dt * ts;
     if (spawn <= 0){
       spawn = (finale ? .24 : .62 - .24*k) * (blood && !finale ? .6 : 1);
       let e2 = "🪻", v = 0;
-      const verb = finale ? 0 : e < 8 ? .12 : .22;
+      const verb = bonus.active ? .44 : finale ? 0 : e < 8 ? .12 : .22;
       if (Math.random() >= verb){ const r = Math.random(), tot = TREATS.reduce((a,b)=>a+b.p,0); let acc = 0; for (const t of TREATS){ acc += t.p/tot; if (r <= acc){ e2 = t.e; v = t.v; break; } } }
       items.push({x: 24 + Math.random()*(C.W-48), y: -20, vy: (150 + 130*k + Math.random()*40) * (blood ? 1.25 : 1), e: e2, v, age: 0});
     }
@@ -6230,9 +6370,12 @@ function lvlHunt(area, done){
           mint = 5; haptic(12); squash = 1; FX.burst(r0.left+it.x, r0.top+it.y, {emojis:["🌿"], n:6, size:[12,18], grav:120});
           popNum("мята", r0.left+it.x, r0.top+it.y-20); arp([659.25, 783.99, 987.77, 1318.5], .05, "sine", .07);
         } else if (!it.v){ if (hurt > 0) return it.y < C.H + 30; /* секунда неуязвимости после удара */
+          if (bonus.active){ bonus.failed = true; return false; }
           if (capeUp){ capeUp = false; hurt = 1.1; snd.back(); haptic(14); flashBanner(area, "Плащ прикрыл от вербены", 1300); FX.burst(r0.left+it.x, r0.top+it.y, {emojis:["🧛"],n:3}); }
           else { hurt = 1.1; lives--; combo = 0; comboT = 0; snd.bonk(); snd.resetCombo(); haptic(40); freeze = .07; shake(area, 9); FX.burst(r0.left+it.x, r0.top+it.y, {emojis:["💢"],n:3}); } }
         else {
+          if (bonus.failed) return false;
+          if (bonus.active) bonus.gain(1);
           combo++; comboT = COMBO_T; bestCombo = Math.max(bestCombo, combo);
           const m = mult(), got = it.v * m * (blood ? 2 : 1); score += got; snd.combo(); haptic(6); squash = 1;
           if (it.kind === "gold"){ goldOk = true; slow = 2.6; haptic(20); FX.burst(r0.left+it.x, r0.top+it.y, {emojis:["✨","⭐"], n:12, size:[12,20], grav:120}); arp([1046.5, 783.99, 659.25, 523.25, 392], .08, "sine", .08); }
@@ -6251,10 +6394,15 @@ function lvlHunt(area, done){
     });
     draw();
     if (Math.floor(time*10) % 5 === 0) upd();
+    if (bonus.active && (bonus.failed || time <= 0)) return bonus.end();
     if (lives <= 0 || time <= 0){
       const st = lives <= 0 ? 0 : score >= HUNT3 ? 3 : score >= HUNT2 ? 2 : 1;
       const tail = (bestCombo >= 5 ? " Лучшая серия: " + bestCombo + "." : "") + (stolen ? " Лапуля утащила " + stolen + "." : "");
-      done(st, lives <= 0 ? "Вербена победила. Набрано " + score + "." : "Набрано " + score + "." + tail + (st < 3 ? " Три звезды с " + HUNT3 + "." : ""));
+      bonus.offer(st, lives <= 0 ? "Вербена победила. Набрано " + score + "." : "Набрано " + score + "." + tail + (st < 3 ? " Три звезды с " + HUNT3 + "." : ""), () => {
+        items = []; time = 10; spawn = 0; finale = blood = false; mint = slow = hurt = 0;
+        area.classList.remove("bloodmoon");
+        upd(); raf = requestAnimationFrame(now => { last = now; frame(now); });
+      });
       return;
     }
     raf = requestAnimationFrame(frame);
@@ -6414,8 +6562,9 @@ function lvlAstral(area, done){
   const dark = document.createElement("div"); dark.className = "adark"; view.appendChild(dark);
   const edgeL = document.createElement("i"), edgeR = document.createElement("i"); edgeL.className = "aedge l"; edgeR.className = "aedge r"; view.append(edgeL, edgeR);
   let W = 0, H = 0, RW = 0, pan = 0, fx = 0, fy = 0, down = false, found = 0, time = 60, alive = false, raf = 0, last = 0, litT = 0, flee = 0, dim = 0, purr = null, surge = false, lapCool = 0;
-  const NEED = 4, BEAMK = perk("mask", 3) ? 1.2 : 1, R0 = () => Math.min(W, H)*.3*BEAMK;
-  const upd = () => stat(chip("🐱", found + "/" + NEED) + chip("⏱️", Math.max(0, Math.ceil(time)))); upd();
+  const bonus = extraRound(area, done, "Луч фонарика уже. За каждую находку — 3 капли.");
+  const NEED = 4, BEAMK = perk("mask", 3) ? 1.2 : 1, R0 = () => Math.min(W, H)*.3*BEAMK*(bonus.active ? .65 : 1);
+  const upd = () => bonus.hud(chip("🐱", found + "/" + NEED), time); upd();
   function layout(){
     W = view.clientWidth; H = view.clientHeight; RW = W*2.1; room.style.width = RW + "px";
     objs.forEach(o => { o.el.style.left = (o.x*RW - o.s/2) + "px"; o.el.style.top = (o.y*H - o.s/2) + "px"; });
@@ -6448,11 +6597,13 @@ function lvlAstral(area, done){
   const lit = c => Math.hypot(c.x - pan - fx, c.y + 6 - fy) < R0()*(dim > 0 ? .55 : .72);
   ali.el.addEventListener("pointerdown", e => { e.stopPropagation(); light(e); if (!alive || !lit(ali)) return;
     found++; upd(); snd.collect(true); haptic(20); const [x, y] = centerOf(ali.el); FX.burst(x, y, {emojis: ["✨", "💛"], n: 12, size: [12, 22], grav: 200});
+    if (bonus.active){ bonus.gain(3); hide(ali, lap); litT = 0; return; }
     if (found >= NEED) return end(true);
     flashBanner(area, ["Нашлась. Прячется снова", "Ещё раз. Она уже убежала", "Почти всё"][Math.min(2, found - 1)], 1500);
     if (found === 2){ surge = true; setTimeout(powerSurge, 700); } else hide(ali, lap);
     litT = 0; });
   lap.el.addEventListener("pointerdown", e => { e.stopPropagation(); light(e); if (!alive || !lit(lap) || lapCool > 0) return;
+    if (bonus.active){ bonus.failed = true; end(false); return; }
     lapCool = 1.2; time = Math.max(0, time - 3); upd(); snd.hmph(); haptic(14); shake(lap.el, 4); flashBanner(area, "Это Лапуля. У неё глаза янтарные. −3 с", 1700); setTimeout(() => alive && hide(lap, ali), 600); });
   /* скачок напряжения: всё видно полсекунды, потом темнее, луч меньше, и Алиса в другой половине дома */
   function powerSurge(){
@@ -6464,8 +6615,13 @@ function lvlAstral(area, done){
   }
   function end(ok){
     if (!alive) return; alive = false; cancelAnimationFrame(raf); purr && purr.stop(); purr = null;
+    if (bonus.active) return bonus.end();
     const st = !ok ? 0 : time >= 26 ? 3 : time >= 12 ? 2 : 1;
-    setTimeout(() => done(st, ok ? `Нашлась ${NEED} раза, осталось ${Math.ceil(time)} с. Три звезды с 26 с в запасе.` : "Алиса спряталась слишком хорошо. Попробуй ещё."), 500);
+    bonus.offer(st, ok ? `Нашлась ${NEED} раза, осталось ${Math.ceil(time)} с. Три звезды с 26 с в запасе.` : "Алиса спряталась слишком хорошо. Попробуй ещё.", () => {
+      alive = true; time = 10; dim = lapCool = litT = 0;
+      hide(ali, lap); hide(lap, ali); purr = startPurr(.02); upd();
+      raf = requestAnimationFrame(now => { last = now; frame(now); });
+    });
   }
   function frame(now){
     if (!alive) return;
@@ -6526,12 +6682,13 @@ function lvlRules(area, done){
     + '<button class="so-chest no" type="button"><span class="so-lid"></span><span class="so-ico">✕</span><b>Нельзя</b></button>'
     + '<button class="so-chest yes" type="button"><span class="so-lid"></span><span class="so-ico">♥</span><b>Можно</b></button>';
   const why = wrap.querySelector(".so-why"), chNo = wrap.querySelector(".so-chest.no"), chYes = wrap.querySelector(".so-chest.yes");
+  const bonus = extraRound(area, done, "Карточки падают быстрее. За верный ответ — 1 капля.");
   let forgive = setOn("ball");          /* сет «Бал у Сальваторе» прощает первую ошибку */
-  const miss = () => { if (forgive){ forgive = false; lvBanner(area, "Бал у Сальваторе: первая ошибка не считается"); return; } errs++; };
+  const miss = () => { if (bonus.active){ bonus.failed = true; return; } if (forgive){ forgive = false; lvBanner(area, "Бал у Сальваторе: первая ошибка не считается"); return; } errs++; };
   let items = [], deck = [], right = 0, errs = 0, time = SORT_DUR, alive = false, raf = 0, last = 0, spawnT = 0, swapped = false, swapDone = false, W = 0, H = 0, combo = 0, whyT = 0;
-  const upd = () => stat(chip("✅", right) + chip("❌", errs) + chip("⏱️", Math.max(0, Math.ceil(time)))); upd();
+  const upd = () => bonus.hud(chip("✅", right) + chip("❌", errs), time); upd();
   const phase = () => { const e = SORT_DUR - time; return e < 14 ? 0 : e < 30 ? 1 : e < 44 ? 2 : 3; };
-  const fallMs = () => [6.4, 4.8, 4.4, 3.4][phase()], maxFly = () => [1, 2, 2, 3][phase()], gapS = () => [2.4, 1.7, 1.8, 1.15][phase()];
+  const fallMs = () => bonus.active ? 2.3 : [6.4, 4.8, 4.4, 3.4][phase()], maxFly = () => [1, 2, 2, 3][phase()], gapS = () => bonus.active ? .78 : [2.4, 1.7, 1.8, 1.15][phase()];
   function layout(){
     W = wrap.clientWidth; H = wrap.clientHeight; const cw = Math.min(150, (W - 48)/2);
     wrap.style.setProperty("--cw", cw + "px");
@@ -6554,11 +6711,16 @@ function lvlRules(area, done){
     if (!alive) return; const it = target(); if (!it) return;
     it.gone = true; const ok = it.d[2] === yes, ch = yes ? chYes : chNo, cr = ch.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
     const tx = cr.left - wr.left + cr.width/2 - 75, ty = cr.top - wr.top - 10;
+    if (bonus.active){
+      if (!ok){ miss(); return; }
+      bonus.gain(1); right++; snd.combo(); upd();
+    }
     const a = it.el.animate([{transform: it.el.style.transform, opacity: 1}, {transform: `translate(${((it.x - 75 + tx)/2).toFixed(1)}px,${(Math.min(it.y, ty) - 60).toFixed(1)}px) rotate(${yes ? 14 : -14}deg) scale(.8)`, opacity: 1, offset: .45},
       {transform: `translate(${tx.toFixed(1)}px,${(ty + 20).toFixed(1)}px) rotate(${yes ? 24 : -24}deg) scale(.3)`, opacity: .2}], {duration: reduced() ? 1 : 380, easing: "cubic-bezier(.3,.6,.4,1)", fill: "forwards"});
     a.onfinish = () => { it.el.remove(); items = items.filter(i => i !== it);
       ch.classList.remove("ok", "bad"); void ch.offsetWidth; ch.classList.add(ok ? "ok" : "bad");
       const [x, y] = centerOf(ch);
+      if (!alive || bonus.active) return;
       if (ok){ right++; combo++; snd.combo(); haptic(6); FX.burst(x, y - 20, {emojis: ["✨"], n: 5 + Math.min(6, combo), size: [10, 18], grav: 220}); if (combo % 5 === 0) popNum("×" + combo, x, y - 40); }
       else { miss(); combo = 0; snd.wrong(); snd.resetCombo(); haptic(28); shake(ch, 5); say("Мимо. " + it.d[3]); }
       upd(); };
@@ -6581,8 +6743,13 @@ function lvlRules(area, done){
   addEventListener("keydown", kd); addEventListener("resize", layout);
   function end(){
     if (!alive) return; alive = false; cancelAnimationFrame(raf);
+    if (bonus.active) return bonus.end();
     const st = errs === 0 && right >= 12 ? 3 : errs <= 3 ? 2 : 1;
-    setTimeout(() => done(st, `Разложено верно ${right}, ошибок ${errs}. Три звезды без единой ошибки.`), 600);
+    bonus.offer(st, `Разложено верно ${right}, ошибок ${errs}. Три звезды без единой ошибки.`, () => {
+      items.forEach(it => it.el.remove()); items = [];
+      alive = true; time = 10; spawnT = 0; upd();
+      raf = requestAnimationFrame(now => { last = now; frame(now); });
+    });
   }
   function frame(now){
     if (!alive) return;
@@ -6592,11 +6759,12 @@ function lvlRules(area, done){
     if (swapped && e >= 42) lapSwap(false);
     if (e >= 44 && !wrap.classList.contains("fin")){ wrap.classList.add("fin"); flashBanner(area, "Последний залп", 1500); }
     spawnT -= dt; const fly = items.filter(i => !i.gone).length;
-    if (time > 2.5 && spawnT <= 0 && fly < maxFly()){ spawn(); spawnT = gapS(); }
+    if (time > (bonus.active ? 0 : 2.5) && spawnT <= 0 && fly < maxFly()){ spawn(); spawnT = gapS(); }
     items.forEach(it => { if (it.gone) return; it.y += it.v*dt; draw(it); if (it.y >= floorY()) drop(it); });
     const t = target(); items.forEach(i => i.el.classList.toggle("cur", i === t));
     if (Math.floor(time*4) % 2 === 0) upd();
-    if (time <= 0 && !items.some(i => !i.gone)){ time = 0; upd(); return end(); }
+    if (bonus.active && (bonus.failed || time <= 0)) return end();
+    if (time <= 0 && items.length === 0){ time = 0; upd(); return end(); }
     if (time <= -6){ return end(); }
     raf = requestAnimationFrame(frame);
   }
@@ -6693,6 +6861,7 @@ function lvlForks(area, done){
   const C = setupCanvas(area), {cv, g} = C;
   const hint = document.createElement("div"); hint.className = "ghint"; hint.textContent = "тап = прыжок"; area.appendChild(hint);
   const CX = 80, GRAV = 2000, JUMP = -720, DUR = 30;
+  const bonus = extraRound(area, done, "Брёвна идут чаще. За рыбку — 1 капля.");
   let G = Math.round(C.H*.74), y = 0, vy = 0, onGround = true, logs = [], fish = [], drops = [], got = 0, lives = 3, time = DUR, inv = 0, sq = 0;
   let nextLog = 1.4, nextFish = .8, dist = 0, last = 0, raf, running = false, freeze = 0, clock = 0, runPh = 0, art = null, artKey = "";
   /* Тэн: с 12-й по 20-ю секунду тучи расходятся. Рыбки идут вдвое чаще и стоят две, пока Лапуля не задела бревно; в воздухе можно прыгнуть второй раз */
@@ -6700,7 +6869,7 @@ function lvlForks(area, done){
      Второй прыжок в воздухе доступен весь забег. Сет «Полночь в Форксе» расширяет зону ловли на 30 % */
   const GUST0 = 10, GUST1 = 20, GOLD_AT = [11.5, 14.5, 17.5], RK = setOn("forks") ? 1.3 : 1; let gust = 0, airJump = 0, goldN = 0;
   for (let i=0;i<80;i++) drops.push({x: Math.random()*C.W*1.2, y: Math.random()*C.H, z: Math.random() < .35 ? 1 : 0});
-  const upd = () => stat(chip("🐟", got) + chip("❤️", Math.max(0,lives)) + chip("⏱️", Math.ceil(time)));
+  const upd = () => bonus.hud(chip("🐟", got) + chip("❤️", Math.max(0,lives)), time);
   upd();
   function jump(){ if (!running) return;
     if (!onGround){ if (airJump < 1) return; airJump = 0; vy = JUMP*.82; snd.jump(); haptic(8); sq = -1;
@@ -6708,7 +6877,7 @@ function lvlForks(area, done){
     vy = JUMP; onGround = false; airJump = 1; snd.jump(); haptic(8); sq = -1; }
   const pd = e => { if (e.target.closest && e.target.closest(".overlay")) return; jump(); };
   area.addEventListener("pointerdown", pd);
-  const kd = e => { if (e.code === "Space" || e.key === "ArrowUp"){ e.preventDefault(); jump(); } };
+  const kd = e => { if (running && (e.code === "Space" || e.key === "ArrowUp")){ e.preventDefault(); jump(); } };
   addEventListener("keydown", kd);
   /* небо, луна и виньетка неподвижны: их рисует CSS под холстом и над ним, холст их не перерисовывает */
   const sky = document.createElement("div"); sky.className = "fsky"; sky.innerHTML = "<i></i>"; area.insertBefore(sky, cv); cv.style.position = "relative";
@@ -6781,25 +6950,29 @@ function lvlForks(area, done){
     clock += dt; if (onGround) runPh += dt*speed/13;
     drops.forEach(d => { d.y += (d.z ? 640 : 400)*dt*gm; d.x -= (d.z ? 190 : 100)*dt*gm*1.3; if (d.y > C.H || d.x < -20){ d.y = -16 - Math.random()*40; d.x = Math.random()*C.W*1.3; } });
     nextLog -= dt; nextFish -= dt;
-    if (nextLog <= 0){ logs.push({x: C.W + 10, w: 44, h: 30}); nextLog = 1.25 + Math.random()*.9 - .3*k; }
+    if (nextLog <= 0){ logs.push({x: C.W + 10, w: 44, h: 30}); nextLog = bonus.active ? .94 + Math.random()*.2 : 1.25 + Math.random()*.9 - .3*k; }
     if (nextFish <= 0){ fish.push({x: C.W + 10, y: G - 74 - Math.random()*70}); nextFish = .9 + Math.random()*.9; }
     logs.forEach(l => l.x -= speed*dt); fish.forEach(f => f.x -= speed*dt);
     const top = G - 38 + y, bottom = G + y, left = CX - 30, right = CX + 36, r0 = cv.getBoundingClientRect();
     logs = logs.filter(l => {
-      if (inv <= 0 && right > l.x + 8 && left < l.x + l.w - 8 && bottom > G - l.h + 6){ lives--; inv = 1.2; snd.bonk(); haptic(40); freeze = .07; shake(area, 10); upd(); FX.burst(r0.left+CX, r0.top+G-30, {emojis:["💫"],n:3}); }
+      if (inv <= 0 && right > l.x + 8 && left < l.x + l.w - 8 && bottom > G - l.h + 6){ if (bonus.active){ bonus.failed = true; return false; } lives--; inv = 1.2; snd.bonk(); haptic(40); freeze = .07; shake(area, 10); upd(); FX.burst(r0.left+CX, r0.top+G-30, {emojis:["💫"],n:3}); }
       return l.x > -80;
     });
     fish = fish.filter(f => {
       if (TIARA && !onGround && Math.abs(f.x - (CX + 8)) < 110) f.y += ((top + bottom)/2 - 14 - f.y)*Math.min(1, dt*5);
-      if (Math.abs(f.x - (CX + 8)) < (TIARA ? 64 : 36)*RK && f.y > top - (TIARA ? 60 : 42)*RK && f.y < bottom + (TIARA ? 10 : 0) + (RK - 1)*30){ const v = f.gold ? 2 : 1; got += v; if (f.gold) snd.collect(true); else snd.combo(); haptic(f.gold ? 12 : 6); upd(); FX.burst(r0.left+f.x, r0.top+f.y, {emojis:f.gold ? ["✨","⭐"] : ["✨"],n:f.gold ? 9 : 4,size:[10,16],grav:200}); popNum("+" + v, r0.left+f.x, r0.top+f.y-20); return false; }
+      if (Math.abs(f.x - (CX + 8)) < (TIARA ? 64 : 36)*RK && f.y > top - (TIARA ? 60 : 42)*RK && f.y < bottom + (TIARA ? 10 : 0) + (RK - 1)*30){ if (bonus.failed) return false; if (bonus.active) bonus.gain(1); const v = f.gold ? 2 : 1; got += v; if (f.gold) snd.collect(true); else snd.combo(); haptic(f.gold ? 12 : 6); upd(); FX.burst(r0.left+f.x, r0.top+f.y, {emojis:f.gold ? ["✨","⭐"] : ["✨"],n:f.gold ? 9 : 4,size:[10,16],grav:200}); popNum("+" + v, r0.left+f.x, r0.top+f.y-20); return false; }
       return f.x > -30;
     });
     draw();
     if (Math.floor(time*10) % 5 === 0) upd();
+    if (bonus.active && (bonus.failed || time <= 0)) return bonus.end();
     if (lives <= 0 || time <= 0){
       running = false;
       const st = lives <= 0 ? 0 : got >= 10 ? 3 : got >= 6 ? 2 : 1;
-      done(st, lives <= 0 ? "Брёвна оказались сильнее. Попробуй ещё." : "Лапуля добежала и поймала рыбок: " + got + ". Три звезды с 10.");
+      bonus.offer(st, lives <= 0 ? "Брёвна оказались сильнее. Попробуй ещё." : "Лапуля добежала и поймала рыбок: " + got + ". Три звезды с 10.", () => {
+        logs = []; fish = []; time = 10; running = true; inv = 0; nextLog = .25; nextFish = 0;
+        upd(); raf = requestAnimationFrame(now => { last = now; frame(now); });
+      });
       return;
     }
     raf = requestAnimationFrame(frame);
@@ -6818,16 +6991,25 @@ function lvlForks(area, done){
 const GARDEN_DUR = 40;
 let GARDEN2 = 30, GARDEN3 = 48; /* пороги звёзд: стартовые, подобраны ботом */
 function lvlGarden(area, done){
+  const bonus = extraRound(area, done, "Воришки прилетают чаще. Каждые три розы — 1 капля.");
+  let bonusRoses = 0;
   let capeUp = perk("cape", 6); const HOLD_MS = perk("wreath", 6) ? 400 : 600, WIDE = setOn("forks");          /* сет «Полночь в Форксе»: по розам попасть легче на 30 % */
   const wrap = document.createElement("div"); wrap.className = "garden"; area.appendChild(wrap);
   const bushes = [];
   for (let i = 0; i < 9; i++){ const b = document.createElement("div"); b.className = "bush"; b.innerHTML = '<span class="leaf e">🌿</span>'; wrap.appendChild(b); bushes.push({el: b, item: null, i}); }
   const night = document.createElement("div"); night.className = "gnight"; wrap.appendChild(night);
   let picked = 0, lives = 3, time = GARDEN_DUR, alive = false, spawnT = 0, raf, last = 0, goldN = 0, thiefT = 0, thieves = [], moonA = 0, saidHold = false, saidThief = false, holding = null;
-  const upd = () => stat(chip("🌹", picked) + chip("❤️", Math.max(0, lives)) + chip("⏱️", Math.max(0, Math.ceil(time))));
+  const upd = () => bonus.hud(chip("🌹", picked) + chip("❤️", Math.max(0, lives)), time);
   upd();
-  const el = () => GARDEN_DUR - time, isNight = () => el() >= 20 && el() < 30;
-  const gain = (n, x, y, emo = "🌹") => { picked += n; S.roses = (S.roses || 0) + n; snd.combo(); haptic(6); FX.burst(x, y, {emojis: [emo, "✨"], n: 4 + n*2, size: [12, 20], grav: 350}); popNum("+" + n, x, y - 24); upd(); };
+  const el = () => GARDEN_DUR - time, isNight = () => bonus.active || (el() >= 20 && el() < 30);
+  const gain = (n, x, y, emo = "🌹") => {
+    if (bonus.active){
+      const before = Math.floor(bonusRoses/3);
+      bonusRoses += n;
+      const reward = Math.floor(bonusRoses/3) - before;
+      if (reward) bonus.gain(reward);
+    }
+    picked += n; S.roses = (S.roses || 0) + n; snd.combo(); haptic(6); FX.burst(x, y, {emojis: [emo, "✨"], n: 4 + n*2, size: [12, 20], grav: 350}); popNum("+" + n, x, y - 24); upd(); };
   function spawn(kind){
     const free = bushes.filter(b => !b.item); if (!free.length) return null;
     const b = free[Math.floor(Math.random()*free.length)], e = el();
@@ -6843,6 +7025,7 @@ function lvlGarden(area, done){
       if (kind === "hold"){ startHold(obj, x, y); return; }
       b.item = null; clearTimeout(obj.t);
       if (kind === "bat"){
+        if (bonus.active){ it.remove(); end(); return; }
         if (capeUp){ capeUp = false; snd.back(); haptic(14); flashBanner(area, "Плащ прикрыл от мыши", 1300); FX.burst(x, y, {emojis: ["🧛"], n: 3}); }
         else { lives--; snd.wrong(); snd.resetCombo(); haptic(40); shake(area, 9); FX.burst(x, y, {emojis: ["💢"], n: 3}); upd(); if (lives <= 0) end(); } }
       else if (kind === "gold"){ gain(3, x, y, "⭐"); snd.collect(true); }
@@ -6884,10 +7067,14 @@ function lvlGarden(area, done){
   }
   function end(){
     if (!alive) return; alive = false; cancelAnimationFrame(raf); save(); release();
-    bushes.forEach(b => { if (b.item){ clearTimeout(b.item.t); b.item = null; } }); thieves.forEach(t => { t.done = true; t.el.remove(); });
+    bushes.forEach(b => { if (b.item){ clearTimeout(b.item.t); b.item.el.remove(); b.item = null; } }); thieves.forEach(t => { t.done = true; t.el.remove(); });
     wrap.classList.remove("night"); night.classList.remove("on");
+    if (bonus.active) return bonus.end();
     const st = lives <= 0 ? 0 : picked >= GARDEN3 ? 3 : picked >= GARDEN2 ? 2 : 1;
-    setTimeout(() => done(st, lives <= 0 ? "Летучие мыши победили. Роз собрано: " + picked + "." : `Роз собрано: ${picked}. Три звезды с ${GARDEN3}.`), 300);
+    bonus.offer(st, lives <= 0 ? "Летучие мыши победили. Роз собрано: " + picked + "." : `Роз собрано: ${picked}. Три звезды с ${GARDEN3}.`, () => {
+      alive = true; time = 10; spawnT = 0; thiefT = 1; thieves = [];
+      upd(); raf = requestAnimationFrame(now => { last = now; frame(now); });
+    });
   }
   function frame(now){
     if (!alive) return;
@@ -6908,7 +7095,7 @@ function lvlGarden(area, done){
       if ((goldN === 0 && e >= 15) || (goldN === 1 && e >= 34)){ kind = "gold"; goldN++; }
       spawn(kind); spawnT = e >= 30 ? .34 : e >= 20 ? .55 : .62 - e*.012;
     }
-    if (nt){ thiefT -= dt; if (thiefT <= 0){ thief(); thiefT = 2.6 + Math.random()*1.2; } }
+    if (nt){ thiefT -= dt; if (thiefT <= 0){ thief(); thiefT = bonus.active ? 1.1 : 2.6 + Math.random()*1.2; } }
     if (Math.floor(time*10) % 5 === 0) upd();
     if (time <= 0){ time = 0; upd(); end(); return; }
     raf = requestAnimationFrame(frame);
@@ -7663,7 +7850,8 @@ function lvlShot(area, done){
 /* ---------- 10: лазерная точка (ивент «Ссора», начало) ---------- */
 function lvlLaser(area, done){
   const C = setupCanvas(area), {cv, g} = C;
-  const DUR = 70, PH = [12, 40, 55];
+  const DUR = 40, PH = [6, 20, 30], GOLD_AT = [13, 25, 35];
+  let goldIndex = 0, goldUntil = 0, lead = 0;
   let t = 0, last = 0, raf, alive = false, ended = false, A = 0, Lp = 0, phase = 0, updT = 0;
   const mk = (c, x, y, ang) => ({c, x, y, vx:0, vy:0, ang, cd:0, bored:0, pounce:0, pvx:0, pvy:0, sq:0, joy:0});
   const cats = {a: mk(CONFIG.alisa, 0, 0, -Math.PI/2), l: mk(CONFIG.lapula, 0, 0, Math.PI/2)};
@@ -7699,10 +7887,17 @@ function lvlLaser(area, done){
   const steer = (o, tx, ty, maxv, acc, dt) => { const dx = tx - o.x, dy = ty - o.y, d = Math.hypot(dx, dy) || 1; const dvx = dx/d*maxv - o.vx, dvy = dy/d*maxv - o.vy, dl = Math.hypot(dvx, dvy) || 1, k = Math.min(1, acc*dt/dl); o.vx += dvx*k; o.vy += dvy*k; };
   const brake = (o, k, dt) => { const f = Math.pow(k, dt*60); o.vx *= f; o.vy *= f; };
   function caught(who){
-    const mult = phase === 3 ? 2 : 1, o = cats[who], r0 = cv.getBoundingClientRect();
+    const gold = t < goldUntil, mult = (phase === 3 ? 2 : 1) + (gold ? 1 : 0), o = cats[who], r0 = cv.getBoundingClientRect();
     if (who === "a"){ A += mult; snd.combo(); haptic(10); FX.burst(r0.left + dot.x, r0.top + dot.y, {emojis:["✨","💗"], n:7, size:[12,20], grav:120}); popNum("+" + mult, r0.left + dot.x, r0.top + dot.y - 26); }
     else { Lp += mult; snd.land(.6); if (ensureRunning()) voice({type:"triangle", f:700, f2:420, glide:.18, t:ctx.currentTime, lp:1800, envOpts:{a:.01, d:.2, peak:.08}}); FX.burst(r0.left + dot.x, r0.top + dot.y, {emojis:["🐾"], n:4, size:[14,20], grav:60}); popNum("Лапуля +" + mult, r0.left + dot.x - 20, r0.top + dot.y - 26); }
-    o.cd = .9; o.joy = .6; o.sq = 1; dot.off = .7; const other = cats[who === "a" ? "l" : "a"]; other.cd = Math.max(other.cd, .35);
+    if (gold){ goldUntil = 0; snd.collect(true); }
+    const nextLead = Math.sign(A - Lp);
+    if (nextLead && lead && nextLead !== lead){
+      popNum(nextLead > 0 ? "Алиса обгоняет!" : "Лапуля обгоняет!", r0.left + C.W/2, r0.top + 117, "gold");
+      haptic(12);
+    }
+    if (nextLead) lead = nextLead;
+    o.cd = .65; o.joy = .6; o.sq = 1; dot.off = .48; const other = cats[who === "a" ? "l" : "a"]; other.cd = Math.max(other.cd, .35);
   }
   function drawCatTop(o, name, sleeping){
     const sp = Math.hypot(o.vx, o.vy);
@@ -7738,7 +7933,7 @@ function lvlLaser(area, done){
     if (sleeping){ g.font = "600 13px Unbounded, sans-serif"; g.fillStyle = "rgba(255,255,255,.55)"; g.textAlign = "left"; const z = (t*1.2) % 1;
       g.globalAlpha = 1 - z; g.fillText("z", cats.l.x + 18 + z*10, cats.l.y - 22 - z*18); g.globalAlpha = 1; }
     if (vis()){
-      const rg = g.createRadialGradient(dot.x, dot.y, 0, dot.x, dot.y, 22); rg.addColorStop(0, "rgba(255,240,240,1)"); rg.addColorStop(.18, "rgba(255,40,60,.95)"); rg.addColorStop(1, "rgba(255,30,50,0)");
+      const rg = g.createRadialGradient(dot.x, dot.y, 0, dot.x, dot.y, 22); rg.addColorStop(0, "rgba(255,240,240,1)"); rg.addColorStop(.18, t < goldUntil ? "#ffd05a" : "rgba(255,40,60,.95)"); rg.addColorStop(1, "rgba(255,30,50,0)");
       g.fillStyle = rg; g.beginPath(); g.arc(dot.x, dot.y, 22, 0, 7); g.fill();
     } else if (dot.off > 0){ g.strokeStyle = `rgba(255,60,80,${dot.off})`; g.lineWidth = 2; g.beginPath(); g.arc(dot.x, dot.y, 26*(1.4 - dot.off), 0, 7); g.stroke(); }
     // табло
@@ -7759,6 +7954,9 @@ function lvlLaser(area, done){
       if (np !== phase){ phase = np; snd.collect(true);
         lvBanner(area, ["", "Лапуля проснулась: она ловит замершую точку", "Лапуля поняла правила: теперь бегут обе", "Последний рывок: за поимку ×2"][phase]);
         if (phase === 1){ cats.l.sq = 1; } }
+      if (goldIndex < GOLD_AT.length && t >= GOLD_AT[goldIndex]){
+        goldIndex++; goldUntil = t + 3; lvBanner(area, "Золотая точка: +1 очко"); snd.collect(true);
+      }
       if (finger){ const nx = Math.max(M, Math.min(C.W - M, finger[0])), ny = Math.max(M + 40, Math.min(C.H - M, finger[1])); dot.x = nx; dot.y = ny; }
       const ins = Math.hypot(dot.x - dot.px, dot.y - dot.py)/Math.max(dt, .001); dot.sp = dot.sp*.8 + ins*.2; dot.px = dot.x; dot.py = dot.y;
       if (dot.off > 0) dot.off -= dt;
@@ -7767,7 +7965,7 @@ function lvlLaser(area, done){
       a.cd -= dt; a.sq = Math.max(0, a.sq - dt*4); a.joy = Math.max(0, a.joy - dt);
       if (vis() && a.cd <= 0){
         a.bored = dot.sp > 45 ? 0 : a.bored + dt;
-        if (a.bored < 1.3) steer(a, dot.x, dot.y, phase === 3 ? 330 : 300, 1100, dt); else brake(a, .9, dt);
+        if (a.bored < 1.3) steer(a, dot.x, dot.y, 320 + phase*17, 1220, dt); else brake(a, .9, dt);
       } else brake(a, .88, dt);
       a.x += a.vx*dt; a.y += a.vy*dt; bound(a);
       // Лапуля
@@ -7776,9 +7974,9 @@ function lvlLaser(area, done){
       else if (l.pounce > 0){ l.pounce -= dt; l.x += l.pvx*dt; l.y += l.pvy*dt; l.vx = l.pvx; l.vy = l.pvy; if (l.pounce <= 0){ l.cd = .8; l.vx *= .2; l.vy *= .2; } }
       else if (vis() && l.cd <= 0){
         const d = Math.hypot(dot.x - l.x, dot.y - l.y);
-        if (phase === 2) steer(l, dot.x, dot.y, 270, 900, dt);
+        if (phase >= 2) steer(l, dot.x, dot.y, 274 + (phase - 2)*42, 1050, dt);
         else {
-          steer(l, dot.x, dot.y, 125, 500, dt);
+          steer(l, dot.x, dot.y, 155, 650, dt);
           if (dot.sp < 70 && d < 150 && d > 30){ const k = 560/d; l.pounce = .3; l.pvx = (dot.x - l.x)*k; l.pvy = (dot.y - l.y)*k; l.sq = 1; if (ensureRunning()) noise({type:"bandpass", freq:1400, Q:1, envOpts:{a:.005, d:.08, peak:.05}}); }
         }
       } else brake(l, .9, dt);
@@ -7792,7 +7990,7 @@ function lvlLaser(area, done){
         const da = Math.hypot(dot.x - a.x - Math.cos(a.ang)*18, dot.y - a.y - Math.sin(a.ang)*18), sa = Math.hypot(a.vx, a.vy);
         const dl = Math.hypot(dot.x - l.x - Math.cos(l.ang)*18, dot.y - l.y - Math.sin(l.ang)*18), sl = Math.hypot(l.vx, l.vy);
         if (a.cd <= 0 && da < 24 && sa > 110) caught("a");
-        else if (phase > 0 && l.cd <= 0 && dl < (phase === 2 ? 24 : 30) && (phase === 2 ? sl > 110 : true)) caught("l");
+        else if (phase > 0 && l.cd <= 0 && dl < (phase >= 2 ? 24 : 30) && (phase >= 2 ? sl > 110 : true)) caught("l");
       }
       updT -= dt; if (updT <= 0){ upd(); updT = .25; }
       if (t >= DUR) return end();
@@ -7802,9 +8000,9 @@ function lvlLaser(area, done){
   }
   function end(){
     if (ended) return; ended = true; alive = false; cancelAnimationFrame(raf); upd(); draw();
-    const st = A >= 12 && Lp <= 3 ? 3 : A > Lp ? 2 : 1;
+    const st = A >= 8 && A - Lp >= 4 ? 3 : A > Lp ? 2 : 1;
     const txt = A > Lp ? `Алиса забрала почти всё: ${A} против ${Lp}. Лапуля обиделась.` : A === Lp ? `Ничья ${A} : ${Lp}. Обе уверены, что победили.` : `Лапуля отыгралась: ${Lp} против ${A}. Алиса обиделась.`;
-    setTimeout(() => done(st, txt + " Три звезды: у Алисы от 12, у Лапули не больше 3."), 500);
+    setTimeout(() => done(st, txt + " Три звезды: у Алисы от 8 и отрыв от Лапули не меньше 4."), 500);
   }
   area.__laser = { cats, dot, C, get t(){ return t; }, get phase(){ return phase; }, get alive(){ return alive; }, get score(){ return [A, Lp]; } };
   raf = requestAnimationFrame(tt => { last = tt; frame(tt); });
@@ -8150,7 +8348,7 @@ function applyGlass(){ app.classList.toggle("lowfx", glassOff()); }
   }
   setTimeout(() => requestAnimationFrame(frame), 5000);
 })();
-function renderAll(){ applyLook(); applyEvent(); applySeason(); hud(); applyMoon(); applyHouseTime(); applyWeather(); applyGuest(); showView(document.querySelector(".view.on").id); }
+function renderAll(){ paintDailyRequest(); applyLook(); applyEvent(); applySeason(); hud(); applyMoon(); applyHouseTime(); applyWeather(); applyGuest(); showView(document.querySelector(".view.on").id); }
 app.addEventListener("scroll", () => { if (app.scrollTop || app.scrollLeft){ app.scrollTop = 0; app.scrollLeft = 0; } });
 try { if (navigator.standalone || matchMedia("(display-mode: standalone)").matches) app.classList.add("pwa"); } catch(e){}
 (function worldFx(){
@@ -8201,6 +8399,7 @@ $("#btnStart").onclick = () => {
   const [x,y] = centerOf($("#btnStart")); FX.burst(x, y, {emojis:["✨","🌙","⭐"], n:14, size:[14,24]});
   $("#splash").classList.add("off"); setTimeout(() => $("#splash").remove(), 1000); setTimeout(pickTerraceEncounter, 3800);
   dayNote(); save();
+  setTimeout(() => paintDailyRequest(true), 1150);
   setTimeout(() => rainSound(app.classList.contains("rainy")), 900);
   setTimeout(() => { timeLines(); eventFx(); queueGift(5200); }, 1300);
 };
