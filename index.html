@@ -1986,7 +1986,11 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 .action-row:active:not(:disabled){filter:brightness(1.12)}
 .action-row:disabled{opacity:.6;cursor:default}
 .app.lowfx .action-row{backdrop-filter:none;background:linear-gradient(180deg,rgba(98,72,126,.9),rgba(56,39,80,.92))}
-#dailyRequest{width:min(100%,330px);margin-top:8px}
+#dailyRequest{
+  width:min(100%,248px);margin-top:10px;padding:6px 10px;gap:8px;border-radius:14px;
+}
+#dailyRequest > .ico{width:14px;height:14px}
+#dailyRequest .row-title,#dailyRequest .row-detail{font-size:11px}
 .request-result{
   display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 8px;
   margin:8px 0 0;padding:2px 8px;color:var(--ink);
@@ -2128,6 +2132,11 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
             <div class="lbl"><span id="purrK">мурр-шкала</span><span class="pc"><span class="num" id="purrN">0/15</span><span class="dropl" aria-hidden="true"><span class="e0">🩸</span><span class="e1">🩸</span></span></span></div>
             <div class="bar"><b id="purrBar"></b></div><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i>
           </div>
+          <div class="dock ears" id="dock">
+            <button class="dk side lg" id="btnWardrobe"><span class="de" aria-hidden="true">🎀</span><span>Гардероб</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
+            <button class="dk play" id="btnPlay"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><span class="de" aria-hidden="true">🌙</span>Играть<svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg></button>
+            <button class="dk side lg" id="btnShop"><span class="de" aria-hidden="true">🛍️</span><span>Лавка</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
+          </div>
           <button type="button" class="action-row lg" id="dailyRequest" hidden>
             <svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg>
             <span><span class="row-title">Просьба дня</span><span class="row-detail"></span></span>
@@ -2137,11 +2146,6 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
             <span>Просьба выполнена</span>
             <b>+8 <span role="img" aria-label="капель">🩸</span></b>
           </p>
-          <div class="dock ears" id="dock">
-            <button class="dk side lg" id="btnWardrobe"><span class="de" aria-hidden="true">🎀</span><span>Гардероб</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
-            <button class="dk play" id="btnPlay"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><span class="de" aria-hidden="true">🌙</span>Играть<svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg></button>
-            <button class="dk side lg" id="btnShop"><span class="de" aria-hidden="true">🛍️</span><span>Лавка</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
-          </div>
           </div>
         </div>
       </section>
