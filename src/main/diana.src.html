@@ -1708,8 +1708,8 @@ html,body{background:#0f0a17}
 @keyframes tipGlint{0%,100%{opacity:.25;transform:translateX(-5px) scale(.8)}50%{opacity:1;transform:translateX(0) scale(1.1)}}
 .meter.paused .bar b::before,.app.game-on .meter .bar b::before,.app.sheet-on .meter .bar b::before{animation:none;opacity:0}
 /* созерцание: 3,5 с без касаний на главной, шкала и док отступают, сад и кошки остаются главными. Любое касание возвращает их за 140 мс */
-#v-home .meter,#v-home .dock{transition:opacity .14s ease,translate .14s ease,scale .14s ease}
-.app.gaze #v-home .meter,.app.gaze #v-home .dock{opacity:.62;translate:0 3px;scale:.97;transition:opacity 1.1s ease,translate 1.1s ease,scale 1.1s ease}
+#v-home .meter,#v-home .dock,#dailyRequest{transition:opacity .14s ease,translate .14s ease,scale .14s ease}
+.app.gaze #v-home .meter,.app.gaze #v-home .dock,.app.gaze #dailyRequest{opacity:.62;translate:0 3px;scale:.97;transition:opacity 1.1s ease,translate 1.1s ease,scale 1.1s ease}
 @media (prefers-reduced-motion:reduce){.meter .bar b::before{animation:none}}
 /* док: три стеклянные кнопки с кошачьими ушками, золотым кантом и лапкой в углу. Ушки дёргаются под пальцем */
 #v-home .dock{position:relative;margin-top:22px;width:100%;max-width:340px;gap:10px;padding:0;border-radius:0;align-items:flex-end}
