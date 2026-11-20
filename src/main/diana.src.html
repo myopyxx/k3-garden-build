@@ -1708,8 +1708,8 @@ html,body{background:#0f0a17}
 @keyframes tipGlint{0%,100%{opacity:.25;transform:translateX(-5px) scale(.8)}50%{opacity:1;transform:translateX(0) scale(1.1)}}
 .meter.paused .bar b::before,.app.game-on .meter .bar b::before,.app.sheet-on .meter .bar b::before{animation:none;opacity:0}
 /* созерцание: 3,5 с без касаний на главной, шкала и док отступают, сад и кошки остаются главными. Любое касание возвращает их за 140 мс */
-#v-home .meter,#v-home .dock,#dailyRequest{transition:opacity .14s ease,translate .14s ease,scale .14s ease}
-.app.gaze #v-home .meter,.app.gaze #v-home .dock,.app.gaze #dailyRequest{opacity:.62;translate:0 3px;scale:.97;transition:opacity 1.1s ease,translate 1.1s ease,scale 1.1s ease}
+#homeControls{width:100%;display:flex;flex-direction:column;align-items:center;transition:opacity .14s ease,transform .14s ease}
+.app.gaze #homeControls{opacity:.62;transform:translateY(3px) scale(.97);transition:opacity 1.1s ease,transform 1.1s ease}
 @media (prefers-reduced-motion:reduce){.meter .bar b::before{animation:none}}
 /* док: три стеклянные кнопки с кошачьими ушками, золотым кантом и лапкой в углу. Ушки дёргаются под пальцем */
 #v-home .dock{position:relative;margin-top:22px;width:100%;max-width:340px;gap:10px;padding:0;border-radius:0;align-items:flex-end}
@@ -1972,6 +1972,14 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 
 #dailyRequest{display:block;width:min(92%,340px);margin:10px auto 0;padding:8px 12px;border-radius:16px;background:#271c3b;color:#f5e9ff;font-size:12px;text-align:center}
 #dailyRequest[hidden]{display:none}
+#duo .cat.request-ear .head{rotate:-9deg;transform-origin:100px 150px;transition:rotate .5s ease}
+#duo .cat.request-thanks .head{animation:requestRest 2.6s ease-in-out}
+.app.memory-concert #duo .cat .head{animation:vgNod .75s ease-in-out infinite alternate}
+.app.memory-concert #duo .pet[data-cat=alisa] .head{animation-delay:.75s}
+.app.memory-concert #duo .pet[data-cat=lapula] .paw.pr{animation:concertPaw .75s ease-in-out infinite}
+@keyframes requestRest{0%,100%{translate:0 0}35%,75%{translate:0 10px}}
+@keyframes concertPaw{0%,100%{translate:0 0}40%{translate:0 -7px}}
+@media(prefers-reduced-motion:reduce){#homeControls,.app.gaze #homeControls{transition:none;transform:none}#duo .cat.request-ear .head{rotate:0deg}#duo .cat.request-thanks .head,.app.memory-concert #duo .cat .head,.app.memory-concert #duo .cat .paw.pr{animation:none}}
 #duo .cat .hl-ear{rotate:var(--ear-follow,0deg);transform-box:fill-box;transform-origin:50% 100%;transition:rotate .24s ease-out}
 @media (prefers-reduced-motion:reduce){#duo .cat .hl-ear{rotate:0deg}}
 </style>
@@ -2089,6 +2097,7 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
         <div class="home">
           <div class="bslot" id="bslot"><div class="bubble" id="bubble" aria-live="polite"><span class="bt" id="bubbleT"><span class="w">мрр?</span></span><i class="btail" aria-hidden="true"></i></div></div>
           <div class="duo" id="duo"></div>
+          <div id="homeControls">
           <div class="meter lg int" id="purr" role="progressbar" aria-label="Мурр-шкала: каждые 15 поглаживаний дают каплю" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0">
             <div class="lbl"><span id="purrK">мурр-шкала</span><span class="pc"><span class="num" id="purrN">0/15</span><span class="dropl" aria-hidden="true"><span class="e0">🩸</span><span class="e1">🩸</span></span></span></div>
             <div class="bar"><b id="purrBar"></b></div><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i>
@@ -2098,6 +2107,7 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
             <button class="dk side lg" id="btnWardrobe"><span class="de" aria-hidden="true">🎀</span><span>Гардероб</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
             <button class="dk play" id="btnPlay"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><span class="de" aria-hidden="true">🌙</span>Играть<svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg></button>
             <button class="dk side lg" id="btnShop"><span class="de" aria-hidden="true">🛍️</span><span>Лавка</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
+          </div>
           </div>
         </div>
       </section>
@@ -3192,7 +3202,7 @@ app.addEventListener("pointerdown", e => {
   if (idle.sleeping && S.event !== "quarrel"){ const p = e.target.closest && e.target.closest("#duo .pet"); wakeCats(p ? p.dataset.cat : (Math.random() < .5 ? "alisa" : "lapula")); }
 }, {passive:true, capture:true});
 setInterval(() => {
-  if (!homeLive() || document.hidden){ idle.last = performance.now(); return; }
+  if (!homeLive() || document.hidden || app.classList.contains("memory-concert")){ idle.last = performance.now(); return; }
   if (idle.sleeping || S.event === "quarrel") return;
   const t = (performance.now() - idle.last)/1000;
   if (t > 80) return sleepCats(false);
@@ -3314,7 +3324,7 @@ function pet(el, e, soft){
     clearTimeout(petFx.cool); petFx.cool = setTimeout(() => { petFx.streak = 1; applyStreak(); }, 4000);
     if (!ov && petFx.streak > 1 && !reduced()) $("#purrN").animate([{transform: "none"}, {transform: `scale(1.14) rotate(${who === "alisa" ? -5 : 5}deg)`, offset: .3}, {transform: "none"}], {duration: 260, easing: "ease-out"});
   }
-  dailyAction("pet", {who, zone});
+  if (dailyAction("pet", {who, zone})) said = true;
   if (MILES[S.pets]){ celebrate(S.pets, who); said = true; }
   if (!reduced() && !soft){
     const sd = who === "alisa" ? -1 : 1, other = document.querySelector(`#duo .pet:not([data-cat="${who}"])`);
@@ -4405,7 +4415,7 @@ function initMini(){
   sheetDrag(sh, [sh.querySelector(".grabzone"), sh.querySelector(".shead")]);
   mini.onclick = () => {
     if (!S.songSeen){ S.songSeen = 1; save(); mini.classList.remove("new"); }
-    if (!S.salvJoke && S.event !== "quarrel"){ S.salvJoke = 1; save(); setTimeout(() => setBubble("Сальваторе? это который Деймон?", "alisa"), 500); setTimeout(() => setBubble("это песня. но Деймон тоже ничего", "lapula"), 3600); }
+    if (!S.salvJoke && S.event !== "quarrel"){ S.salvJoke = 1; save(); setTimeout(() => { if (!app.classList.contains("memory-concert")) setBubble("Сальваторе? это который Деймон?", "alisa"); }, 500); setTimeout(() => { if (!app.classList.contains("memory-concert")) setBubble("это песня. но Деймон тоже ничего", "lapula"); }, 3600); }
     if (!songFrame){ songFrame = document.createElement("iframe"); songFrame.src = song.yandex; songFrame.allow = "clipboard-write; autoplay; encrypted-media"; songFrame.referrerPolicy = "origin"; songFrame.title = song.artist + " — " + song.title; sh.querySelector(".song-sheet").appendChild(songFrame); }
     sheetClose = () => musicBox.close(); showSheetEl(sh, true); musicBox.open();
   };
@@ -4413,7 +4423,12 @@ function initMini(){
 /* музыкальная шкатулка в листе песни: валик крутится в темпе, семь молоточков по числу нарядов вздрагивают на своих партиях,
    ручку сбоку крутят пальцем. По часовой быстрее (до 112 ударов в минуту), против часовой медленнее (до 68); отпустили: темп сам возвращается к 80 */
 const musicBox = (() => {
-  let el = null, raf = 0, last = 0, roll = 0, ang = 0, vel = 0, drag = null, live = false;
+  let el = null, raf = 0, last = 0, roll = 0, ang = 0, vel = 0, drag = null, live = false, turned = 0;
+  function turnMemory(degrees){
+    if (!wearOf("l").bow || S.concertMemory || S.event === "quarrel") return;
+    turned += Math.abs(degrees);
+    if (turned >= 90){ closeSheet(); showView("v-home"); playConcert(true); }
+  }
   function build(){
     el = $("#mbox"); if (!el || el.dataset.ready) return; el.dataset.ready = 1;
     el.innerHTML = '<div class="mb-case"><div class="mb-roll" aria-hidden="true"><i></i></div><div class="mb-comb"></div><div class="mb-notes" aria-hidden="true"></div></div>' +
@@ -4425,10 +4440,10 @@ const musicBox = (() => {
     crank.addEventListener("pointerdown", e => { drag = {a: a(e), id: e.pointerId, t: performance.now()}; try { crank.setPointerCapture(e.pointerId); } catch(_){} crank.classList.add("held"); wake(); e.preventDefault(); });
     crank.addEventListener("pointermove", e => { if (!drag || e.pointerId !== drag.id) return; const now = performance.now(), cur = a(e); let d = cur - drag.a; if (d > 180) d -= 360; if (d < -180) d += 360;
       const dt = Math.max(8, now - drag.t)/1000; drag.a = cur; drag.t = now; ang += d; vel += (d/dt/360 - vel)*.35;                /* обороты в секунду, сглаженные */
-      const step = Math.floor(ang/45); if (step !== drag.k){ drag.k = step; haptic(3); } });
+      const step = Math.floor(ang/45); if (step !== drag.k){ drag.k = step; haptic(3); } turnMemory(d); });
     const up = e => { if (!drag || (e && e.pointerId !== drag.id)) return; drag = null; crank.classList.remove("held"); };
     ["pointerup", "pointercancel", "lostpointercapture"].forEach(t => crank.addEventListener(t, up));
-    crank.addEventListener("keydown", e => { const d = {ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1}[e.key]; if (!d) return; e.preventDefault(); wake(); vel = d > 0 ? 1.1 : -.8; ang += d*60; });
+    crank.addEventListener("keydown", e => { const d = {ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1}[e.key]; if (!d) return; e.preventDefault(); wake(); vel = d > 0 ? 1.1 : -.8; ang += d*60; turnMemory(d*60); });
   }
   function wake(){ if (!Music.playing && S.music && S.sound && !app.classList.contains("listening")) Music.start(); }
   function paint(){
@@ -4467,7 +4482,7 @@ const musicBox = (() => {
     n.animate([{transform: "translate(-50%,0) scale(.6)", opacity: 0}, {transform: "translate(-50%,-14px) scale(1)", opacity: 1, offset: .25}, {transform: `translate(calc(-50% + ${(Math.random()*20 - 10).toFixed(0)}px),-46px) scale(.9)`, opacity: 0}], {duration: 900, easing: "ease-out"}).onfinish = () => n.remove();
   }
   return {
-    open(){ build(); if (!el) return; live = true; vel = 0; dailyListenSeconds = 0; paint(); wake(); Music.listen(onStep); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); },
+    open(){ build(); if (!el) return; live = true; vel = 0; turned = 0; dailyListenSeconds = 0; paint(); wake(); Music.listen(onStep); last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); },
     close(){ live = false; cancelAnimationFrame(raf); Music.listen(null); Music.tempo(Music.base); }
   };
 })();
@@ -4497,6 +4512,7 @@ document.querySelectorAll(".view").forEach(v => v.addEventListener("scroll", () 
 /* куда смотрит камера: вкладка, а поверх неё открытый лист гардероба или лавки */
 function camTo(view, sheet){ if (view) camTo.view = view; if (sheet !== undefined) camTo.sheet = sheet; $("#world").dataset.cam = camTo.sheet || camTo.view || "v-home"; }
 function showView(id){
+  if (id !== "v-home") stopConcert();
   if (id === "v-home") paintDailyRequest();
   if (id === "v-wardrobe" && !S.splitWear) id = "v-home";
   const prevV = showView.last;
@@ -4868,6 +4884,8 @@ function dailyRequest(){
 function paintDailyRequest(announce = false){
   const task = dailyRequest(), button = $("#dailyRequest");
   button.hidden = false;
+  const lap = catOf("lapula");
+  if (lap) lap.classList.toggle("request-ear", !task.done && task.kind === "pet" && task.who === "lapula" && task.zone === 0 && S.event !== "quarrel");
   const label = task.done ? "Просьба дня выполнена ✓" :
     task.text + " · " + task.count + "/" + task.target + " · +8 капель";
   if (button.textContent !== label) button.textContent = label;
@@ -4885,11 +4903,18 @@ function dailyAction(kind, detail = {}){
   if (task.count >= task.target){
     task.done = true;
     dayNote().request = task.text;
+    if (kind === "pet" && task.who === "lapula" && task.zone === 0) dayNote().earRequest = true;
     earn(8);
     hud(true);
     snd.collect(true);
   }
   save(); paintDailyRequest();
+  if (kind === "pet"){
+    const cat = catOf(task.who);
+    setBubble(task.done ? (task.who === "lapula" ? "за левым ушком лучше. запомни" : "вот теперь хорошо") : ["вот тут", "мрр…", "ещё немножко", "да, именно так"][Math.min(task.count - 1, 3)], task.who);
+    if (task.done && cat){ cat.classList.add("request-thanks"); setTimeout(() => cat.classList.remove("request-thanks"), 2700); }
+  }
+  return true;
 }
 $("#dailyRequest").onclick = () => {
   const task = dailyRequest();
@@ -4944,6 +4969,8 @@ function diaryLines(e, first){
   if (e.nap) P("nap", "Уснула у тебя на пальце, а проснулась, когда ты его убрала.");
   (e.vg || []).slice(0, 2).forEach(id => P("vg_" + id, VG_DIARY[id]));
   if (e.jl && e.jl.length) P("jl", e.jl.includes("lapula") ? "Гладили меня, а Лапуля делала вид, что ей всё равно." : "Гладили Лапулю, а я сидела рядом. Просто сидела.");
+  if (e.earRequest) P("earRequest", "Лапуля сама подставила ушко. Потом положила голову на лапы.");
+  if (e.concert) P("concert", "Устроили концерт для двоих. Лапуля отбивала такт лапой. Я вступила чуть позже.");
   if (e.request) P("request", "Ты выполнила нашу просьбу. Я записала: «" + e.request + "».");
   if (e.epi) P("epi", "Смотрели эпилог про нас на крыше. Луна там огромная.");
   if (!L.length) P("empty", "Ты заходила ненадолго. Мы были дома.");
@@ -4953,7 +4980,7 @@ function diaryLines(e, first){
 const VG_DIARY = {plaid: "Делили с Лапулей плед. Ну как делили.", fly: "Следили за светлячком, пока он не улетел.", scope: "Смотрели в телескоп. Лапуля нашла среди звёзд рыбу.",
   note: "Спрятала под лапу записку. Что в ней, не скажу.", tail: "Дул ветер, и Лапуля села так, что мне не дуло.", nod: "Качали головами под шкатулку. Лапуля сбивалась.",
   rain: "Сидели у стекла и смотрели, как бегут капли. Мы с Лапулей болели за разные.", boxduet: "Залезли с Лапулей в одну коробку. Места хватило на уши."};
-const LNOTES = {vg_plaid: "плед был мой", vg_fly: "я почти поймала", vg_scope: "она там есть", vg_note: "я прочитала", vg_tail: "случайно", vg_nod: "это синкопа", vg_rain: "моя быстрее", vg_boxduet: "коробка была моя", jl: "мне правда всё равно",
+const LNOTES = {earRequest: "За левым ухом лучше. Запомни.", concert: "я задавала ритм", vg_plaid: "плед был мой", vg_fly: "я почти поймала", vg_scope: "она там есть", vg_note: "я прочитала", vg_tail: "случайно", vg_nod: "это синкопа", vg_rain: "моя быстрее", vg_boxduet: "коробка была моя", jl: "мне правда всё равно",
   first: "и с ошибками", late: "а я спала", early: "я тоже", s_hw: "и мой", s_ny: "а я рыбку", s_val: "особенно я",
   pa: "пересчитаю", pl: "сиди где сидишь", eq: "я считала по-другому", lv3: "я болела", lv1: "в следующий раз три", lv0: "завтра получится",
   lvN: "я смотрела все", ach: "это и моя награда", egg: "уже прочитала", q: "точку первой увидела я", mk: "я первая подвинулась",
@@ -5018,6 +5045,26 @@ function moonDial(onDay){
   day = NaN; paint(true);
   return el;
 }
+let concertTimer = 0;
+function stopConcert(){
+  clearTimeout(concertTimer); concertTimer = 0;
+  app.classList.remove("memory-concert");
+}
+function playConcert(discover = false){
+  if (S.event === "quarrel") return;
+  if (busyAct) endBusy();
+  stopConcert(); wakeCats("lapula"); unNap(false);
+  if (discover){ S.concertMemory = true; dayNote().concert = true; save(); renderDiaryCard(); }
+  app.classList.add("memory-concert");
+  if (S.sound && S.music && !app.classList.contains("listening")) Music.start();
+  setBubble("я начну. ты подхватывай", "lapula");
+  concertTimer = setTimeout(() => {
+    stopConcert();
+    if (homeLive()) setBubble(discover ? "наш первый концерт. запишу в дневник" : "мы всё ещё помним эту мелодию", "alisa");
+  }, 6000);
+}
+addEventListener("visibilitychange", () => { if (document.hidden) stopConcert(); });
+app.addEventListener("pointerdown", () => { if (concertTimer) stopConcert(); }, {capture:true, passive:true});
 function openDiary(){
   const ks = Object.keys(S.diary || {}).sort().reverse(), firstK = ks[ks.length - 1];
   S.diarySeen = Date.now(); save(); renderDiaryCard();
@@ -5037,11 +5084,21 @@ function openDiary(){
       diaryLines(S.diary[k], k === firstK).forEach(({k: key, t}) => {
         const p = document.createElement("p"); p.textContent = t; day.appendChild(p);
         const n = LNOTES[key];
-        if (n && (key.startsWith("vg_") ? notes < 3 : notes < 2 && hashStr(k + key) % 10 < 5)){       /* у сценок пометка Лапули всегда */ notes++; const m = document.createElement("span"); m.className = "lnote"; m.textContent = n;
+        if (n && (key === "earRequest" || key === "concert" || (key.startsWith("vg_") ? notes < 3 : notes < 2 && hashStr(k + key) % 10 < 5))){       /* у сценок пометка Лапули всегда */ notes++; const m = document.createElement("span"); m.className = "lnote"; m.textContent = n;
           m.style.setProperty("--r", ((hashStr(key + k) % 7) - 3) * .9 + "deg"); p.appendChild(m); }
       });
       box.appendChild(day);
     });
+    if (S.concertMemory){
+      const replay = document.createElement("button"); replay.className = "btn ghost"; replay.textContent = "♫ Концерт для двоих · вспомнить";
+      replay.disabled = S.event === "quarrel";
+      replay.onclick = () => { closeSheet(); showView("v-home"); playConcert(); };
+      body.appendChild(replay);
+    } else if (S.owned.bow){
+      const clue = document.createElement("p"); clue.className = "lnote";
+      clue.textContent = "Когда на Лапуле бантик, шкатулка звенит иначе. Надень его и поверни ручку. Она ещё не слышала.";
+      body.appendChild(clue);
+    }
     body.appendChild(box);
   }, () => applyMoon());
 }
@@ -5804,6 +5861,7 @@ function busyPick(){
   const p2 = pool.filter(k => k !== S.lastBusy), k = pick(p2.length ? p2 : pool); S.lastBusy = k; return k;
 }
 function startBusy(then, force, ms){
+  if (app.classList.contains("memory-concert")) return false;
   if (reduced() || busyAct || !homeLive() || specialBusy || idle.sleeping || idle.lapNap || S.event === "quarrel" || (knead && knead.cat)) return false;
   const kind = force || busyPick(), who = kind === "box" ? (Math.random() < .6 ? "lapula" : "alisa") : Math.random() < .5 ? "alisa" : "lapula";
   specialBusy = true; busyAct = {kind, who, then}; busyAct.t = setTimeout(() => endBusy(), ms || 6500);
