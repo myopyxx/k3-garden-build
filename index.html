@@ -1668,8 +1668,7 @@ html,body{background:#0f0a17}
 .thief.has .loot{opacity:1}
 
 /* ===== v11: стекло на главной, проявка пальцем, объём снимков ===== */
-/* Шкала, две кнопки и реплика снова преломляют небо. Раньше стекло здесь было выключено ради плавности,
-   поэтому оно само гаснет (класс lowfx), если телефон не держит частоту кадров, и на время открытого листа */
+/* Шкала, две кнопки и реплика преломляют небо. Стекло меняется в режиме экономии и при открытом листе. */
 @media not (prefers-reduced-transparency:reduce){
   .app:not(.lowfx) #v-home .meter,.app:not(.lowfx) #v-home .btn.ghost,.app:not(.lowfx) .home .bubble{
     -webkit-backdrop-filter:blur(22px) saturate(1.95) brightness(1.06);backdrop-filter:blur(22px) saturate(1.95) brightness(1.06);
@@ -2297,7 +2296,8 @@ const CONFIG = {
 const $ = s => document.querySelector(s);
 const app = $("#app");
 const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
-const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+const reduced = () => motionPreference.matches;
 
 /* ---------- состояние ---------- */
 const KEY = "alisa-diaries-v3";
@@ -3167,27 +3167,52 @@ let gazeT = 0, gazeRaf = 0;
   ["pointerdown", "keydown"].forEach(t => addEventListener(t, arm, {passive: true, capture: true})); setTimeout(arm, 0); }
 function homeLive(){ return $("#v-home").classList.contains("on") && !$("#game").classList.contains("on") && !openSh && !document.querySelector("#splash:not(.off)") && !$("#viewer").classList.contains("on"); }
 function setGaze(c, x, y){ if (!c) return; c.style.setProperty("--gx", x.toFixed(2) + "px"); c.style.setProperty("--gy", y.toFixed(2) + "px"); c.style.setProperty("--gn", (x/3.6).toFixed(3)); c.style.setProperty("--gm", (y/2.8).toFixed(3)); }
-function lookAt(x, y){
+function lookAt(x, y, followEars = false){
   if (S.event === "quarrel" || reduced()) return;
   const tnow = performance.now();
-  document.querySelectorAll("#duo .cat").forEach(c => { if (c.classList.contains("sleep") || (c._away || 0) > tnow) return; const r = c.getBoundingClientRect(), dx = x - (r.left + r.width*.5), dy = y - (r.top + r.height*.43), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d/150); setGaze(c, dx/d*k*3.6, dy/d*k*2.8); });
+  const targets = [];
+  document.querySelectorAll("#duo .cat:not(.sleep)").forEach(cat => {
+    const look = (cat._away || 0) <= tnow;
+    if (look || followEars) targets.push({cat, look, rect:cat.getBoundingClientRect()});
+  });
+  // Сначала обе рамки, потом запись CSS: стиль первой кошки не задерживает замер второй.
+  for (const {cat, look, rect} of targets){
+    const dx = x - (rect.left + rect.width*.5);
+    if (look){
+      const dy = y - (rect.top + rect.height*.43), distance = Math.hypot(dx, dy) || 1;
+      const strength = Math.min(1, distance/150);
+      setGaze(cat, dx/distance*strength*3.6, dy/distance*strength*2.8);
+    }
+    if (followEars) cat.style.setProperty("--ear-follow", Math.max(-10, Math.min(10, dx/14)) + "deg");
+  }
   clearTimeout(gazeT); gazeT = setTimeout(lookHome, 1900);
 }
 function lookHome(){ document.querySelectorAll("#duo .cat").forEach(c => setGaze(c, 0, 0)); }
 function glance(c, dir, ms){ if (!c || S.event === "quarrel" || c.classList.contains("sleep")) return; setGaze(c, dir*3.4, .4); clearTimeout(c._gl); c._gl = setTimeout(() => setGaze(c, 0, 0), ms); }
-app.addEventListener("pointermove", e => { if (!e.isPrimary || gazeRaf || !homeLive()) return; gazeRaf = requestAnimationFrame(() => { gazeRaf = 0; if (!homeLive()) return; lookAt(e.clientX, e.clientY);
-  if ((e.buttons || e.pointerType === "touch" && earPointers.has(e.pointerId)) && !reduced() && S.event !== "quarrel"){
-    document.querySelectorAll("#duo .cat:not(.sleep)").forEach(c => {
-      const rect = c.getBoundingClientRect();
-      const turn = Math.max(-10, Math.min(10, (e.clientX - rect.left - rect.width/2)/14));
-      c.style.setProperty("--ear-follow", turn + "deg");
-    });
-  } }); }, {passive:true});
+let gazePointer;
+app.addEventListener("pointermove", e => {
+  if (!e.isPrimary || (!gazeRaf && !homeLive())) return;
+  gazePointer = e;
+  if (gazeRaf) return;
+  gazeRaf = requestAnimationFrame(() => {
+    gazeRaf = 0;
+    const pointer = gazePointer;
+    gazePointer = null;
+    if (!homeLive()) return;
+    const followEars = pointer.pointerType === "touch" ? earPointers.has(pointer.pointerId) : pointer.buttons !== 0;
+    lookAt(pointer.clientX, pointer.clientY, followEars);
+  });
+}, {passive:true});
 const earPointers = new Set();
 app.addEventListener("pointerdown", e => earPointers.add(e.pointerId), {passive:true});
 for (const type of ["pointerup", "pointercancel"]){
   addEventListener(type, e => {
     earPointers.delete(e.pointerId);
+    if (gazePointer?.pointerId === e.pointerId){
+      cancelAnimationFrame(gazeRaf);
+      gazeRaf = 0;
+      gazePointer = null;
+    }
     document.querySelectorAll("#duo .cat").forEach(c => c.style.removeProperty("--ear-follow"));
   }, {passive:true});
 }
@@ -3742,7 +3767,7 @@ function openSettings(){
       li("#i-speaker:#9fc3ff", "Звуки", null, swEl(S.sound, "Звуки", v => { S.sound = v; save(); if (!v) Music.stop(); else if (S.music) Music.start(0); })),
       li("#i-vibe:#c9a7ff", "Вибрация", "на iPhone лёгкий щелчок", swEl(S.vibe, "Вибрация", v => { S.vibe = v; save(); })),
       li("#i-drop:#bfe0ff", "Упрощённые эффекты", "меньше стекла и блеска, меньше расход заряда. включай, если игра идёт рывками",
-        swEl(glassOff(), "Упрощённые эффекты, экономия заряда", v => { S.glass = !v; if (!v) try { sessionStorage.removeItem(GLASS_KEY); } catch(e){} save(); applyGlass(); })),
+        swEl(glassOff(), "Упрощённые эффекты, экономия заряда", v => { S.glass = !v; save(); applyGlass(); })),
       tiltRow()
     );
     const crests = document.createElement("div"); crests.className = "crests"; crests.setAttribute("role","radiogroup"); crests.setAttribute("aria-label","Команда");
@@ -6171,7 +6196,7 @@ function startLevel(L, fromEl){
   current = L;
   const P = POSTER[L.n], game = $("#game");
   game.style.setProperty("--lvbg", `linear-gradient(180deg,${P[0]},${P[1]} 70%,${P[2]})`);
-  $("#gTitle").textContent = L.t; $("#gStat").innerHTML = "";
+  $("#gTitle").textContent = L.t; stat("");
   $("#result").classList.remove("on");
   const area = $("#garea"); area.innerHTML = "";
   const open = () => {
@@ -6205,7 +6230,12 @@ function exitLevel(){
   game.animate([{opacity:1, transform:"none"}, {opacity:0, transform:"scale(.94)"}], {duration:300, easing:"cubic-bezier(.4,0,.6,1)"}).onfinish = fin;
 }
 $("#gClose").onclick = () => { snd.back(); exitLevel(); };
-function stat(html){ $("#gStat").innerHTML = html; }
+let lastStat;
+function stat(html){
+  if (html === lastStat) return;
+  $("#gStat").innerHTML = html;
+  lastStat = html;
+}
 const chip = (e, v) => `<div class="chip"><span class="e">${e}</span><span class="num">${v}</span></div>`;
 
 function intro(area, L, text, onGo){
@@ -6385,7 +6415,10 @@ function lvlHunt(area, done){
       if (it.kind === "gold"){
         const sp = goldFish(), w = 34*1.35; g.save(); g.translate(it.x, it.y); g.rotate(Math.sin(it.age*3.2)*.35);
         g.shadowColor = "rgba(255,214,110,.9)"; g.shadowBlur = 16; g.drawImage(sp, -w/2, -w/2, w, w); g.restore();
-        if (Math.random() < .07) FX.burst(cv.getBoundingClientRect().left + it.x + (Math.random()-.5)*20, cv.getBoundingClientRect().top + it.y, {emojis:["✨"], n:1, size:[8,12], grav:60});
+        if (Math.random() < .07){
+          const rect = cv.getBoundingClientRect();
+          FX.burst(rect.left + it.x + (Math.random()-.5)*20, rect.top + it.y, {emojis:["✨"], n:1, size:[8,12], grav:60});
+        }
       } else drawEmoji(g, it.e, it.x, it.y, it.kind === "mint" ? 30 : 34, Math.sin(it.y/40)*.25);
     });
     const cy = C.H - 40;
@@ -6467,13 +6500,14 @@ function lvlHunt(area, done){
     }
     if (mintN < mintAt.length && e >= mintAt[mintN]){ mintN++; items.push({x: 40 + Math.random()*(C.W-80), y: -20, vy: 140, e: "🌿", v: 0, kind: "mint", age: 0}); }
     if (!goldN && e >= goldAt){ goldN = 1; const x0 = 60 + Math.random()*(C.W - 120); items.push({x: x0, x0, y: -20, vy: 165, e: "🐟", v: 5, kind: "gold", age: 0}); }
-    const cy = C.H - 40, r0 = cv.getBoundingClientRect();
+    const cy = C.H - 40;
     lapThink(dt, ts, cy);
     items = items.filter(it => {
       it.age += dt * ts; it.y += it.vy*dt*ts;
       if (it.kind === "gold") it.x = Math.max(24, Math.min(C.W - 24, it.x0 + Math.sin(it.age*3.2) * Math.min(70, C.W*.18)));
       else if (mint > 0 && it.v > 0 && it.y > 40) it.x += (px - it.x) * Math.min(1, dt*2.6);
       if (it.y > cy - 50 && it.y < cy + 6 && Math.abs(it.x - px) < 38){
+        const r0 = cv.getBoundingClientRect();
         if (it.kind === "mint"){
           mint = 5; haptic(12); squash = 1; FX.burst(r0.left+it.x, r0.top+it.y, {emojis:["🌿"], n:6, size:[12,18], grav:120});
           popNum("мята", r0.left+it.x, r0.top+it.y-20); arp([659.25, 783.99, 987.77, 1318.5], .05, "sine", .07);
@@ -6494,6 +6528,7 @@ function lvlHunt(area, done){
         upd(); return false;
       }
       if (lap.on && !lap.out && it.v > 0 && it.y > cy - 46 && it.y < cy + 8 && Math.abs(it.x - lap.x) < 30){
+        const r0 = cv.getBoundingClientRect();
         stolen++; lap.squash = 1; popNum("ам", r0.left + lap.x, r0.top + cy - 64);
         if (ensureRunning()) voice({type:"sine", f:300, f2:180, glide:.08, t:ctx.currentTime, envOpts:{a:.004, d:.1, peak:.12}});
         return false;
@@ -7061,14 +7096,14 @@ function lvlForks(area, done){
     if (nextLog <= 0){ logs.push({x: C.W + 10, w: 44, h: 30}); nextLog = bonus.active ? .94 + Math.random()*.2 : 1.25 + Math.random()*.9 - .3*k; }
     if (nextFish <= 0){ fish.push({x: C.W + 10, y: G - 74 - Math.random()*70}); nextFish = .9 + Math.random()*.9; }
     logs.forEach(l => l.x -= speed*dt); fish.forEach(f => f.x -= speed*dt);
-    const top = G - 38 + y, bottom = G + y, left = CX - 30, right = CX + 36, r0 = cv.getBoundingClientRect();
+    const top = G - 38 + y, bottom = G + y, left = CX - 30, right = CX + 36;
     logs = logs.filter(l => {
-      if (inv <= 0 && right > l.x + 8 && left < l.x + l.w - 8 && bottom > G - l.h + 6){ if (bonus.active){ bonus.failed = true; return false; } lives--; inv = 1.2; snd.bonk(); haptic(40); freeze = .07; shake(area, 10); upd(); FX.burst(r0.left+CX, r0.top+G-30, {emojis:["💫"],n:3}); }
+      if (inv <= 0 && right > l.x + 8 && left < l.x + l.w - 8 && bottom > G - l.h + 6){ if (bonus.active){ bonus.failed = true; return false; } const r0 = cv.getBoundingClientRect(); lives--; inv = 1.2; snd.bonk(); haptic(40); freeze = .07; shake(area, 10); upd(); FX.burst(r0.left+CX, r0.top+G-30, {emojis:["💫"],n:3}); }
       return l.x > -80;
     });
     fish = fish.filter(f => {
       if (TIARA && !onGround && Math.abs(f.x - (CX + 8)) < 110) f.y += ((top + bottom)/2 - 14 - f.y)*Math.min(1, dt*5);
-      if (Math.abs(f.x - (CX + 8)) < (TIARA ? 64 : 36)*RK && f.y > top - (TIARA ? 60 : 42)*RK && f.y < bottom + (TIARA ? 10 : 0) + (RK - 1)*30){ if (bonus.failed) return false; if (bonus.active) bonus.gain(1); const v = f.gold ? 2 : 1; got += v; if (f.gold) snd.collect(true); else snd.combo(); haptic(f.gold ? 12 : 6); upd(); FX.burst(r0.left+f.x, r0.top+f.y, {emojis:f.gold ? ["✨","⭐"] : ["✨"],n:f.gold ? 9 : 4,size:[10,16],grav:200}); popNum("+" + v, r0.left+f.x, r0.top+f.y-20); return false; }
+      if (Math.abs(f.x - (CX + 8)) < (TIARA ? 64 : 36)*RK && f.y > top - (TIARA ? 60 : 42)*RK && f.y < bottom + (TIARA ? 10 : 0) + (RK - 1)*30){ if (bonus.failed) return false; const r0 = cv.getBoundingClientRect(); if (bonus.active) bonus.gain(1); const v = f.gold ? 2 : 1; got += v; if (f.gold) snd.collect(true); else snd.combo(); haptic(f.gold ? 12 : 6); upd(); FX.burst(r0.left+f.x, r0.top+f.y, {emojis:f.gold ? ["✨","⭐"] : ["✨"],n:f.gold ? 9 : 4,size:[10,16],grav:200}); popNum("+" + v, r0.left+f.x, r0.top+f.y-20); return false; }
       return f.x > -30;
     });
     draw();
@@ -7189,11 +7224,20 @@ function lvlGarden(area, done){
     const dt = Math.min(.05, (now - last)/1000); last = now; time -= dt; const e = el();
     /* ночь: лунный луч ходит по поляне, вне его видно только свечение роз и глаза мышей */
     const nt = isNight(); if (nt !== wrap.classList.contains("night")){ wrap.classList.toggle("night", nt); night.classList.toggle("on", nt); if (nt){ snd.wind(); flashBanner(area, "Ночь. Розы видно под луной", 2000); } else flashBanner(area, "Рассвет. Розопад!", 1600); }
-    if (nt){ moonA += dt*1.15; const ar = area.getBoundingClientRect(); const mx = ar.width*(.5 + .32*Math.sin(moonA)), my = ar.height*(.5 + .22*Math.sin(moonA*1.7 + 1));
-      const wr = wrap.getBoundingClientRect(), R = Math.min(ar.width, ar.height)*.3, cx = mx + ar.left - wr.left, cy = my + ar.top - wr.top;
+    if (nt){
+      moonA += dt*1.15;
+      const ar = area.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+      const mx = ar.width*(.5 + .32*Math.sin(moonA)), my = ar.height*(.5 + .22*Math.sin(moonA*1.7 + 1));
+      const R = Math.min(ar.width, ar.height)*.3, cx = mx + ar.left - wr.left, cy = my + ar.top - wr.top;
+      const lit = bushes.map(b => {
+        if (!b.item) return false;
+        const r = b.item.el.getBoundingClientRect();
+        return Math.hypot(r.left + r.width/2 - ar.left - mx, r.top + r.height/2 - ar.top - my) < R*.8;
+      });
       night.style.background = `radial-gradient(circle ${R.toFixed(0)}px at ${cx.toFixed(0)}px ${cy.toFixed(0)}px,rgba(200,215,255,.06) 0,rgba(8,6,20,.55) 60%,rgba(6,4,14,.92) 100%)`;
-      /* под лучом предмет виден целиком, вне луча — только свечение розы или глаза мыши */
-      bushes.forEach(b => { if (!b.item) return; const r = b.item.el.getBoundingClientRect(); b.item.el.classList.toggle("lit", Math.hypot(r.left + r.width/2 - ar.left - mx, r.top + r.height/2 - ar.top - my) < R*.8); }); }
+      /* Под лучом предмет виден целиком, вне его — только свечение розы или глаза мыши. */
+      bushes.forEach((b, i) => b.item?.el.classList.toggle("lit", lit[i]));
+    }
     if (e >= 10 && !saidHold){ saidHold = true; flashBanner(area, "Колючие розы: держи палец, пока не замкнётся круг", 2400); }
     spawnT -= dt;
     if (spawnT <= 0){
@@ -7518,6 +7562,7 @@ function lvlSun(area, done){
 function lvlMask(area, done){
   const LENSK = perk("mask", 8) ? 1.25 : 1, LISTEN = setOn("ball") ? .75 : 1.1;
   const C = setupCanvas(area), {cv, g} = C;
+  const traceColor = getComputedStyle(document.body).getPropertyValue("--accent-hi").trim() || "#ff7a8c";
   const sc = document.createElement("canvas"), sg = sc.getContext("2d");
   const fitSc = () => { const dpr = Math.min(2, devicePixelRatio||1); sc.width = Math.round(C.W*dpr); sc.height = Math.round(C.H*dpr); sg.setTransform(dpr,0,0,dpr,0,0); bg = null; };
   let bg = null;
@@ -7645,7 +7690,7 @@ function lvlMask(area, done){
       g.lineTo(x0 + w, base); g.stroke();
     };
     if (ghost) line(ghost.beats, ghost.end, "rgba(255,255,255,.22)", 1.5);
-    if (trace.id !== null) line(trace.beats, t, getComputedStyle(document.body).getPropertyValue("--accent-hi").trim() || "#ff7a8c", 2.2);
+    if (trace.id !== null) line(trace.beats, t, traceColor, 2.2);
     else { g.strokeStyle = "rgba(255,255,255,.18)"; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x0, base); g.lineTo(x0 + w, base); g.stroke(); }
     g.restore();
   }
@@ -7688,7 +7733,21 @@ function lvlMask(area, done){
     });
     if (alive && !busy && !hintShown && rTime < 36 && guests.filter(x => x.known).length < guests.length/2){ hintShown = true; lvBanner(area, "Проведи лупой по всем: над каждым загорится сердце"); }
     if (trace.beats.length > 12) trace.beats.shift();
-    if (C.W && sc.width){ sg.clearRect(0, 0, C.W, C.H); drawScene(sg); g.clearRect(0, 0, C.W, C.H); g.drawImage(sc, 0, 0, C.W, C.H); drawTrace(); drawLens(); }
+    if (C.W && sc.width){
+      // Сцена непрозрачна. Вспомогательный холст нужен только для увеличения линзой
+      // или чтобы сохранить масштаб при дробном округлении физических пикселей.
+      if (lens.k < .12 && cv.width === sc.width && cv.height === sc.height){
+        g.save();
+        g.lineCap = "butt";
+        drawScene(g);
+        g.restore();
+      } else {
+        drawScene(sg);
+        g.drawImage(sc, 0, 0, C.W, C.H);
+      }
+      drawTrace();
+      drawLens();
+    }
     updT -= dt; if (updT <= 0){ upd(); updT = .25; }
     if (!ended) raf = requestAnimationFrame(frame);
   }
@@ -7958,6 +8017,12 @@ function lvlShot(area, done){
 /* ---------- 10: лазерная точка (ивент «Ссора», начало) ---------- */
 function lvlLaser(area, done){
   const C = setupCanvas(area), {cv, g} = C;
+  // Высота игрового поля может обновиться уже после события resize (например, при смене 100dvh).
+  const resize = typeof ResizeObserver === "function" ? new ResizeObserver(([entry]) => {
+    const {width, height} = entry.contentRect;
+    if (Math.round(width) !== C.W || Math.round(height) !== C.H) C.fit();
+  }) : null;
+  resize?.observe(area);
   const DUR = 40, PH = [6, 20, 30], GOLD_AT = [13, 25, 35];
   let goldIndex = 0, goldUntil = 0, lead = 0;
   let t = 0, last = 0, raf, alive = false, ended = false, A = 0, Lp = 0, phase = 0, updT = 0;
@@ -7967,9 +8032,14 @@ function lvlLaser(area, done){
   const M = 26, bound = o => { o.x = Math.max(M, Math.min(C.W - M, o.x)); o.y = Math.max(M + 40, Math.min(C.H - M, o.y)); };
   const reset = () => { cats.a.x = C.W*.3; cats.a.y = C.H*.66; cats.l.x = C.W*.7; cats.l.y = C.H*.34; };
   reset();
-  let floor = null;
+  const floor = document.createElement("canvas");
+  const scriptFont = getComputedStyle(document.documentElement).getPropertyValue("--script");
+  let floorWidth = 0, floorHeight = 0, floorDpr = 0;
   function buildFloor(){
-    const dpr = Math.min(2, devicePixelRatio||1); floor = document.createElement("canvas"); floor.width = Math.round(C.W*dpr); floor.height = Math.round(C.H*dpr);
+    const dpr = Math.min(2, devicePixelRatio||1);
+    if (floorWidth === C.W && floorHeight === C.H && floorDpr === dpr) return;
+    floorWidth = C.W; floorHeight = C.H; floorDpr = dpr;
+    floor.width = Math.round(C.W*dpr); floor.height = Math.round(C.H*dpr);
     const f = floor.getContext("2d"); f.setTransform(dpr,0,0,dpr,0,0);
     const bg = f.createLinearGradient(0, 0, 0, C.H); bg.addColorStop(0, "#33201f"); bg.addColorStop(1, "#1d1114"); f.fillStyle = bg; f.fillRect(0, 0, C.W, C.H);
     for (let y = 0, row = 0; y < C.H; y += 24, row++){ f.fillStyle = row % 2 ? "rgba(255,220,190,.045)" : "rgba(0,0,0,.08)"; f.fillRect(0, y, C.W, 24);
@@ -8016,7 +8086,7 @@ function lvlLaser(area, done){
       g.fillStyle = o.c.fur; g.beginPath(); g.arc(0, 0, 21, 0, 7); g.fill();
       g.strokeStyle = o.c.shade; g.lineWidth = 7; g.lineCap = "round"; g.beginPath(); g.arc(0, 0, 19, .6, 2.8); g.stroke();
       g.fillStyle = o.c.fur; g.beginPath(); g.moveTo(-14, -12); g.lineTo(-19, -24); g.lineTo(-6, -17); g.fill(); g.beginPath(); g.moveTo(4, -19); g.lineTo(2, -31); g.lineTo(12, -21); g.fill();
-      g.restore(); g.font = "400 21px " + getComputedStyle(document.documentElement).getPropertyValue("--script"); g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.6)"; g.fillText(name, o.x, o.y + 44); return;
+      g.restore(); g.font = "400 21px " + scriptFont; g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.6)"; g.fillText(name, o.x, o.y + 44); return;
     }
     g.rotate(o.ang);
     const st = 1 + o.sq*.18 + Math.min(.12, sp/2600), sw = 1/(1 + o.sq*.12);
@@ -8030,10 +8100,10 @@ function lvlLaser(area, done){
     g.fillStyle = o.c.eyes; g.beginPath(); g.arc(25, -4.5, 2.6, 0, 7); g.arc(25, 4.5, 2.6, 0, 7); g.fill();
     g.fillStyle = "#141014"; g.fillRect(25, -5.5, 1.4, 2); g.fillRect(25, 3.5, 1.4, 2);
     g.restore();
-    g.font = "400 21px " + getComputedStyle(document.documentElement).getPropertyValue("--script"); g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.75)"; g.fillText(name, o.x, o.y + 44);
+    g.font = "400 21px " + scriptFont; g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.75)"; g.fillText(name, o.x, o.y + 44);
   }
   function draw(){
-    if (!floor || floor.width !== Math.round(C.W*Math.min(2, devicePixelRatio||1))) buildFloor();
+    buildFloor();
     g.drawImage(floor, 0, 0, C.W, C.H);
     const sleeping = phase === 0;
     drawCatTop(cats.l, CONFIG.lapula.name, sleeping);
@@ -8048,7 +8118,7 @@ function lvlLaser(area, done){
     const cx = C.W/2, y0 = 76;
     g.textAlign = "center"; g.textBaseline = "middle";
     g.font = "600 26px Unbounded, sans-serif"; g.fillStyle = "#fff"; g.fillText(A + " : " + Lp, cx, y0);
-    g.font = "400 22px " + getComputedStyle(document.documentElement).getPropertyValue("--script");
+    g.font = "400 22px " + scriptFont;
     g.fillStyle = "rgba(255,255,255,.8)"; g.textAlign = "right"; g.fillText(CONFIG.alisa.name, cx - 44, y0 + 2); g.textAlign = "left"; g.fillText(CONFIG.lapula.name, cx + 44, y0 + 2);
     g.textBaseline = "alphabetic"; g.textAlign = "left";
     if (phase === 3){ g.font = "600 11px Unbounded, sans-serif"; g.fillStyle = "#f5c84c"; g.textAlign = "center"; g.fillText("×2", cx, y0 + 26); g.textAlign = "left"; }
@@ -8117,7 +8187,7 @@ function lvlLaser(area, done){
   intro(area, LEVELS[9], "Одна лазерная точка, две кошки. Держи палец на полу: точка горит чуть выше него. Алиса ловит точку, когда та убегает и ей есть за чем бежать. Лапуля охотится на замершую точку и хватает лапой, если провести слишком близко. Играешь за Алису.", () => {
     alive = true; lvBanner(area, "Лапуля спит. Покажи Алисе точку"); hint.animate([{opacity:1}, {opacity:0}], {duration:900, delay:5000, fill:"forwards"});
   });
-  return () => { alive = false; ended = true; cancelAnimationFrame(raf); removeEventListener("resize", C.fit); };
+  return () => { alive = false; ended = true; cancelAnimationFrame(raf); resize?.disconnect(); removeEventListener("resize", C.fit); };
 }
 
 /* ---------- 11: гроза (ивент «Ссора», примирение) ---------- */
@@ -8436,26 +8506,11 @@ function bindDuo(root){
   root.querySelectorAll(".cat").forEach(blinkLoop);
 }
 ["pointerup", "pointercancel", "blur"].forEach(t => addEventListener(t, stopKnead));
-/* стекло стоит дорого на старых телефонах. Меряем кадры на главной, только пока вкладка видна и песня не открыта:
-   если средняя частота держится ниже 34 кадров дольше трёх секунд подряд, стекло гаснет до перезагрузки вкладки.
-   Ручной переключатель в настройках главнее: выключенное там не включается само, включённое сбрасывает автоотключение */
-const GLASS_KEY = "alisa-lowfx";
-function glassOff(){ let auto = false; try { auto = sessionStorage.getItem(GLASS_KEY) === "1"; } catch(e){} return S.glass === false || auto; }
+/* Экономия заряда меняет графику только по выбору игрока. */
+function glassOff(){ return S.glass === false; }
 function applyGlass(){ app.classList.toggle("lowfx", glassOff()); }
-(function glassGuard(){
-  delete S.lowfxAt; applyGlass();
-  let t0 = 0, n = 0, low = 0;
-  const live = () => !document.hidden && homeLive() && !reduced() && S.glass !== false;      /* homeLive уже учитывает открытые листы, в том числе песню */
-  function frame(now){
-    if (app.classList.contains("lowfx")){ setTimeout(() => requestAnimationFrame(frame), 4000); t0 = 0; low = 0; return; }
-    if (!live()){ t0 = 0; low = 0; setTimeout(() => requestAnimationFrame(frame), 1500); return; }
-    if (!t0 || now - t0 > 1400){ t0 = now; n = 0; low = 0; }        /* разрыв в кадрах (свернули, шторка iOS): начинаем заново */
-    else { n++; if (now - t0 >= 1000){ const fps = n*1000/(now - t0); low = fps < 34 ? low + (now - t0) : 0; t0 = now; n = 0;
-      if (low > 3000){ try { sessionStorage.setItem(GLASS_KEY, "1"); } catch(e){} applyGlass(); } } }
-    requestAnimationFrame(frame);
-  }
-  setTimeout(() => requestAnimationFrame(frame), 5000);
-})();
+delete S.lowfxAt;
+applyGlass();
 function renderAll(){ paintDailyRequest(); applyLook(); applyEvent(); applySeason(); hud(); applyMoon(); applyHouseTime(); applyWeather(); applyGuest(); showView(document.querySelector(".view.on").id); }
 app.addEventListener("scroll", () => { if (app.scrollTop || app.scrollLeft){ app.scrollTop = 0; app.scrollLeft = 0; } });
 try { if (navigator.standalone || matchMedia("(display-mode: standalone)").matches) app.classList.add("pwa"); } catch(e){}

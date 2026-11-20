@@ -51,12 +51,12 @@ const {open} = require('./helper.js');
 
   // 3. наклон телефона: слои смещаются, при экономии кадров стоят
   await p.waitForTimeout(4600);
-  const lowfx0 = await p.evaluate(() => app.classList.contains('lowfx')); await p.evaluate(() => { try { sessionStorage.removeItem(GLASS_KEY); } catch(e){} app.classList.remove('lowfx'); });   // в headless кадров мало, предохранитель мог выключить стекло
+  ok('полные эффекты остаются включены', await p.evaluate(() => !app.classList.contains('lowfx')));
   await p.evaluate(() => { S.tilt = true; DeviceOrientationEvent.requestPermission = () => Promise.resolve('granted'); return tiltOn(true); });   // разрешение iOS подставляем: в Chromium его нет
   for (let i = 0; i < 40; i++){ await p.evaluate(g => dispatchEvent(Object.assign(new Event('deviceorientation'), {gamma: g, beta: 40, alpha: 0})), i ? 12 : 0); await p.waitForTimeout(16); }
   await p.waitForTimeout(400);
   const par = await p.evaluate(() => ({dx: parseFloat(document.querySelector('#stage').style.getPropertyValue('--dx')), duo: getComputedStyle(document.querySelector('#duo')).translate, near: getComputedStyle(document.querySelector('.nearfx')).translate}));
-  ok('наклон двигает сцену, котики сдвигаются меньше лепестков', par.dx > 6 && parseFloat(par.duo) > 3 && parseFloat(par.near) > parseFloat(par.duo), JSON.stringify(Object.assign(par, {lowfxБыл: lowfx0})));
+  ok('наклон двигает сцену, котики сдвигаются меньше лепестков', par.dx > 6 && parseFloat(par.duo) > 3 && parseFloat(par.near) > parseFloat(par.duo), JSON.stringify(par));
   await p.evaluate(() => app.classList.add('lowfx')); await p.waitForTimeout(100);
   ok('при экономии кадров котики на месте', await p.evaluate(() => getComputedStyle(document.querySelector('#duo')).translate === 'none'));
   await p.evaluate(() => { app.classList.remove('lowfx'); S.tilt = false; tiltOff(); });
