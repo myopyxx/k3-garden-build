@@ -1970,8 +1970,27 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 .qpop .qb{flex-wrap:wrap}
 .qpop .qb .btn{min-height:50px}
 
-#dailyRequest{display:block;width:min(92%,340px);margin:10px auto 0;padding:8px 12px;border-radius:16px;background:#271c3b;color:#f5e9ff;font-size:12px;text-align:center}
-#dailyRequest[hidden]{display:none}
+/* Второстепенные действия: тот же материал, что у боковых кнопок дока. */
+.action-row{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;
+  width:100%;min-height:44px;padding:7px 12px;border-radius:18px;color:var(--ink);text-align:left;
+  box-shadow:inset 0 0 0 1px rgba(245,200,76,.3),0 8px 18px rgba(8,4,18,.34);
+}
+.action-row[hidden]{display:none}
+.action-row .ico{width:18px;height:18px;color:#ffe1a2}
+.action-row .row-title{display:block;font:650 13px/1.25 var(--ui)}
+.action-row .row-detail{display:block;margin-top:2px;font:500 12px/1.3 var(--ui);color:#f5e8ff}
+.action-row .row-meta{font:650 11px/1.3 var(--ui);color:#ffe1a2;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+#dailyRequest .row-reward{display:flex;align-items:center;justify-content:flex-end;gap:2px;margin-top:2px}
+#dailyRequest .row-reward .ico{width:11px;height:11px}
+#dailyRequest [hidden]{display:none}
+.action-row:active:not(:disabled){filter:brightness(1.12)}
+.action-row:disabled{opacity:.6;cursor:default}
+.app.lowfx .action-row{backdrop-filter:none;background:linear-gradient(180deg,rgba(98,72,126,.9),rgba(56,39,80,.92))}
+#dailyRequest{width:min(100%,330px);margin-top:8px}
+.diary-content{display:grid;gap:12px;margin-top:12px}
+.diary-content .diary{margin:0}
+.diary-clue{margin:0;padding:10px 12px;border-inline-start:1px solid rgba(245,200,76,.35);font:500 italic 16px/1.35 var(--serif);color:var(--ink)}
 #duo .cat.request-ear .head{rotate:-9deg;transform-origin:100px 150px;transition:rotate .5s ease}
 #duo .cat.request-thanks .head{animation:requestRest 2.6s ease-in-out}
 .app.memory-concert #duo .cat .head{animation:vgNod .75s ease-in-out infinite alternate}
@@ -2102,7 +2121,11 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
             <div class="lbl"><span id="purrK">мурр-шкала</span><span class="pc"><span class="num" id="purrN">0/15</span><span class="dropl" aria-hidden="true"><span class="e0">🩸</span><span class="e1">🩸</span></span></span></div>
             <div class="bar"><b id="purrBar"></b></div><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i>
           </div>
-          <button type="button" id="dailyRequest" hidden></button>
+          <button type="button" class="action-row lg" id="dailyRequest" hidden>
+            <svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg>
+            <span><span class="row-title">Просьба дня</span><span class="row-detail"></span></span>
+            <span class="row-meta" aria-hidden="true"><span class="row-progress"></span><span class="row-reward">+8 <svg class="ico"><use href="#i-dropm"/></svg></span></span>
+          </button>
           <div class="dock ears" id="dock">
             <button class="dk side lg" id="btnWardrobe"><span class="de" aria-hidden="true">🎀</span><span>Гардероб</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
             <button class="dk play" id="btnPlay"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><span class="de" aria-hidden="true">🌙</span>Играть<svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg></button>
@@ -4887,9 +4910,16 @@ function paintDailyRequest(announce = false){
   button.hidden = false;
   const lap = catOf("lapula");
   if (lap) lap.classList.toggle("request-ear", !task.done && task.kind === "pet" && task.who === "lapula" && task.zone === 0 && S.event !== "quarrel");
-  const label = task.done ? "Просьба дня выполнена ✓" :
-    task.text + " · " + task.count + "/" + task.target + " · +8 капель";
-  if (button.textContent !== label) button.textContent = label;
+  const detail = button.querySelector(".row-detail");
+  const progressText = button.querySelector(".row-progress");
+  button.querySelector(".ico use").setAttribute("href", task.done ? "#i-check" : "#i-heart");
+  const text = task.done ? "Выполнено" : task.text;
+  const progress = task.count + "/" + task.target;
+  if (detail.textContent !== text) detail.textContent = text;
+  progressText.hidden = task.done;
+  if (progressText.textContent !== progress) progressText.textContent = progress;
+  button.setAttribute("aria-label", task.done ? "Просьба дня выполнена, получено 8 капель" :
+    "Просьба дня. " + task.text + ". " + progress + ". Награда: 8 капель");
   if (announce && homeLive() && !task.done && !task.shown){
     task.shown = true; save(); setBubble(task.text, task.who || "alisa");
   }
@@ -5090,17 +5120,22 @@ function openDiary(){
       });
       box.appendChild(day);
     });
+    const content = document.createElement("div");
+    content.className = "diary-content";
     if (S.concertMemory){
-      const replay = document.createElement("button"); replay.className = "btn ghost"; replay.textContent = "♫ Концерт для двоих · вспомнить";
+      const replay = document.createElement("button"); replay.type = "button";
+      replay.className = "action-row lg";
+      replay.innerHTML = '<svg class="ico" aria-hidden="true"><use href="#i-note"/></svg><span><span class="row-title">Концерт для двоих</span><span class="row-detail">Послушать снова</span></span><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg>';
       replay.disabled = S.event === "quarrel";
       replay.onclick = () => { closeSheet(); showView("v-home"); playConcert(); };
-      body.appendChild(replay);
+      content.appendChild(replay);
     } else if (S.owned.bow){
-      const clue = document.createElement("p"); clue.className = "lnote";
+      const clue = document.createElement("p"); clue.className = "diary-clue";
       clue.textContent = "Когда на Лапуле бантик, шкатулка звенит иначе. Надень его и поверни ручку. Она ещё не слышала.";
-      body.appendChild(clue);
+      content.appendChild(clue);
     }
-    body.appendChild(box);
+    content.appendChild(box);
+    body.appendChild(content);
   }, () => applyMoon());
 }
 /* столик в альбоме: дневник и шкатулка лежат предметами, а не строками списка */
