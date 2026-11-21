@@ -118,15 +118,15 @@ body.day .stars{opacity:.08}
 .btn::after,.chip::after,.round::after,.lg.int::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
   background:radial-gradient(circle at var(--px,50%) var(--py,50%),rgba(255,255,255,.42),transparent 62%);transition:opacity .5s}
 .lit::after{opacity:1!important;transition-duration:.06s!important}
-/* кромка жидкого стекла: светлая сверху-слева, по ней медленно проходит блик. Без размытия, поэтому почти ничего не стоит */
-@property --ra{syntax:"<angle>";inherits:false;initial-value:0deg}
-.rim{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;padding:1.2px;
-  background:conic-gradient(from var(--ra),rgba(255,255,255,.08),rgba(255,255,255,.75) 9%,rgba(255,240,205,.22) 18%,rgba(255,255,255,.06) 34%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.4) 76%,rgba(255,255,255,.08));
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+/* Кромка маскирует готовый вращающийся слой блика. Градиент не пересчитывается каждый кадр. */
+.rim{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;padding:1.2px;overflow:hidden;container-type:size;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.rim::before{content:"";position:absolute;left:50%;top:50%;width:max(142cqw,142cqh);height:max(142cqw,142cqh);
+  background:conic-gradient(rgba(255,255,255,.08),rgba(255,255,255,.75) 9%,rgba(255,240,205,.22) 18%,rgba(255,255,255,.06) 34%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.4) 76%,rgba(255,255,255,.08));
   animation:rimTurn 14s linear infinite}
-@keyframes rimTurn{from{--ra:300deg}to{--ra:660deg}}
-.app.game-on .rim,.app.sheet-on .rim{animation-play-state:paused}
-@media (prefers-reduced-motion:reduce){.rim{animation:none;--ra:310deg}}
+@keyframes rimTurn{from{transform:translate(-50%,-50%) rotate(300deg)}to{transform:translate(-50%,-50%) rotate(660deg)}}
+.app.game-on .rim::before,.app.sheet-on .rim::before{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.rim::before{animation:none;transform:translate(-50%,-50%) rotate(310deg)}}
 
 .btn{min-height:54px;padding:0 24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
   font:600 14px/1 var(--ui);letter-spacing:.01em;color:#fff;
@@ -1838,7 +1838,7 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 @media (prefers-reduced-motion:reduce){.cat .head,.cat .tailw{transition:none}.cat.arch .breathe,.cat.ruffle .breathe{animation:none}#duo .pet{transition:none}}
 
 /* блик кромки сдвигается туда, где палец */
-.lit>.rim{animation:none;--ra:var(--rat,310deg)}
+.lit>.rim::before{animation:none;transform:translate(-50%,-50%) rotate(var(--rat,310deg))}
 .stamp.pressed,.gslot.pressed,.wit.pressed{scale:.96;transition:scale 60ms}
 .stamp,.gslot{transition:scale .5s cubic-bezier(.22,1,.36,1)}
 
