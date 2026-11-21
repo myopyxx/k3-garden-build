@@ -41,16 +41,26 @@ function drawCat(c, f, x, y, r, t){
   /* плащ Алисы / шарфик Лапули / ошейник Уголька */
   if (f.C.cat === "alisa"){ c.fillStyle = P.acc; c.beginPath(); c.moveTo(x - r*.75, y - r*.25); c.quadraticCurveTo(x, y + r*1.15, x + r*.75, y - r*.25); c.closePath(); c.fill(); }
   /* тело */
-  c.fillStyle = P.fur; c.beginPath(); c.ellipse(x, y + r*.2 + bob*.3, r*.82, r*.68, 0, 0, 6.283); c.fill();
+  c.save(); c.translate(x,y+r*.2+bob*.3); c.scale(r*.03,r*.04);
+  paintCatPart(c,"runningBody",P); c.restore();
   c.fillStyle = P.shade; c.beginPath(); c.ellipse(x - r*.35, y + r*.72, r*.22, r*.14, 0, 0, 6.283); c.ellipse(x + r*.35, y + r*.72, r*.22, r*.14, 0, 0, 6.283); c.fill();
   /* голова */
   const hy = y - r*.42 + bob;
+  if (f.C.cat === "alisa" || f.C.cat === "lapula"){
+    c.save(); c.translate(x,hy); c.scale(r*.017,r*.017);
+    paintSketchHead(c,P,f.C.cat === "lapula",Math.cos(ang)*3,
+      Math.sin(t*.9+f.id*2) > .985 ? .12 : 1,1,Math.sin(ang)*2);
+    c.restore();
+    if (f.C.cat === "lapula"){
+      c.fillStyle=P.acc; c.beginPath(); c.ellipse(x,hy+r*.69,r*.52,r*.1,0,0,Math.PI*2); c.fill();
+    }
+    return;
+  }
   c.fillStyle = P.fur; c.beginPath();
   c.moveTo(x - r*.72, hy - r*.1); c.lineTo(x - r*.62, hy - r*.92); c.lineTo(x - r*.18, hy - r*.55); c.lineTo(x + r*.18, hy - r*.55); c.lineTo(x + r*.62, hy - r*.92); c.lineTo(x + r*.72, hy - r*.1); c.closePath(); c.fill();
   c.beginPath(); c.ellipse(x, hy, r*.78, r*.62, 0, 0, 6.283); c.fill();
   c.fillStyle = "#c98f9b"; c.globalAlpha = .55; c.beginPath(); c.moveTo(x - r*.56, hy - r*.35); c.lineTo(x - r*.52, hy - r*.78); c.lineTo(x - r*.28, hy - r*.5); c.fill();
   c.beginPath(); c.moveTo(x + r*.56, hy - r*.35); c.lineTo(x + r*.52, hy - r*.78); c.lineTo(x + r*.28, hy - r*.5); c.fill(); c.globalAlpha = 1;
-  if (f.C.cat === "lapula"){ c.fillStyle = P.acc; c.beginPath(); c.ellipse(x, hy + r*.52, r*.55, r*.13, 0, 0, 6.283); c.fill(); }
   if (f.C.cat === "black"){ c.fillStyle = P.acc; c.beginPath(); c.ellipse(x, hy + r*.5, r*.48, r*.1, 0, 0, 6.283); c.fill(); c.fillStyle = "#f3d27a"; c.beginPath(); c.arc(x, hy + r*.62, r*.09, 0, 6.283); c.fill(); }
   /* глаза смотрят туда, куда целится */
   const ex = Math.cos(ang)*r*.07, ey = Math.sin(ang)*r*.06, blink = (Math.sin(t*.9 + f.id*2) > .985) ? .15 : 1;

@@ -1,20 +1,13 @@
 # Собирает основную игру: вставляет фото в исходник и кладёт результат в корень сайта.
 # Запуск: python3 src/main/build.py            -> index.html
 #         python3 src/main/build.py путь.html  -> в указанный файл, сайт не трогает
-import json
 import base64, pathlib, subprocess, sys, tempfile
 here = pathlib.Path(__file__).resolve().parent
 src = (here / "diana.src.html").read_text(encoding="utf-8")
 photos = (here / "photos.js").read_text(encoding="utf-8")
 assert src.count("/*PHOTO_DATA*/") == 1, "в исходнике должна быть ровно одна метка /*PHOTO_DATA*/"
 out = src.replace("/*PHOTO_DATA*/", photos).replace("/*FRAME_METER*/", (here.parent / "shared/frame-meter.js").read_text(encoding="utf-8"))
-cat_dir = here / "cats"
-cats = {}
-for name, bounds in json.loads((cat_dir / "layout.json").read_text()).items():
-    image = base64.b64encode((cat_dir / (name + ".webp")).read_bytes()).decode("ascii")
-    cats[name] = [*bounds, "data:image/webp;base64," + image]
-assert out.count("/*CAT_PARTS*/{}") == 1
-out = out.replace("/*CAT_PARTS*/{}", json.dumps(cats, separators=(",", ":")))
+out = out.replace("/*CAT_SKETCH*/", (here.parent / "shared/cat-sketch.js").read_text(encoding="utf-8"))
 for name in ("gate", "memory"):
     art = (here.parent / "shared/arena-art" / (name + ".webp")).read_bytes()
     asset = "data:image/webp;base64," + base64.b64encode(art).decode("ascii")

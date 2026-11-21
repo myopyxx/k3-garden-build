@@ -1155,11 +1155,9 @@ svg.sti{width:1em;height:1em;display:block}
 @keyframes heartUp{0%{opacity:0;transform:translateY(0)}15%{opacity:1}100%{opacity:0;transform:translate(14px,-78vh)}}
 .app.lovefx #duo .pet[data-cat=alisa] .turn{transform:translateX(-10px) rotate(-4deg)}
 .app.lovefx #duo .pet[data-cat=lapula] .turn{transform:translateX(10px) rotate(4deg)}
-.app.lovetail #duo .cat .tail{opacity:0;transition:opacity .25s}
-#duo .cat svg{transition:transform .35s ease}
-.tailheart{position:absolute;left:0;top:0;z-index:3;pointer-events:none;overflow:visible}
-.tailheart path{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.tailheart path.glow{stroke:rgba(255,140,170,.45);stroke-width:22px;filter:blur(6px)}
+.tail.curling{opacity:0}
+.heart-tails{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
+.tail.curling{animation-play-state:paused}
 /* флаг над домом */
 .flagru{position:absolute;width:0;height:0;z-index:1;pointer-events:none}
 .flagru .pole{position:absolute;left:-1px;bottom:0;width:2.2px;height:52px;border-radius:2px;background:linear-gradient(90deg,#9a9aa6,#e9e9ef 50%,#8c8c98);transform-origin:50% 100%;transform:scaleY(0);transition:transform .6s var(--spring-soft)}
@@ -1341,6 +1339,7 @@ body.day .moon .phase{opacity:0}
 .cat.melt .eye{transform:scaleY(.1);transition:transform 1.6s ease}
 .cat.melt .breathe{animation-duration:4.2s}
 /* чем заняты: умывается лапой, сидит в коробке, гоняет клубок, смотрит на луну */
+.apeek :is(.lid,.yawn,.tongue,.wpaw,.eglow){display:none}
 .cat .wpaw{opacity:0;transform:translate(124px,222px)}
 .cat .tongue{opacity:0}
 .cat.washing .pr,.cat.washend .pr{opacity:0}
@@ -2991,19 +2990,16 @@ document.addEventListener("pointercancel", unpress, {passive:true});
   ["pointerup", "pointercancel"].forEach(t => document.addEventListener(t, off, {passive: true})); }
 
 /* =================== КОТИКИ =================== */
-const CAT_PARTS = /*CAT_PARTS*/{};
-function catPart(name){
-  const [x, y, width, height, href] = CAT_PARTS[name];
-  return `<image x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="none" href="${href}"/>`;
-}
+/*CAT_SKETCH*/
 let catSvgId = 0;
 function catSVG(c, opts={}){
   const fangs = opts.fangs !== false, k = c === CONFIG.alisa ? "a" : "l";
-  const id = ++catSvgId;
+  const id = ++catSvgId, lap = k === "l";
+  const part = name => sketchSVG(name,c);
   const eye = cx => `<g transform="translate(${cx} 102) rotate(${cx < 100 ? 8 : -8}) scale(.86 ${k === "l" ? .70 : .85})">
     <g class="eye"><g clip-path="url(#socket-${id})">
       <circle r="13" fill="${c.eyes}"/><circle r="13" fill="url(#iris-${id})"/>
-      <ellipse class="pup" rx="3.7" ry="9.6" fill="#211926"/>
+      <ellipse class="pup" rx="${lap ? 4.9 : 3.7}" ry="9.6" fill="#211926"/>
       <circle cx="-3" cy="-4" r="1.9" fill="#fff1d7"/><circle cx="3" cy="4" r=".8" fill="#ffe1a0"/>
       <path class="lid" d="M-14 -13 H14 V0 Q0 3 -14 0Z" fill="${c.fur}"/>
     </g><path d="M-13 0 Q-3 -16 9 -8 Q12 -5 13 -1" fill="none" stroke="#392c34" stroke-width="1.4"/></g>
@@ -3016,13 +3012,13 @@ function catSVG(c, opts={}){
   </defs>
   <path class="acc acc-cape" d="M42 142 Q100 120 158 142 L178 234 Q100 216 22 234 Z" fill="#5c0f1d"/>
   <path class="acc acc-cape" d="M54 134 Q100 114 146 134 L152 148 Q100 130 48 148 Z" fill="#8e1c2e"/>
-  <g transform="${k === "a" ? "translate(200 0) scale(-1 1)" : "translate(0 0)"}"><g class="tailw"><g class="tail">${catPart("tail")}</g></g></g>
-  ${catPart("body")}
-  <g class="paw pl">${catPart("pawL")}</g>
-  <g class="paw pr">${catPart("pawR")}<g transform="translate(-12 3)"><g class="acc acc-ring"><circle cx="124" cy="216" r="6" fill="none" stroke="#f5c84c" stroke-width="3"/><rect x="121" y="206" width="6" height="6" fill="#4ea0ff" transform="rotate(45 124 209)"/></g></g></g>
-  <g class="head">
-  <g class="hl hl-ear"><g class="ear el">${catPart(k + "EarL")}</g><g class="ear er">${catPart(k + "EarR")}</g></g>
-  ${catPart(k + "Face")}
+  <g transform="${k === "a" ? "translate(200 0) scale(-1 1)" : "translate(0 0)"}"><g class="tailw"><g class="tail">${part("tail")}</g></g></g>
+  ${part("body")}
+  <g class="paw pl">${part("pawL")}</g>
+  <g class="paw pr">${part("pawR")}<g transform="translate(-12 3)"><g class="acc acc-ring"><circle cx="124" cy="216" r="6" fill="none" stroke="#f5c84c" stroke-width="3"/><rect x="121" y="206" width="6" height="6" fill="#4ea0ff" transform="rotate(45 124 209)"/></g></g></g>
+  <g class="head"><g transform="translate(100 139) scale(${catHeadWidth(lap)} ${lap ? .89 : 1}) translate(-100 -139)">
+  <g class="hl hl-ear"><g class="ear el">${part(lap ? "lapEarL" : "earL")}</g><g class="ear er">${part("earR")}</g></g>
+  ${part("face")}
   <g class="hl hl-top">
   <g class="acc acc-wreath"><circle cx="66" cy="62" r="7" fill="#d7263d"/><circle cx="66" cy="62" r="3.5" fill="#a3132a"/><circle cx="80" cy="54" r="6" fill="#e2445a"/><circle cx="80" cy="54" r="3" fill="#a3132a"/><path d="M58 70 q6 -4 12 0 M86 58 q5 -5 10 -1" stroke="#4f8a43" stroke-width="3" fill="none" stroke-linecap="round"/></g>
   <g class="acc acc-tiara"><path d="M78 62 L84 46 L92 56 L100 40 L108 56 L116 46 L122 62 Z" fill="#f5c84c"/><circle cx="100" cy="48" r="3.5" fill="#e3304a"/></g>
@@ -3032,13 +3028,11 @@ function catSVG(c, opts={}){
   ${eye(120)}</g>
   <g class="hl hl-muz">
   <ellipse class="yawn" cx="100" cy="132" rx="7.5" ry="9" fill="#4a1c2a"/>
-  <path d="M100 125 Q94 134 86 130 M100 125 Q106 134 114 130" fill="none" stroke="${c.nose}" stroke-width=".9" opacity=".6" stroke-linecap="round"/>
-  ${fangs ? '<path d="M92 129 Q94 130 95.5 129 L94 134 Z M104.5 129 Q106 130 108 129 L106 134 Z" fill="#fff"/>' : ""}
-  <g fill="none" stroke="#e8d9d0" stroke-width=".52" stroke-linecap="round" opacity=".76"><path d="M85 124 Q62 118 34 119 M85 126 Q56 125 30 135 M85 128 Q59 131 42 143 M115 124 Q138 118 166 119 M115 126 Q144 125 170 135 M115 128 Q141 131 158 143"/></g></g>
+  ${part("muzzle")}${fangs ? part("teeth") : ""}${part("whiskers")}</g>
   <g class="hl hl-eyes"><g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><g class="sglint"><path d="M67 110 L74 92 M120 110 L127 92" fill="none" stroke="#fff6cf" stroke-width="3.2" stroke-linecap="round"/></g><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
   <g class="acc acc-mask"><path fill-rule="evenodd" d="M56 98 Q60 82 80 86 Q92 88 100 96 Q108 88 120 86 Q140 82 144 98 Q142 114 122 116 Q108 116 100 108 Q92 116 78 116 Q58 114 56 98 Z M70 101 Q74 93 82 93 Q90 94 91 101 Q88 108 80 108 Q72 108 70 101 Z M109 101 Q110 94 118 93 Q126 93 130 101 Q128 108 120 108 Q112 108 109 101 Z" fill="#17101a" stroke="#d9b45a" stroke-width="1.8"/><path d="M144 96 Q158 74 150 58 M146 92 Q160 80 162 66" fill="none" stroke="#b01e33" stroke-width="3" stroke-linecap="round"/></g></g>
-  <g class="hl hl-muz"><path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/></g></g>
-  <g class="wpaw"><g transform="translate(-111 -223)">${catPart("pawR")}</g></g>
+  <g class="hl hl-muz"><path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/></g></g></g>
+  <g class="wpaw"><g transform="translate(-111 -223)">${part("pawR")}</g></g>
 </svg>`;
 }
 const catBox = (k, cls="") => `<div class="cat ${k === "l" ? "lap " : ""}${cls}" data-k="${k}"><div class="turn"><div class="breathe">${k === "a" ? catSVG(CONFIG.alisa) : catSVG(CONFIG.lapula, {fangs:false})}</div></div></div>`;
@@ -3717,6 +3711,76 @@ function trySpecial(tries = 0){
   const sp = pickSpecial(); if (sp) runSpecial(sp);
 }
 function duoRect(){ const d = $("#duo"); return d.getBoundingClientRect(); }
+// Each animated silhouette lives in the same SVG group as its resting tail.
+// Project the two meeting points into each cat's own moving coordinate system.
+function curlHeartTails(){
+  const duo = $("#duo");
+  duo.insertAdjacentHTML("beforeend", `<svg class="heart-tails" aria-hidden="true">
+    <defs><mask id="tail-body-cutout" maskUnits="userSpaceOnUse" x="-50%" y="-50%" width="200%" height="200%">
+    <rect x="-50%" y="-50%" width="200%" height="200%" fill="white"/></mask></defs>
+    <g mask="url(#tail-body-cutout)"></g></svg>`);
+  const overlay = duo.lastElementChild, mask = overlay.querySelector("mask"), ink = overlay.lastElementChild;
+  const tails = ["lapula","alisa"].map(who => {
+    const group = catOf(who).querySelector(".tail");
+    ink.insertAdjacentHTML("beforeend", '<g class="love-tail"><path stroke="'+sketchInk+'" stroke-width="1.6" fill="'+CONFIG[who].fur+'"/><path fill="none" stroke="'+pencilLight+'" stroke-width="1.1" stroke-linecap="round"/></g>');
+    mask.insertAdjacentHTML("beforeend", '<path d="'+catLines.body[0][0]+'" fill="black"/>');
+    return {group,art:ink.lastElementChild,cutout:mask.lastElementChild,body:group.ownerSVGElement};
+  });
+  const rest = [[145,199],[159,203],[175,192],[180,179],[186,164],[180,151],[177,147],[174,143],[171,139],[168,138]];
+  const started = performance.now(), duration = 5750;
+  const matrixAttr = m => `matrix(${m.a} ${m.b} ${m.c} ${m.d} ${m.e} ${m.f})`;
+  function frame(now){
+    const elapsed = now-started;
+    if (elapsed >= duration || tails.some(t => !t.group.isConnected)){
+      overlay.remove();
+      for (const t of tails) t.group.classList.remove("curling");
+      return;
+    }
+    let mix = Math.min(1,elapsed/950,(duration-elapsed)/720);
+    mix = reduced() ? 1 : mix*mix*(3-2*mix);
+    const matrices = tails.map(t => t.group.getScreenCTM());
+    if (matrices.every(m => m && Math.abs(m.a*m.d-m.b*m.c)>.001)){
+      const roots = matrices.map(m => new DOMPoint(...rest[0]).matrixTransform(m));
+      const x = (roots[0].x+roots[1].x)/2, y = (roots[0].y+roots[1].y)/2;
+      const span = Math.abs(roots[1].x-roots[0].x);
+      const w = span*.48, h = Math.min(span*.88,Math.hypot(matrices[0].a,matrices[0].b)*89);
+      const screenToOverlay = overlay.getScreenCTM().inverse();
+      tails.forEach(({group,art,body,cutout},i) => {
+        art.setAttribute("transform",matrixAttr(screenToOverlay.multiply(matrices[i])));
+        cutout.setAttribute("transform",matrixAttr(screenToOverlay.multiply(body.getScreenCTM())));
+        const sign = i === 0 ? -1 : 1, root=roots[i], inv=matrices[i].inverse();
+        const goal = [[root.x,root.y],[root.x-sign*w*.28,root.y+6],[x+sign*w*.25,y+5],[x,y],
+          [x-sign*w*.29,y-h*.18],[x-sign*w*1.12,y-h*.49],[x-sign*w*.93,y-h*.78],
+          [x-sign*w*.76,y-h*1.12],[x-sign*w*.21,y-h*1.07],[x,y-h*.72]];
+        const pts = goal.map(([gx,gy],j) => {
+          const p=new DOMPoint(gx,gy).matrixTransform(inv);
+          return [rest[j][0]+(p.x-rest[j][0])*mix,rest[j][1]+(p.y-rest[j][1])*mix];
+        });
+        const left=[],right=[];
+        for (let j=0;j<3;j++){
+          const [a,b,c,d]=pts.slice(j*3,j*3+4);
+          for (let n=j?1:0;n<=12;n++){
+            const t=n/12,u=1-t,coords=[],tan=[];
+            for (let axis=0;axis<2;axis++){
+              coords.push(u*u*u*a[axis]+3*u*u*t*b[axis]+3*u*t*t*c[axis]+t*t*t*d[axis]);
+              tan.push(u*u*(b[axis]-a[axis])+2*u*t*(c[axis]-b[axis])+t*t*(d[axis]-c[axis]));
+            }
+            const radius = 8*(1-Math.pow((j+t)/3,2.8))+.45;
+            const scale=radius/(Math.hypot(...tan)||1);
+            left.push([coords[0]-tan[1]*scale,coords[1]+tan[0]*scale]);
+            right.push([coords[0]+tan[1]*scale,coords[1]-tan[0]*scale]);
+          }
+        }
+        const path = points => points.map(p => p.map(v=>v.toFixed(2)).join(" ")).join(" L");
+        art.firstElementChild.setAttribute("d","M"+path([...left,...right.reverse()])+"Z");
+        art.lastElementChild.setAttribute("d","M"+path(left.slice(15,24)));
+        group.classList.add("curling");
+      });
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
 function loveFx(){
   specialBusy = true; app.classList.add("lovefx");
   const moon = $("#moon"); if (!moon.querySelector(".mheart")) moon.insertAdjacentHTML("beforeend", '<svg class="mheart" viewBox="0 0 100 100" aria-hidden="true"><defs><radialGradient id="mhg" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff1d6"/><stop offset=".6" stop-color="#f7c8b8"/><stop offset="1" stop-color="#e98aa0"/></radialGradient></defs><path d="M50 90 C22 70 5 52 5 32 C5 17 17 7 30 7 C40 7 47 13 50 21 C53 13 60 7 70 7 C83 7 95 17 95 32 C95 52 78 70 50 90Z" fill="url(#mhg)"/></svg>');
@@ -3728,22 +3792,13 @@ function loveFx(){
   const lap = document.querySelector('#duo .pet[data-cat="lapula"]');
   if (lap) lap.animate([{transform:"none"}, {transform:"translateY(-10px)", offset:.45}, {transform:"none"}], {duration:420, easing:"ease-out"});
   setTimeout(() => {
-    app.classList.add("lovetail");
-    const duo = $("#duo"), D = duo.getBoundingClientRect(), A = catOf("alisa").getBoundingClientRect(), L = catOf("lapula").getBoundingClientRect();
-    const ax = A.left - D.left + A.width*.25, ay = A.top - D.top + A.height*.825, lx = L.left - D.left + L.width*.75, cx = (ax + lx)/2, w = Math.max(30, (ax - lx)/2 + 6);
-    const half = (sx, dir) => `M${sx.toFixed(1)} ${ay.toFixed(1)} Q${((sx + cx)/2).toFixed(1)} ${(ay + 16).toFixed(1)} ${cx.toFixed(1)} ${(ay + 4).toFixed(1)} C${(cx - dir*w*.8).toFixed(1)} ${(ay - 16).toFixed(1)} ${(cx - dir*w*1.15).toFixed(1)} ${(ay - 42).toFixed(1)} ${(cx - dir*w*.9).toFixed(1)} ${(ay - 60).toFixed(1)} C${(cx - dir*w*.62).toFixed(1)} ${(ay - 78).toFixed(1)} ${(cx - dir*w*.12).toFixed(1)} ${(ay - 74).toFixed(1)} ${cx.toFixed(1)} ${(ay - 52).toFixed(1)}`;
-    const sw = (A.width/200*16).toFixed(1);
-    duo.insertAdjacentHTML("beforeend", `<svg class="tailheart" aria-hidden="true" width="${D.width}" height="${D.height}" viewBox="0 0 ${D.width.toFixed(1)} ${D.height.toFixed(1)}">
-      <path class="glow" d="${half(ax, -1)}" /><path class="glow" d="${half(lx, 1)}" />
-      <path class="t" d="${half(ax, -1)}" stroke="${CONFIG.alisa.shade}" stroke-width="${sw}"/><path class="t" d="${half(lx, 1)}" stroke="${CONFIG.lapula.shade}" stroke-width="${sw}"/></svg>`);
-    duo.querySelectorAll(".tailheart path").forEach(pth => { const len = pth.getTotalLength(); pth.style.strokeDasharray = len; pth.style.strokeDashoffset = len; pth.animate([{strokeDashoffset: len}, {strokeDashoffset: 0}], {duration:1000, easing:"cubic-bezier(.3,.7,.2,1)", fill:"forwards"}); });
+    curlHeartTails();
     if (ensureRunning()) [523.25, 659.25, 783.99, 1046.5].forEach((fq, i) => fmBell({f:fq, t:ctx.currentTime + i*.12, dur:.6, peak:.07, send:.3}));
     haptic([10, 30, 10]);
   }, 520);
   setTimeout(() => {
-    const th = $("#duo .tailheart"); if (th) th.querySelectorAll("path").forEach(pth => { const len = pth.getTotalLength(); pth.animate([{strokeDashoffset: 0}, {strokeDashoffset: len}], {duration:700, easing:"ease-in", fill:"forwards"}); });
     app.classList.remove("lovefx");
-    setTimeout(() => { app.classList.remove("lovetail"); th && th.remove(); f.remove(); specialBusy = false; }, 760);
+    setTimeout(() => { f.remove(); specialBusy = false; }, 760);
   }, 5600);
 }
 /* флаг на ветру: плоская картинка режется на столбики, каждый сдвигается по синусу и подсвечивается */
@@ -5847,14 +5902,11 @@ function finale(ep, onDone){
   (document.fonts && document.fonts.load ? document.fonts.load("700 60px Unbounded") : Promise.resolve()).then(go, go);
 }
 function backCat(c, k){
-  return `<svg class="ecat ${k}" viewBox="0 0 120 150" aria-hidden="true">
-    <path class="etail" d="${k === "a" ? "M84 120 C110 122 112 140 98 152" : "M36 120 C10 122 8 140 22 152"}" fill="none" stroke="${c.fur}" stroke-width="11" stroke-linecap="round"/>
-    <ellipse cx="60" cy="100" rx="37" ry="35" fill="${c.fur}"/>
-    <path d="M28 92 Q34 70 60 66 Q86 70 92 92" fill="none" stroke="rgba(255,244,222,.32)" stroke-width="2.4" stroke-linecap="round"/>
-    <g class="ehead"><path d="M33 46 Q27 16 54 29Z M87 46 Q93 16 66 29Z" fill="${c.fur}"/><path d="M36 40 Q33 24 48 30 M84 40 Q87 24 72 30" fill="none" stroke="rgba(255,244,222,.3)" stroke-width="1.6" stroke-linecap="round"/>
-      <ellipse cx="60" cy="50" rx="30" ry="26" fill="${c.fur}"/>
-      <path d="M34 44 Q40 26 60 25 Q80 26 86 44" fill="none" stroke="rgba(255,244,222,.38)" stroke-width="2.2" stroke-linecap="round"/></g>
-  </svg>`;
+  return `<svg class="ecat ${k}" viewBox="36 39 128 194" aria-hidden="true">
+    <g class="etail" transform="${k === "a" ? "" : "translate(200 0) scale(-1 1)"}">${sketchSVG("tail",c)}</g>
+    ${sketchSVG("body",c)}
+    <g class="ehead"><g transform="translate(100 139) scale(${catHeadWidth(k === "l")} ${k === "l" ? .89 : 1}) translate(-100 -139)">
+    ${sketchSVG(k === "l" ? "lapEarL" : "earL",c)}${sketchSVG("earR",c)}${sketchSVG("face",c)}</g></g></svg>`;
 }
 function playEpilogue(){
   if ($("#epi") || app.classList.contains("epi-rise")) return;
@@ -6644,16 +6696,8 @@ $("#rHome").onclick = () => { snd.back(); showView("v-home"); exitLevel(); };
 /* британка на canvas */
 function drawCatCanvas(g, x, y, c, s=1, sx=1, sy=1){
   g.save(); g.translate(x, y); g.scale(s*sx, s*sy);
-  g.shadowColor = "rgba(255,240,250,.3)"; g.shadowBlur = 14;
-  g.fillStyle = c.fur;
-  g.beginPath(); g.moveTo(-26,-22); g.quadraticCurveTo(-28,-46,-12,-36); g.fill();
-  g.beginPath(); g.moveTo(26,-22); g.quadraticCurveTo(28,-46,12,-36); g.fill();
-  g.beginPath(); g.ellipse(0,-12,30,26,0,0,7); g.fill();
-  g.shadowBlur = 0;
-  g.fillStyle = c.eyes; g.beginPath(); g.arc(-11,-14,6,0,7); g.arc(11,-14,6,0,7); g.fill();
-  g.fillStyle = "#141014"; g.beginPath(); g.ellipse(-11,-14,2,4.5,0,0,7); g.ellipse(11,-14,2,4.5,0,0,7); g.fill();
-  g.fillStyle = "#fff"; g.beginPath(); g.arc(-9,-16,1.6,0,7); g.arc(13,-16,1.6,0,7); g.fill();
-  g.fillStyle = c.nose; g.beginPath(); g.moveTo(-3,-4); g.lineTo(3,-4); g.lineTo(0,0); g.fill();
+  g.translate(0,-14); g.scale(.55,.55);
+  paintSketchHead(g,c,c === CONFIG.lapula);
   g.restore();
 }
 function setupCanvas(area){
@@ -6876,7 +6920,7 @@ const GOBLET_SVG = '<svg viewBox="0 0 80 104" aria-hidden="true"><defs>'
   + '<ellipse cx="40" cy="97" rx="29" ry="5.5" fill="#3a0a14"/><ellipse cx="40" cy="96" rx="29" ry="5" fill="none" stroke="#f3d27a" stroke-opacity=".55" stroke-width="1.4"/></svg>';
 const RING_SVG = '<svg viewBox="0 0 44 30" aria-hidden="true"><ellipse cx="22" cy="19" rx="15" ry="7.5" fill="none" stroke="#f5c84c" stroke-width="4.4"/><ellipse cx="22" cy="17.6" rx="15" ry="7.5" fill="none" stroke="#fff1c2" stroke-opacity=".6" stroke-width="1.2"/>'
   + '<path d="M16 11 L22 3 L28 11 L22 15 Z" fill="#2f6fd8"/><path d="M22 3 L28 11 L22 9 Z" fill="#7fb2ff"/></svg>';
-const PAW_SVG = `<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M120 22 L48 18 C30 17 18 24 18 35 C18 46 30 53 48 52 L120 48 Z" fill="${CONFIG.lapula.fur}"/>`
+const PAW_SVG = `<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M120 22 L48 18 C30 17 18 24 18 35 C18 46 30 53 48 52 L120 48 Z" fill="${CONFIG.lapula.fur}" stroke="#403946" stroke-width="1.8"/>`
   + `<ellipse cx="30" cy="35" rx="16" ry="15" fill="${CONFIG.lapula.fur}"/><g fill="${CONFIG.lapula.shade}" opacity=".5"><ellipse cx="22" cy="25" rx="4.4" ry="3.6"/><ellipse cx="16" cy="34" rx="4.4" ry="3.6"/><ellipse cx="22" cy="44" rx="4.4" ry="3.6"/></g></svg>`;
 function lvlShell(area, done){
   const wrap = document.createElement("div"); wrap.className = "shell"; area.appendChild(wrap);
@@ -6996,8 +7040,10 @@ const ASTRAL_OBJ = [
 ];
 /* укрытие: за каким предметом, со сдвигом по x в долях его размера; Алиса выглядывает над краем */
 const ASTRAL_SPOTS = [[1, -.25], [1, .3], [2, 0], [5, .1], [6, -.3], [6, .3], [7, 0], [9, 0], [10, 0], [11, -.2], [0, 0], [8, 0]];
-const peekSVG = c => `<svg viewBox="0 0 60 40" aria-hidden="true"><path d="M8 26 Q6 6 20 14 Z M52 26 Q54 6 40 14 Z" fill="${c.fur}"/><ellipse cx="30" cy="32" rx="24" ry="18" fill="${c.fur}"/>`
-  + `<circle cx="21" cy="29" r="5" fill="${c.eyes}"/><circle cx="39" cy="29" r="5" fill="${c.eyes}"/><ellipse cx="21" cy="29" rx="1.8" ry="3.8" fill="#141014"/><ellipse cx="39" cy="29" rx="1.8" ry="3.8" fill="#141014"/></svg>`;
+function peekSVG(c){
+  const svg = catSVG(c,{fangs:c === CONFIG.alisa});
+  return svg.replace('viewBox="0 0 200 240"', 'viewBox="43 42 114 79" aria-hidden="true"');
+}
 function lvlAstral(area, done){
   const view = document.createElement("div"); view.className = "astral"; area.appendChild(view);
   const room = document.createElement("div"); room.className = "aroom"; view.appendChild(room);
@@ -7369,7 +7415,7 @@ function lvlForks(area, done){
     [[-24, 0], [-13, 3.1416], [5, 1.5708], [15, 4.7124]].forEach(([lx, ph]) => {
       const sw = air ? (lx < 0 ? -6 : 6) : Math.sin(runPh + ph)*6, lift = air ? 3 : Math.max(0, -Math.cos(runPh + ph))*4;
       g.beginPath(); g.ellipse(CX + lx + sw, G - 5 + y - lift, 4.4, 6.5, sw*.04, 0, 6.2832); g.fill(); });
-    g.fillStyle = CONFIG.lapula.fur; g.beginPath(); g.ellipse(CX - 6, G - 19 + y, 28, 17, 0, 0, 7); g.fill();
+    g.save(); g.translate(CX - 6,G - 19 + y); paintCatPart(g,"runningBody",CONFIG.lapula); g.restore();
     g.fillStyle = CONFIG.lapula.shade; g.beginPath(); g.ellipse(CX - 33, G - 27 + y, 10, 5, -.6 + Math.sin(runPh*.5)*.18, 0, 7); g.fill();
     drawCatCanvas(g, CX + 18, G - 23 + y, CONFIG.lapula, .74);
     g.restore();
@@ -7826,7 +7872,7 @@ function lvlSun(area, done){
     if (exposed && sunT > GRACE){ const hg = g.createRadialGradient(cx, G - 28, 4, cx, G - 28, 60); hg.addColorStop(0, "rgba(255,110,60,.45)"); hg.addColorStop(1, "rgba(255,110,60,0)"); g.fillStyle = hg; g.fillRect(cx - 60, G - 90, 120, 120); }
     g.save(); g.translate(0, -bob);
     g.fillStyle = "rgba(0,0,0,.35)"; g.beginPath(); g.ellipse(cx, G + 2 + bob, 30, 5, 0, 0, 7); g.fill();
-    g.fillStyle = CONFIG.lapula.fur; g.beginPath(); g.ellipse(cx - 8, G - 15, 26, 15, 0, 0, 7); g.fill();
+    g.save(); g.translate(cx - 8,G - 15); paintCatPart(g,"runningBody",CONFIG.lapula); g.restore();
     g.strokeStyle = CONFIG.lapula.shade; g.lineWidth = 8; g.lineCap = "round"; g.beginPath(); g.moveTo(cx - 30, G - 18); g.quadraticCurveTo(cx - 48, G - 30 - Math.sin(t*3)*6, cx - 40, G - 46); g.stroke();
     g.fillStyle = CONFIG.lapula.shade; [[-22, 0], [-6, 1], [6, 0]].forEach(([dx], i) => { g.fillRect(cx + dx - 3, G - 8 + (alive ? Math.sin(t*9 + i*2)*2 : 0), 6, 9); });
     drawCatCanvas(g, cx + 16, G - 20, CONFIG.lapula, .7);
@@ -8433,7 +8479,8 @@ function lvlLaser(area, done){
     if (sleeping){
       g.fillStyle = o.c.fur; g.beginPath(); g.arc(0, 0, 21, 0, 7); g.fill();
       g.strokeStyle = o.c.shade; g.lineWidth = 7; g.lineCap = "round"; g.beginPath(); g.arc(0, 0, 19, .6, 2.8); g.stroke();
-      g.fillStyle = o.c.fur; g.beginPath(); g.moveTo(-14, -12); g.lineTo(-19, -24); g.lineTo(-6, -17); g.fill(); g.beginPath(); g.moveTo(4, -19); g.lineTo(2, -31); g.lineTo(12, -21); g.fill();
+      g.translate(-4,-12); g.rotate(-.35); g.scale(.32,.32);
+      paintSketchHead(g,o.c,o.c === CONFIG.lapula,0,.1);
       g.restore(); g.font = "400 21px " + scriptFont; g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.6)"; g.fillText(name, o.x, o.y + 44); return;
     }
     g.rotate(o.ang);
@@ -8441,12 +8488,9 @@ function lvlLaser(area, done){
     g.scale(st, sw);
     const wag = Math.sin(t*(sp > 60 ? 14 : 4))*.5;
     g.strokeStyle = o.c.shade; g.lineWidth = 7; g.lineCap = "round"; g.beginPath(); g.moveTo(-20, 0); g.quadraticCurveTo(-34, wag*14, -42, wag*22); g.stroke();
-    g.fillStyle = o.c.fur; g.beginPath(); g.ellipse(-2, 0, 22, 14, 0, 0, 7); g.fill();
-    g.fillStyle = o.c.shade; g.globalAlpha = .45; g.beginPath(); g.ellipse(-6, 0, 12, 7, 0, 0, 7); g.fill(); g.globalAlpha = 1;
-    g.fillStyle = o.c.fur; g.beginPath(); g.arc(18, 0, 12, 0, 7); g.fill();
-    g.beginPath(); g.moveTo(16, -9); g.lineTo(24, -16); g.lineTo(26, -5); g.fill(); g.beginPath(); g.moveTo(16, 9); g.lineTo(24, 16); g.lineTo(26, 5); g.fill();
-    g.fillStyle = o.c.eyes; g.beginPath(); g.arc(25, -4.5, 2.6, 0, 7); g.arc(25, 4.5, 2.6, 0, 7); g.fill();
-    g.fillStyle = "#141014"; g.fillRect(25, -5.5, 1.4, 2); g.fillRect(25, 3.5, 1.4, 2);
+    g.save(); g.translate(-2,0); g.scale(.78,.82); paintCatPart(g,"runningBody",o.c); g.restore();
+    g.translate(18,0); g.rotate(Math.PI/2); g.scale(.28,.24);
+    paintSketchHead(g,o.c,o.c === CONFIG.lapula);
     g.restore();
     g.font = "400 21px " + scriptFont; g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.75)"; g.fillText(name, o.x, o.y + 44);
   }
@@ -8650,20 +8694,11 @@ function lvlStorm(area, done){
     g.save(); g.translate(x, y); g.scale(s, s);
     g.fillStyle = "rgba(0,0,0,.3)"; g.beginPath(); g.ellipse(0, 2, 36, 7, 0, 0, 7); g.fill();
     g.strokeStyle = c.c.shade; g.lineWidth = 9; g.lineCap = "round"; g.beginPath(); g.moveTo(c.side*20, -8); g.quadraticCurveTo(c.side*48, -6, c.side*40, -34); g.stroke();
-    g.fillStyle = c.c.fur; g.beginPath(); g.ellipse(0, -34, 30, 34, 0, 0, 7); g.fill();
-    g.fillStyle = c.c.shade; g.globalAlpha = .35; g.beginPath(); g.ellipse(dir*4, -28, 16, 20, 0, 0, 7); g.fill(); g.globalAlpha = 1;
-    const hx = dir*8, hy = -80;
-    g.fillStyle = c.c.fur;
-    g.beginPath(); g.moveTo(hx - 22, hy - 8); g.lineTo(hx - 20, hy - 34); g.lineTo(hx - 6, hy - 18); g.fill();
-    g.beginPath(); g.moveTo(hx + 22, hy - 8); g.lineTo(hx + 20, hy - 34); g.lineTo(hx + 6, hy - 18); g.fill();
-    g.beginPath(); g.ellipse(hx, hy, 27, 23, 0, 0, 7); g.fill();
-    const ex = hx + dir*4, wide = c.puff > .3;
-    g.fillStyle = c.c.eyes; g.beginPath(); g.arc(ex - 10, hy - 2, 6, 0, 7); g.arc(ex + 10, hy - 2, 6, 0, 7); g.fill();
-    g.fillStyle = "#141014"; const pw = wide ? 3.6 : 1.8, px = dir*2.5;
-    g.beginPath(); g.ellipse(ex - 10 + px, hy - 2, pw, 4.6, 0, 0, 7); g.ellipse(ex + 10 + px, hy - 2, pw, 4.6, 0, 0, 7); g.fill();
-    if (look && stage !== "thread"){ g.fillStyle = c.c.fur; g.fillRect(ex - 17, hy - 10, 34, 5); }          /* в конце довольный прищур */
-    g.fillStyle = "#fff"; g.beginPath(); g.arc(ex - 8 + px, hy - 4, 1.4, 0, 7); g.arc(ex + 12 + px, hy - 4, 1.4, 0, 7); g.fill();
-    g.fillStyle = c.c.nose; g.beginPath(); g.moveTo(ex - 3, hy + 7); g.lineTo(ex + 3, hy + 7); g.lineTo(ex, hy + 10); g.fill();
+    g.save(); g.scale(.57,.67); g.translate(-100,-227);
+    for (const part of ["body","pawL","pawR"]) paintCatPart(g,part,c.c);
+    g.restore();
+    g.translate(dir*6,-78); g.scale(.56,.56);
+    paintSketchHead(g,c.c,c.c === CONFIG.lapula,dir*2.5,look && stage !== "thread" ? .55 : 1,c.puff > .3 ? 1.25 : 1);
     g.restore();
     g.font = nameFont; g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.72)"; g.fillText(c.name, x, y + 46); g.textAlign = "left";
   }
@@ -8679,11 +8714,9 @@ function lvlStorm(area, done){
     g.save(); g.beginPath(); g.rect(ix, iy, iw, ih); g.clip();
     const sky = g.createLinearGradient(0, iy, 0, iy + ih); sky.addColorStop(0, "#2a2050"); sky.addColorStop(1, "#5a2f62"); g.fillStyle = sky; g.fillRect(ix, iy, iw, ih);
     const c = h.c.c, cx = side === 0 ? ix + iw - 6 : ix + 6, cy = iy + ih - 4;
-    g.fillStyle = c.fur; g.beginPath(); g.ellipse(cx, cy, 22, 24, 0, 0, 7); g.fill();
-    g.beginPath(); g.ellipse(cx, cy - 28, 18, 15, 0, 0, 7); g.fill();
-    g.beginPath(); g.moveTo(cx - 15, cy - 34); g.lineTo(cx - 13, cy - 50); g.lineTo(cx - 4, cy - 40); g.fill(); g.beginPath(); g.moveTo(cx + 15, cy - 34); g.lineTo(cx + 13, cy - 50); g.lineTo(cx + 4, cy - 40); g.fill();
-    g.fillStyle = c.eyes; g.beginPath(); g.arc(cx - 6, cy - 29, 3.4, 0, 7); g.arc(cx + 6, cy - 29, 3.4, 0, 7); g.fill();
-    g.fillStyle = "#141014"; g.beginPath(); g.ellipse(cx - 6 + (side ? -1 : 1), cy - 29, 1.2, 2.6, 0, 0, 7); g.ellipse(cx + 6 + (side ? -1 : 1), cy - 29, 1.2, 2.6, 0, 0, 7); g.fill();
+    g.translate(cx,cy+18); g.scale(.39,.39); g.translate(-100,-228);
+    for (const part of ["body","pawL","pawR"]) paintCatPart(g,part,c);
+    g.translate(100,102); paintSketchHead(g,c,c === CONFIG.lapula,side ? -2 : 2);
     g.restore();
     if (!joinedNow && stage === "photo"){ g.strokeStyle = `rgba(245,200,76,${(.35 + .3*Math.sin(t*5)).toFixed(2)})`; g.lineWidth = 2; g.strokeRect(x0 - 4, y0 - 4, w + 8, H + 8); }
     g.restore();
