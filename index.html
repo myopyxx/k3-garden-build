@@ -7680,7 +7680,8 @@ function lvlSun(area, done){
     alive = true; hissL = hissLoop(); hint.animate([{opacity:1}, {opacity:0}], {duration:900, delay:3500, fill:"forwards"});
     raf = requestAnimationFrame(tt => { last = tt; frame(tt); });
   });
-  raf = requestAnimationFrame(function idle(tt){ if (alive || ended) return; last = tt; draw(); raf = requestAnimationFrame(idle); });
+  // В заставке сцена неподвижна. Следующий кадр запустит intro при входе в уровень.
+
   return () => { alive = false; ended = true; cancelAnimationFrame(raf); hissL.stop(); removeEventListener("resize", C.fit); removeEventListener("keydown", kd); };
 }
 
