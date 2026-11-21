@@ -1,3 +1,9 @@
+let previousScore;
+function showScore(markup){
+  if (markup === previousScore) return;
+  $("#scMain").innerHTML = markup;
+  previousScore = markup;
+}
 /* 1 нокаут, 2 нокаута, 5 нокаутов */
 function plural(n, a, b, c){ n = Math.abs(n) % 100; const k = n % 10; return n > 10 && n < 20 ? c : k === 1 ? a : k >= 2 && k <= 4 ? b : c; }
 /* =================== РЕЖИМЫ =================== */
@@ -39,7 +45,7 @@ const MODES = {
     },
     hud(){
       const a = teamGems(1), b = teamGems(2);
-      $("#scMain").innerHTML = `<span class="us">🩸 ${a}</span><span class="tm">${fmtT(G.left)}</span><span class="them">${b} 🩸</span>`;
+      showScore(`<span class="us">🩸 ${a}</span><span class="tm">${fmtT(G.left)}</span><span class="them">${b} 🩸</span>`);
       const n = $("#scNote"); if (G.holder){ n.textContent = (G.holder === 1 ? "победа через " : "поражение через ") + Math.max(0, Math.ceil(G.hold)); n.classList.add("on"); } else n.classList.remove("on");
     },
     result(r){
@@ -81,7 +87,7 @@ const MODES = {
     },
     hud(){
       const alive = G.fighters.filter(f => !f.dead).length, s = G.safeR || {k: 0};
-      $("#scMain").innerHTML = `<span>🐾 осталось ${alive}</span><span class="tm">⚡ ${G.me.power}</span>`;
+      showScore(`<span>🐾 осталось ${alive}</span><span class="tm">⚡ ${G.me.power}</span>`);
       const n = $("#scNote"); if (s.k > 0 && s.k < 1){ n.textContent = "туман сжимается"; n.classList.add("on"); } else if (G.el < G.fogStart && G.el > G.fogStart - 10){ n.textContent = "туман через " + Math.ceil(G.fogStart - G.el); n.classList.add("on"); } else n.classList.remove("on");
     },
     result(r, place){
@@ -137,7 +143,7 @@ const MODES = {
     },
     hud(){
       const foes = G.fighters.filter(f => f.team === 2 && !f.dead).length, boss = G.fighters.find(f => f.kind === "boss" && !f.dead);
-      $("#scMain").innerHTML = `<span>волна ${Math.max(1, G.wave)}/6</span><span class="tm">❤️ ${G.lives}</span><span class="them">👤 ${foes}</span>`;
+      showScore(`<span>волна ${Math.max(1, G.wave)}/6</span><span class="tm">❤️ ${G.lives}</span><span class="them">👤 ${foes}</span>`);
       const n = $("#scNote"); if (boss){ n.textContent = "Старый охотник " + Math.ceil(boss.hp/boss.maxHp*100) + "%"; n.classList.add("on"); } else n.classList.remove("on");
     },
     result(r){

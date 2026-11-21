@@ -489,7 +489,7 @@ canvas.c{display:block;width:100%;height:100%}
 .edge-top{visibility:hidden}
 .edge-top.on{visibility:visible}
 .app.sheet-on .stage :is(.hudcap,.round,.hgroup,.tabs,.dk.lg,.mini,.seg){-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(46,32,62,.86)}
-.app.game-on .stage{visibility:hidden}
+.app.game-on .stage{visibility:hidden;content-visibility:hidden}
 .app.game-on .world *{animation-play-state:paused}
 .sheet .btn,.panel .btn,.sheet .chip{-webkit-backdrop-filter:none;backdrop-filter:none}
 
@@ -2334,7 +2334,16 @@ const fresh = () => JSON.parse(JSON.stringify(DEF));
 let S;
 try { S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch(e) { S = fresh(); }
 ["stars","ach","owned","wear","bought"].forEach(k => { if (typeof S[k] !== "object" || !S[k]) S[k] = {}; });
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+let petSaveTimer = 0, lastSaveAt = -Infinity;
+function save(){
+  clearTimeout(petSaveTimer); petSaveTimer = 0; lastSaveAt = performance.now();
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+function savePetProgress(){
+  if (petSaveTimer) return;
+  const delay = 180 - (performance.now() - lastSaveAt);
+  if (delay <= 0) save();
+  else petSaveTimer = setTimeout(save, delay);
+}
 /* v4: уровни 7–9 новые. Старые звёзды за них остаются в зачёте альбома, но сами уровни открываются заново */
 if (!S.v4){ S.legacy = {}; [7,8,9].forEach(n => { if (S.stars[n]){ S.legacy[n] = S.stars[n]; delete S.stars[n]; } }); S.v4 = 1; save(); }
 if (typeof S.legacy !== "object" || !S.legacy) S.legacy = {};
@@ -2391,10 +2400,12 @@ function makeNoise(sec){
   const len = Math.floor(ctx.sampleRate*sec), b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
   for (let i=0;i<len;i++) d[i] = Math.random()*2-1; return b;
 }
+let audioPrimed = false;
 function unlock(){
   if (!initAudio()) return;
+  if (audioPrimed && ctx.state === "running") return;
   if (ctx.state !== "running") ctx.resume().catch(()=>{});
-  const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1,1,ctx.sampleRate); s.connect(ctx.destination); s.start(0);
+  const s = ctx.createBufferSource(); s.buffer = ctx.createBuffer(1,1,ctx.sampleRate); s.connect(ctx.destination); s.start(0); audioPrimed = true;
 }
 ["pointerdown","touchend","click","keydown"].forEach(ev => addEventListener(ev, unlock, {capture:true, passive:true}));
 document.addEventListener("visibilitychange", () => { if (!ctx) return; if (document.hidden) ctx.suspend().catch(()=>{}); else ctx.resume().catch(()=>{}); });
@@ -2877,7 +2888,14 @@ function shake(el, power=8){
   const k = []; for (let i=0;i<8;i++){ const p = power*(1-i/8); k.push({transform:`translate(${(Math.random()-.5)*2*p}px,${(Math.random()-.5)*2*p}px) rotate(${(Math.random()-.5)*p*.25}deg)`}); }
   k.push({transform:"none"}); el.animate(k, {duration:320, easing:"linear"});
 }
-function bumpChip(){ const c = $("#chipDrops"); c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump"); }
+function restartClass(el, name){
+  if (el.classList.contains(name)){
+    el.classList.remove(name);
+    void el.offsetWidth;
+  }
+  el.classList.add(name);
+}
+function bumpChip(){ const c = $("#chipDrops"); restartClass(c, "bump"); }
 /* капли летят по холсту частиц в чип баланса: 0,48 с полёта, вылет через 70 мс. Каждая, долетев, щёлкает счётчик на единицу */
 function flyDrops(fromEl, n=6){
   const target = $("#chipDrops .he"); if (!target || !fromEl) return;
@@ -3146,7 +3164,7 @@ function toastClose(fling){
   };
   el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
 })();
-function checkAch(){ ACH.forEach(a => { if (!S.ach[a.id] && a.ok()){ S.ach[a.id] = Date.now(); toast(a); noteList("ach", a.id); } }); save(); }
+function checkAch(persist = save){ ACH.forEach(a => { if (!S.ach[a.id] && a.ok()){ S.ach[a.id] = Date.now(); toast(a); noteList("ach", a.id); persist = save; } }); persist(); }
 
 /* ---------- главная ---------- */
 const PHRASES = {
@@ -3258,7 +3276,7 @@ function lookAt(x, y, followEars = false){
   const targets = [];
   document.querySelectorAll("#duo .cat:not(.sleep)").forEach(cat => {
     const look = (cat._away || 0) <= tnow;
-    if (look || followEars) targets.push({cat, look, rect:cat.getBoundingClientRect()});
+    if (look || followEars) targets.push({cat, look, rect:petRects.get(cat) || cat.getBoundingClientRect()});
   });
   // Сначала обе рамки, потом запись CSS: стиль первой кошки не задерживает замер второй.
   for (const {cat, look, rect} of targets){
@@ -3321,7 +3339,7 @@ const pick = a => a[Math.floor(Math.random()*a.length)];
 const idle = {last: performance.now(), lines: 0, sleeping: false, night: false};
 function yawn(who, delay=0){
   if (reduced()) return;
-  setTimeout(() => { const c = catOf(who); if (!c || c.classList.contains("sleep")) return; c.classList.remove("yawning"); void c.offsetWidth; c.classList.add("yawning"); snd.yawn(); setTimeout(() => c.classList.remove("yawning"), 1700); }, delay);
+  setTimeout(() => { const c = catOf(who); if (!c || c.classList.contains("sleep")) return; restartClass(c, "yawning"); snd.yawn(); setTimeout(() => c.classList.remove("yawning"), 1700); }, delay);
 }
 function sleepCats(night){
   if (idle.sleeping) return; idle.sleeping = true; idle.night = !!night;
@@ -3425,7 +3443,15 @@ function renderPurr(){
   if (n && n !== renderPurr.n && !reduced()) petMotion($("#purrBar"), [{scale: "1 1"}, {scale: "1 1.7", offset: .25}, {scale: "1 1"}], {duration: 420, easing: meterSpring});
   renderPurr.n = n; m.style.setProperty("--pk", (n/D).toFixed(3));        /* зрачки шире с каждым делением шкалы */
   m.setAttribute("aria-valuenow", n); m.classList.toggle("paused", q);
-  $("#purrK").textContent = q ? "мурр-шкала · на паузе" : (moonNow() ? "мурр-шкала · полнолуние" : "мурр-шкала"); m.classList.toggle("moonx", moonNow() && !q);
+  const moon = moonNow(), label = $("#purrK");
+  const title = q ? "мурр-шкала · на паузе" : moon ? "мурр-шкала · полнолуние" : "мурр-шкала";
+  if (label.textContent !== title) label.textContent = title;
+  m.classList.toggle("moonx", moon && !q);
+}
+let meterFrame = 0;
+function queuePurr(){
+  if (meterFrame) return;
+  meterFrame = requestAnimationFrame(() => { meterFrame = 0; renderPurr(); });
 }
 const renderMoon = renderPurr;
 const petFx = {who: null, at: 0, duet: false, dew: false, dewAt: -1e9, streak: 1, endAt: 0, counted: true, cool: 0, dt: 0};
@@ -3447,6 +3473,7 @@ function pet(el, e, soft){
   const stroke = soft === "stroke"; if (stroke) soft = false;
   const who = el.dataset.cat, cat = el.querySelector(".cat");
   if (S.event === "quarrel") return soft ? null : sulk(el, who);
+  const r0 = petRect(cat), mr = petRect($("#purr"));
   const ov = over;
   S.pets++; if (!ov) S.purr++; if (who === "alisa") S.petA++; else S.petL++; note(who === "alisa" ? "pa" : "pl");
   if (!S.seenFirstPet) endOnboard();
@@ -3455,7 +3482,6 @@ function pet(el, e, soft){
   cat.classList.add("happy"); clearTimeout(cat._hp); cat._hp = setTimeout(() => cat.classList.remove("happy"), 2600);
   /* четыре зоны, как у живой кошки: макушка и уши, щёки и подбородок, спина по шерсти, против шерсти.
      Капель зоны не меняют: шкала растёт одинаково, отличается только ответ кошки */
-  const r0 = petRect(cat), mr = petRect($("#purr"));
   if (e && Number.isFinite(e.clientX) && !soft){
     const rx = (e.clientX - r0.left)/r0.width, ry = (e.clientY - r0.top)/r0.height;
     zone = stroke && meta && meta.against ? 3 : ry < .32 ? 0 : ry < .52 && Math.abs(rx - .5) < .34 ? 1 : 2;
@@ -3498,7 +3524,7 @@ function pet(el, e, soft){
     petMotion($("#purr"), [{transform:"none"}, {transform:`translateY(${stroke ? 1.4 : 2.5}px) rotate(${sd*(stroke ? .45 : .7)}deg)`, offset:.2}, {transform:`translateY(-1px) rotate(${-sd*.2}deg)`, offset:.55}, {transform:"none"}], {duration:stroke ? 420 : 640, easing:"ease-out"});
     if (!stroke) petMotion(el, [{transform:"none"}, {transform:"translateY(2.5px)", offset:.2}, {transform:"translateY(-1px)", offset:.55}, {transform:"none"}], {duration:640, easing:"ease-out"});
     if (other && !stroke) petMotion(other, [{transform:"none"}, {transform:"translateY(1.2px)", offset:.25}, {transform:"none"}], {duration:520, easing:"ease-out", delay:50});
-    if (S.pets % 7 === 0){ const c = el.querySelector(".cat"); c.classList.remove("slowblink"); void c.offsetWidth; c.classList.add("slowblink"); setTimeout(() => c.classList.remove("slowblink"), 1600); }
+    if (S.pets % 7 === 0){ const c = el.querySelector(".cat"); restartClass(c, "slowblink"); setTimeout(() => c.classList.remove("slowblink"), 1600); }
   }
   { const m = $("#purr"), px = e?.clientX ?? (r0.left + r0.width/2);
     m.style.setProperty("--px", Math.max(0, Math.min(mr.width, px - mr.left)).toFixed(0) + "px"); m.style.setProperty("--py", "0px");
@@ -3528,14 +3554,14 @@ function pet(el, e, soft){
   else if (S.purr >= perDrop()){
     const D = perDrop(), pay = cyclePay(false); S.purr = 0; earn(pay); const m = $("#purr"), bar = $("#purrBar");
     bar.style.width = "100%"; $("#purrN").textContent = D + "/" + D; $("#duo").style.setProperty("--pd", 1.38); m.style.setProperty("--dt", "0%"); m.style.setProperty("--pk", 1); m.style.setProperty("--heat", 1); m.classList.remove("near");
-    m.classList.remove("full"); void m.offsetWidth; m.classList.add("full");
+    restartClass(m, "full");
     setTimeout(() => { flyDrops(m.querySelector(".dropl"), pay); setTimeout(() => hud(true), 800); }, 380);
     if (pay > 1){ const [mx, my] = centerOf(m); setTimeout(() => popNum("+" + pay, mx + 70, my - 14), 380); }
     setTimeout(() => { dropFlash(); }, 300);
     petFx.endAt = performance.now(); petFx.counted = false; petFx.dew = false; petFx.duet = false;
     overStart(pay, who);
-  } else renderPurr();
-  checkAch();
+  } else queuePurr();
+  checkAch(!ov && S.purr === 0 ? save : savePetProgress);
 }
 let petMeta = null;
 const AGAINST = {alisa: ["против шерсти? серьёзно?", "я тебе не щётка"], lapula: ["шерсть растёт в другую сторону", "эй. гладь обратно"]};
@@ -3544,7 +3570,7 @@ function petZone(cat, who, zone, rx, ry, stroke){
   const now = performance.now(), tmp = (k, ms) => { cat.classList.add(k); clearTimeout(cat["_z" + k]); cat["_z" + k] = setTimeout(() => cat.classList.remove(k), ms); };
   if (zone === 0){
     tmp("earflat", 1100);
-    if (!stroke && Math.random() < .3){ const k = rx < .5 ? "flickL" : "flickR"; cat.classList.remove(k); void cat.offsetWidth; cat.classList.add(k); setTimeout(() => cat.classList.remove(k), 460); }
+    if (!stroke && Math.random() < .3){ const k = rx < .5 ? "flickL" : "flickR"; restartClass(cat, k); setTimeout(() => cat.classList.remove(k), 460); }
     if (Math.random() < .22 && !cat.classList.contains("slowblink")){ cat.classList.add("slowblink"); setTimeout(() => cat.classList.remove("slowblink"), 1600); }
     if (ensureRunning() && canPlay("ztop", 260)) fmBell({f: PENTA[7 + Math.floor(Math.random()*4)], dur: .35, peak: .035, send: .3});
   } else if (zone === 1){
@@ -4524,7 +4550,7 @@ function renderStarMap(dir){
     lines += `<line class="${on ? "on" : ""}" data-a="${a}" data-b="${b}" x1="${(x1*W/100).toFixed(1)}" y1="${(y1*H/100).toFixed(1)}" x2="${(x2*W/100).toFixed(1)}" y2="${(y2*H/100).toFixed(1)}" style="--len:${len.toFixed(0)};--ld:${(k*.05).toFixed(2)}s"/>`; });
   map.innerHTML = `<svg class="slines" viewBox="0 0 ${W} ${H}" aria-hidden="true">${lines}</svg>`;
   ids.forEach(id => { const a = ACH.find(x => x.id === id); if (a) map.appendChild(starNode(a, M.n[id], small)); });
-  map.style.setProperty("--dir", dir || 0); map.classList.remove("in"); void map.offsetWidth; map.classList.add("in");
+  map.style.setProperty("--dir", dir || 0); restartClass(map, "in");
   if (!awSel || !M.n[awSel]){ const best = ids.filter(id => S.ach[id]).sort((x, y) => achDate(y) - achDate(x))[0]; awSel = best || ids[0]; }
   pickStar(awSel, true);
 }
@@ -4638,7 +4664,7 @@ const musicBox = (() => {
       ev.hits.forEach(id => { const h = el.querySelector(`.mb-ham[data-id="${id}"]`); if (!h) return;
         if (!reduced()) h.animate([{transform: "none"}, {transform: "translateY(-9px) rotate(-7deg)", offset: .28}, {transform: "translateY(1px)", offset: .7}, {transform: "none"}], {duration: 260, easing: "ease-out"});
         puff(h, "♪"); });
-      if (ev.note !== null){ const r = el.querySelector(".mb-roll"); r.classList.remove("ping"); void r.offsetWidth; r.classList.add("ping"); if (ev.pos % 2 === 0) puff(r, "♫", (ev.note - 64)/17); }
+      if (ev.note !== null){ const r = el.querySelector(".mb-roll"); restartClass(r, "ping"); if (ev.pos % 2 === 0) puff(r, "♫", (ev.note - 64)/17); }
     }, ev.at*1000);
   }
   function puff(from, ch, k){
@@ -5020,7 +5046,7 @@ function moonLabel(){
   if (S.day) return;
   let l = $("#mlabel"); if (!l){ l = document.createElement("div"); l.id = "mlabel"; l.className = "mlabel lg"; l.setAttribute("aria-live", "polite"); l.innerHTML = '<span class="me" aria-hidden="true"></span><span class="mt"></span><i class="rim" aria-hidden="true"></i>'; $(".hud").appendChild(l); }
   const f = moonPhase(); l.querySelector(".me").textContent = MOON_E[Math.round(f*8) % 8]; l.querySelector(".mt").textContent = moonName(f) + (fullMoon() ? " · шкала короче" : "");
-  l.classList.remove("on"); void l.offsetWidth; l.classList.add("on"); clearTimeout(l._t); l._t = setTimeout(() => { l.classList.remove("on"); app.classList.remove("moonpill"); }, 2600);
+  restartClass(l, "on"); clearTimeout(l._t); l._t = setTimeout(() => { l.classList.remove("on"); app.classList.remove("moonpill"); }, 2600);
   /* на узком экране пилюля может встать поверх реплики: тогда реплика на эти 2,6 с уступает место */
   app.classList.toggle("moonpill", pillHitsBubble());
 }
@@ -6080,7 +6106,7 @@ app.addEventListener("pointerdown", () => { if (busyAct) endBusy(); }, {capture:
 let duoAt = 0;
 function noseMid(){ const p = ["alisa", "lapula"].map(w => { const r = catOf(w).getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height*.5]; }); return [(p[0][0] + p[1][0])/2, (p[0][1] + p[1][1])/2]; }
 const DUO_PLAY = {
-  blink(){ const a = catOf("alisa"), l = catOf("lapula"), sb = c => { c.classList.remove("slowblink"); void c.offsetWidth; c.classList.add("slowblink"); setTimeout(() => c.classList.remove("slowblink"), 1600); };
+  blink(){ const a = catOf("alisa"), l = catOf("lapula"), sb = c => { restartClass(c, "slowblink"); setTimeout(() => c.classList.remove("slowblink"), 1600); };
     glance(a, 1, 3200); setTimeout(() => glance(l, -1, 2600), 500);
     setTimeout(() => sb(a), 900); setTimeout(() => sb(l), 2000);
     setTimeout(() => { const [x, y] = noseMid(); FX.burst(x, y, {emojis: ["🤍"], n: 2, speed: [30, 70], grav: -40, size: [14, 20], life: [1.2, 1.6]});
@@ -6253,7 +6279,7 @@ function openWord(){
     const showPick = () => { pk.querySelector('[data-k="d"] .wpk-s').textContent = `+${W.r} капель`;
       pk.querySelector('[data-k="m"] .wpk-s').textContent = "+5 поглаживаний, до следующей капли";
       pk.querySelector('[data-k="h"] .wpk-s').textContent = "завтра откроет одну букву"; kb.style.display = "none"; pk.hidden = false; };
-    const say = (t, keep) => { msg.textContent = t; bar(); msg.classList.remove("on"); void msg.offsetWidth; msg.classList.add("on"); clearTimeout(msg._t);
+    const say = (t, keep) => { msg.textContent = t; bar(); restartClass(msg, "on"); clearTimeout(msg._t);
       if (!keep) msg._t = setTimeout(() => { msg.classList.remove("on"); setTimeout(() => { if (!msg.classList.contains("on")){ msg.textContent = hintText(); bar(); } }, 250); }, 2200); };
     const hintText = () => W.h >= 0 ? `Лапуля подглядела: ${W.h + 1}-я буква «${ans[W.h]}»` : "";
     const paintKeys = () => { const best = {}; W.g.forEach(g => wdScore(g, ans).forEach((s, i) => { best[g[i]] = Math.max(best[g[i]] ?? -1, s); }));
@@ -6316,16 +6342,23 @@ addEventListener("keydown", e => { if (wdKey && openSh) wdKey(e); });
 
 /* =================== ДВИЖОК УРОВНЕЙ =================== */
 let current = null, cleanup = null, gameTok = 0;
+const emptyGameArea = $("#garea").cloneNode(false);
+function resetGameArea(){
+  const area = emptyGameArea.cloneNode(false);
+  $("#garea").replaceWith(area);
+  return area;
+}
 function startLevel(L, fromEl){
   stopLevel(); rainSound(false);
   current = L;
   const P = POSTER[L.n], game = $("#game");
   game.style.setProperty("--lvbg", `linear-gradient(180deg,${P[0]},${P[1]} 70%,${P[2]})`);
-  $("#gTitle").textContent = L.t; stat("");
+  $("#gTitle").textContent = L.t; stat();
   $("#result").classList.remove("on");
-  const area = $("#garea"); area.innerHTML = "";
+  const area = resetGameArea(), tok = ++gameTok;
   const open = () => {
-    game.classList.add("on"); const tok = ++gameTok; setTimeout(() => { if (tok === gameTok && game.classList.contains("on")) app.classList.add("game-on"); }, 650);
+    if (tok !== gameTok) return;
+    game.classList.add("on"); setTimeout(() => { if (tok === gameTok && game.classList.contains("on")) app.classList.add("game-on"); }, 650);
     if (S.music) Music.start(L.n * 7);
     requestAnimationFrame(() => { if (tok !== gameTok) return;
       cleanup = L.run(area, (...result) => { if (tok === gameTok) finish(...result); }) || null; });
@@ -6348,20 +6381,30 @@ function startLevel(L, fromEl){
 }
 function stopLevel(){ if (cleanup){ try { cleanup(); } catch(e){} cleanup = null; } }
 function exitLevel(){
-  stopLevel(); const game = $("#game"); gameTok++; app.classList.remove("game-on");
+  stopLevel(); const game = $("#game"), tok = ++gameTok; app.classList.remove("game-on");
   const toHome = quarrelExit();
-  const fin = () => { game.classList.remove("on"); renderMap(); hud(true); applyLook(); if (toHome) showView("v-home"); applyEvent(); rainSound($("#v-home").classList.contains("on") && app.classList.contains("rainy")); if (S.music){ Music.start(0); $("#miniPlayer").classList.remove("playing"); } eventFx(); };
+  const fin = () => {
+    if (tok !== gameTok) return;
+    game.classList.remove("on"); resetGameArea(); renderMap(); hud(true); applyLook(); if (toHome) showView("v-home"); applyEvent(); rainSound($("#v-home").classList.contains("on") && app.classList.contains("rainy")); if (S.music){ Music.start(0); $("#miniPlayer").classList.remove("playing"); } eventFx(); };
   if (reduced() || !game.animate) return fin();
   game.animate([{opacity:1, transform:"none"}, {opacity:0, transform:"scale(.94)"}], {duration:300, easing:"cubic-bezier(.4,0,.6,1)"}).onfinish = fin;
 }
 $("#gClose").onclick = () => { snd.back(); exitLevel(); };
-let lastStat;
-function stat(html){
-  if (html === lastStat) return;
-  $("#gStat").innerHTML = html;
-  lastStat = html;
+const statRow = $("#gStat");
+function stat(...fields){
+  for (let i = 0; i < fields.length; i += 2){
+    let node = statRow.children[i/2];
+    if (!node){
+      node = document.createElement("div"); node.className = "chip";
+      node.innerHTML = '<span class="e"></span><span class="num"></span>';
+      statRow.appendChild(node);
+    }
+    const icon = node.firstChild, number = node.lastChild, value = String(fields[i + 1]);
+    if (icon.textContent !== fields[i]) icon.textContent = fields[i];
+    if (number.textContent !== value) number.textContent = value;
+  }
+  while (statRow.children.length > fields.length/2) statRow.lastChild.remove();
 }
-const chip = (e, v) => `<div class="chip"><span class="e">${e}</span><span class="num">${v}</span></div>`;
 
 function intro(area, L, text, onGo){
   const d = document.createElement("div"); d.className = "overlay on";
@@ -6436,8 +6479,8 @@ function extraRound(area, done, rules){
   let result = null, drops = 0;
   return {
     active:false, failed:false,
-    hud(normal, time){
-      stat((this.active ? chip("🩸", "+" + drops) : normal) + chip("⏱️", Math.max(0, Math.ceil(time))));
+    hud(time, ...normal){
+      stat(...(this.active ? ["🩸", "+" + drops] : normal), "⏱️", Math.max(0, Math.ceil(time)));
     },
     offer(stars, text, resume){
       if (result || !stars){ done(stars, text); return; }
@@ -6481,7 +6524,8 @@ function drawCatCanvas(g, x, y, c, s=1, sx=1, sy=1){
 function setupCanvas(area){
   const cv = document.createElement("canvas"); cv.className = "c"; area.appendChild(cv);
   const g = cv.getContext("2d"); const st = {cv, g, W:0, H:0};
-  st.fit = () => { const dpr = Math.min(2, devicePixelRatio||1); st.W = area.clientWidth; st.H = area.clientHeight; cv.width = st.W*dpr; cv.height = st.H*dpr; g.setTransform(dpr,0,0,dpr,0,0); };
+  st.fit = () => { const dpr = Math.min(2, devicePixelRatio||1); st.W = area.clientWidth; st.H = area.clientHeight; if (cv.width === Math.floor(st.W*dpr) && cv.height === Math.floor(st.H*dpr) && st.dpr === dpr) return;
+    st.dpr = dpr; cv.width = st.W*dpr; cv.height = st.H*dpr; g.setTransform(dpr,0,0,dpr,0,0); };
   st.fit(); addEventListener("resize", st.fit);
   return st;
 }
@@ -6524,7 +6568,7 @@ function lvlHunt(area, done){
   const kd = e => { keys[e.key] = true; }, ku = e => { keys[e.key] = false; };
   addEventListener("keydown", kd); addEventListener("keyup", ku);
   const mult = () => combo >= 10 ? 3 : combo >= 5 ? 2 : 1;
-  const upd = () => bonus.hud(chip("🍽️", score) + chip("❤️", Math.max(0,lives)), time);
+  const upd = () => bonus.hud(time, "🍽️", score, "❤️", Math.max(0,lives));
   upd();
   area.__hunt = { get items(){ return items; }, get px(){ return px; }, get cy(){ return C.H - 40; }, get W(){ return C.W; }, lap, get e(){ return DUR - time; }, get slow(){ return slow; }, set tx(v){ tx = Math.max(30, Math.min(C.W-30, v)); } };
   const arp = (fs, step = .06, type = "triangle", peak = .06) => { if (!ensureRunning()) return; const t = ctx.currentTime; fs.forEach((f, i) => voice({type, f, t: t + i*step, lp: 4200, send: .18, envOpts: {a:.004, d:.16, peak}})); };
@@ -6704,7 +6748,7 @@ function lvlShell(area, done){
   wrap.innerHTML = '<div class="sh-glow"></div><div class="sh-table"></div><span class="sh-candle l e">🕯️</span><span class="sh-candle r e">🕯️</span><div class="sh-ring">' + RING_SVG + '</div><div class="sh-paw">' + PAW_SVG + '</div>';
   const ringEl = wrap.querySelector(".sh-ring"), pawEl = wrap.querySelector(".sh-paw");
   let gobs = [], round = -1, found = 0, state = "idle", alive = true, tok = 0, W = 0, H = 0, gw = 80;
-  const upd = () => stat(chip("💍", found + "/" + SHELL_ROUNDS.length) + chip("🍷", Math.max(1, round + 1) + "/" + SHELL_ROUNDS.length)); upd();
+  const upd = () => stat("💍", found + "/" + SHELL_ROUNDS.length, "🍷", Math.max(1, round + 1) + "/" + SHELL_ROUNDS.length); upd();
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const alivep = t => alive && t === tok;
   const slotX = (i, n) => { const gap = Math.min(gw*1.32, (W - 24)/n); return W/2 + (i - (n - 1)/2)*gap; };
@@ -6832,7 +6876,7 @@ function lvlAstral(area, done){
   let W = 0, H = 0, RW = 0, pan = 0, fx = 0, fy = 0, down = false, found = 0, time = 60, alive = false, raf = 0, last = 0, litT = 0, flee = 0, dim = 0, purr = null, surge = false, lapCool = 0;
   const bonus = extraRound(area, done, "Луч фонарика уже. За каждую находку — 3 капли.");
   const NEED = 4, BEAMK = perk("mask", 3) ? 1.2 : 1, R0 = () => Math.min(W, H)*.3*BEAMK*(bonus.active ? .65 : 1);
-  const upd = () => bonus.hud(chip("🐱", found + "/" + NEED), time); upd();
+  const upd = () => bonus.hud(time, "🐱", found + "/" + NEED); upd();
   function layout(){
     W = view.clientWidth; H = view.clientHeight; RW = W*2.1; room.style.width = RW + "px";
     objs.forEach(o => { o.el.style.left = (o.x*RW - o.s/2) + "px"; o.el.style.top = (o.y*H - o.s/2) + "px"; });
@@ -6844,7 +6888,7 @@ function lvlAstral(area, done){
   function setSpot(c, i, quiet){
     c.spot = i; const [x, y] = spotXY(i), o = objs[ASTRAL_SPOTS[i][0]]; c.x = x; c.y = y;
     c.el.style.left = (x - 26) + "px"; c.el.style.top = (y - 20) + "px"; c.el.style.zIndex = 1; o.el.style.zIndex = 2;
-    if (!quiet){ c.el.classList.remove("pop"); void c.el.offsetWidth; c.el.classList.add("pop"); }
+    if (!quiet){ restartClass(c.el, "pop"); }
   }
   function freeSpot(avoid){ let i, k = 0; do { i = Math.floor(Math.random()*ASTRAL_SPOTS.length); k++; } while (k < 50 && (avoid.includes(i) || Math.abs(spotXY(i)[0] - (pan + fx)) < W*.35)); return i; }
   /* светящиеся следы ведут от места, где Алиса была, к новому месту */
@@ -6954,7 +6998,7 @@ function lvlRules(area, done){
   let forgive = setOn("ball");          /* сет «Бал у Сальваторе» прощает первую ошибку */
   const miss = () => { if (bonus.active){ bonus.failed = true; return; } if (forgive){ forgive = false; lvBanner(area, "Бал у Сальваторе: первая ошибка не считается"); return; } errs++; };
   let items = [], deck = [], right = 0, errs = 0, time = SORT_DUR, alive = false, raf = 0, last = 0, spawnT = 0, swapped = false, swapDone = false, W = 0, H = 0, combo = 0, whyT = 0;
-  const upd = () => bonus.hud(chip("✅", right) + chip("❌", errs), time); upd();
+  const upd = () => bonus.hud(time, "✅", right, "❌", errs); upd();
   const phase = () => { const e = SORT_DUR - time; return e < 14 ? 0 : e < 30 ? 1 : e < 44 ? 2 : 3; };
   const fallMs = () => bonus.active ? 2.3 : [6.4, 4.8, 4.4, 3.4][phase()], maxFly = () => [1, 2, 2, 3][phase()], gapS = () => bonus.active ? .78 : [2.4, 1.7, 1.8, 1.15][phase()];
   function layout(){
@@ -6973,7 +7017,7 @@ function lvlRules(area, done){
   }
   const draw = it => { it.el.style.transform = `translate(${(it.x - 75).toFixed(1)}px,${it.y.toFixed(1)}px) rotate(${it.rot.toFixed(1)}deg)`; };
   const target = () => items.filter(i => !i.gone).sort((a, b) => b.y - a.y)[0];
-  function say(t){ why.textContent = t; why.classList.remove("on"); void why.offsetWidth; why.classList.add("on"); clearTimeout(whyT); whyT = setTimeout(() => why.classList.remove("on"), 1700); }
+  function say(t){ why.textContent = t; restartClass(why, "on"); clearTimeout(whyT); whyT = setTimeout(() => why.classList.remove("on"), 1700); }
   /* бросок: карточка летит в сундук по дуге */
   function toss(yes){
     if (!alive) return; const it = target(); if (!it) return;
@@ -7001,7 +7045,7 @@ function lvlRules(area, done){
   function lapSwap(on){
     swapped = on; snd.meow("lapula"); haptic(12);
     flashBanner(area, on ? "Лапуля поменяла сундуки местами" : "Сундуки вернулись", 2000);
-    [chYes, chNo].forEach(c => { c.classList.remove("hop"); void c.offsetWidth; c.classList.add("hop"); }); layout();
+    [chYes, chNo].forEach(c => { restartClass(c, "hop"); }); layout();
   }
   chNo.onclick = () => toss(false); chYes.onclick = () => toss(true);
   let sx = null, sy = 0;
@@ -7137,7 +7181,7 @@ function lvlForks(area, done){
      Второй прыжок в воздухе доступен весь забег. Сет «Полночь в Форксе» расширяет зону ловли на 30 % */
   const GUST0 = 10, GUST1 = 20, GOLD_AT = [11.5, 14.5, 17.5], RK = setOn("forks") ? 1.3 : 1; let gust = 0, airJump = 0, goldN = 0;
   for (let i=0;i<80;i++) drops.push({x: Math.random()*C.W*1.2, y: Math.random()*C.H, z: Math.random() < .35 ? 1 : 0});
-  const upd = () => bonus.hud(chip("🐟", got) + chip("❤️", Math.max(0,lives)), time);
+  const upd = () => bonus.hud(time, "🐟", got, "❤️", Math.max(0,lives));
   upd();
   function jump(){ if (!running) return;
     if (!onGround){ if (airJump < 1) return; airJump = 0; vy = JUMP*.82; snd.jump(); haptic(8); sq = -1;
@@ -7267,7 +7311,7 @@ function lvlGarden(area, done){
   for (let i = 0; i < 9; i++){ const b = document.createElement("div"); b.className = "bush"; b.innerHTML = '<span class="leaf e">🌿</span>'; wrap.appendChild(b); bushes.push({el: b, item: null, i}); }
   const night = document.createElement("div"); night.className = "gnight"; wrap.appendChild(night);
   let picked = 0, lives = 3, time = GARDEN_DUR, alive = false, spawnT = 0, raf, last = 0, goldN = 0, thiefT = 0, thieves = [], moonA = 0, saidHold = false, saidThief = false, holding = null;
-  const upd = () => bonus.hud(chip("🌹", picked) + chip("❤️", Math.max(0, lives)), time);
+  const upd = () => bonus.hud(time, "🌹", picked, "❤️", Math.max(0, lives));
   upd();
   const el = () => GARDEN_DUR - time, isNight = () => bonus.active || (el() >= 20 && el() < 30);
   const gain = (n, x, y, emo = "🌹") => {
@@ -7506,9 +7550,10 @@ function lvlSun(area, done){
   /* на середине пути небо на 6 с затягивает туча: солнце не жжёт, ожог остывает вдвое быстрее. Одна передышка перед рывком к дому */
   const STORM_AT = START + (END - START)*.5, STORM_DUR = 6; let storm = -1;      /* -1 ещё не было, 0..STORM_DUR идёт, 99 прошла */          /* сет «Дневные Бродяги»: первые 1,2 с на солнце не жгут */
   const smoke = [];
+  let smokeClock = 0;
   let hissL = { set(){}, stop(){} };
   const catX = () => Math.min(END, START + SPEED*t);
-  const upd = () => stat(chip("🔥", Math.round(burn*100) + "%") + chip("🏠", Math.round((catX()-START)/(END-START)*100) + "%"));
+  const upd = () => stat("🔥", Math.round(burn*100) + "%", "🏠", Math.round((catX()-START)/(END-START)*100) + "%");
   upd();
   const setT = e => { const r = cv.getBoundingClientRect(); const k = Math.max(0, Math.min(1, (e.clientX - r.left)/r.width)); target = AMAX - k*(AMAX - AMIN); };
   const pd = e => { if (e.target.closest && e.target.closest(".overlay")) return; setT(e); };
@@ -7552,18 +7597,37 @@ function lvlSun(area, done){
     for (const poly of o.polys){ g.beginPath(); poly.forEach(([px,py], i) => i ? g.lineTo(X(px), Y(py)) : g.moveTo(X(px), Y(py))); g.stroke(); }
   }
 
+  let cachedSky = null, previousAngle, cachedAngle, skyWidth, skyHeight;
+  function paintSky(painter, W, k, sx, sy){
+    const sky = painter.createLinearGradient(0, 0, 0, G);
+    sky.addColorStop(0, mixHex("#211a3d", "#3f6aa8", k)); sky.addColorStop(.62, mixHex("#b9527a", "#9cc0e4", k)); sky.addColorStop(1, mixHex("#ffb070", "#f3e6c8", k));
+    painter.fillStyle = sky; painter.fillRect(0, 0, W, G + 2);
+    const glow = painter.createRadialGradient(sx, sy, 4, sx, sy, 230); const gc = k < .5 ? "#ffa25e" : "#fff2c2";
+    glow.addColorStop(0, rgba(gc, .75)); glow.addColorStop(.25, rgba(gc, .25)); glow.addColorStop(1, rgba(gc, 0));
+    painter.fillStyle = glow; painter.fillRect(0, 0, W, G);
+  }
+
   function draw(dt = 0){
     geo();
     const W = C.W, H = C.H, x = catX();
     const camX = Math.min(END + 120 - W*.62, x - W*.34);
     const e = Math.sin(a), k = Math.max(0, Math.min(1, (e - .24)/.76)), sunRight = a < Math.PI/2;
     const [sx, sy] = sunPos(a);
-    const sky = g.createLinearGradient(0, 0, 0, G);
-    sky.addColorStop(0, mixHex("#211a3d", "#3f6aa8", k)); sky.addColorStop(.62, mixHex("#b9527a", "#9cc0e4", k)); sky.addColorStop(1, mixHex("#ffb070", "#f3e6c8", k));
-    g.fillStyle = sky; g.fillRect(0, 0, W, G + 2);
-    const glow = g.createRadialGradient(sx, sy, 4, sx, sy, 230); const gc = k < .5 ? "#ffa25e" : "#fff2c2";
-    glow.addColorStop(0, rgba(gc, .75)); glow.addColorStop(.25, rgba(gc, .25)); glow.addColorStop(1, rgba(gc, 0));
-    g.fillStyle = glow; g.fillRect(0, 0, W, G);
+    // Пока палец ведёт солнце, рисуем напрямую. В установившемся положении переиспользуем небо.
+    if (previousAngle === a){
+      cachedSky ??= document.createElement("canvas");
+      if (cachedAngle !== a || skyWidth !== cv.width || skyHeight !== cv.height){
+        skyWidth = cv.width; skyHeight = cv.height; cachedAngle = a;
+        const height = Math.min(cv.height, Math.ceil((G + 2)*C.dpr));
+        if (cachedSky.width !== cv.width) cachedSky.width = cv.width;
+        if (cachedSky.height !== height) cachedSky.height = height;
+        const skyContext = cachedSky.getContext("2d");
+        skyContext.setTransform(C.dpr, 0, 0, C.dpr, 0, 0);
+        paintSky(skyContext, W, k, sx, sy);
+      }
+      g.drawImage(cachedSky, 0, 0, cachedSky.width/C.dpr, cachedSky.height/C.dpr);
+    } else paintSky(g, W, k, sx, sy);
+    previousAngle = a;
     // облака
     CLOUDS.forEach(c => { const [cx2, cy2] = cloudAt(c, t);
       g.fillStyle = mixHex("#e7a9b8", "#ffffff", k).replace("rgb", "rgba").replace(")", ",.82)");
@@ -7588,8 +7652,10 @@ function lvlSun(area, done){
     for (let px=0; px<=W+8; px+=8) g.lineTo(px, G - 40 - hill(px + camX*.15, 1)); g.lineTo(W, G); g.fill();
     g.fillStyle = mixHex("#3a2442", "#4b5a73", k);
     const i0 = Math.floor(camX*.45/34) - 1;
+    g.beginPath();
     for (let i=i0; i<i0 + W/34 + 3; i++){ const tx = i*34 - camX*.45, th = treeH(i);
-      g.beginPath(); g.moveTo(tx - 13, G); g.lineTo(tx, G - th); g.lineTo(tx + 13, G); g.fill(); }
+      g.moveTo(tx - 13, G); g.lineTo(tx, G - th); g.lineTo(tx + 13, G); }
+    g.fill();
     // земля
     const gd = g.createLinearGradient(0, G, 0, H); gd.addColorStop(0, "#241a20"); gd.addColorStop(.3, "#140e14"); gd.addColorStop(1, "#08060a");
     g.fillStyle = gd; g.fillRect(0, G, W, H - G);
@@ -7634,11 +7700,17 @@ function lvlSun(area, done){
     // дым
     for (let i = smoke.length - 1; i >= 0; i--){ const p = smoke[i]; p.l -= dt; if (p.l <= 0){ smoke.splice(i, 1); continue; }
       p.x += p.vx*dt; p.y += p.vy*dt; g.fillStyle = `rgba(210,200,210,${p.l*.35})`; g.beginPath(); g.arc(p.x - camX, p.y, 5 + (1 - p.l)*12, 0, 7); g.fill(); }
-    if (exposed && alive && Math.random() < 1 - 2**(-60*dt)) smoke.push({x: x + 10 + Math.random()*16, y: G - 40 - Math.random()*10, vx: (Math.random() - .5)*20, vy: -40 - Math.random()*30, l: 1});
+    if (exposed && alive) smokeClock += dt; else smokeClock = 0;
+    while (smokeClock >= 1/60){
+      smokeClock -= 1/60;
+      if (Math.random() < .5) smoke.push({x: x + 10 + Math.random()*16, y: G - 40 - Math.random()*10, vx: (Math.random() - .5)*20, vy: -40 - Math.random()*30, l: 1});
+    }
     // передний план: трава
     g.fillStyle = "#060408";
+    g.beginPath();
     for (let i = Math.floor(camX*1.3/22) - 1; i < camX*1.3/22 + W/22 + 2; i++){ const gx = i*22 - camX*1.3, hh = 14 + treeH(i*3)*.32;
-      g.beginPath(); g.moveTo(gx - 9, H); g.quadraticCurveTo(gx - 4, H - hh*.6, gx + (i % 2 ? 6 : -6), H - hh); g.quadraticCurveTo(gx + 2, H - hh*.5, gx + 9, H); g.fill(); }
+      g.moveTo(gx - 9, H); g.quadraticCurveTo(gx - 4, H - hh*.6, gx + (i % 2 ? 6 : -6), H - hh); g.quadraticCurveTo(gx + 2, H - hh*.5, gx + 9, H); }
+    g.fill();
     // ожог: виньетка
     if (burn > .02){ const v = g.createRadialGradient(W/2, H/2, Math.min(W,H)*.35, W/2, H/2, Math.max(W,H)*.75); v.addColorStop(0, "rgba(255,80,40,0)"); v.addColorStop(1, `rgba(255,80,40,${burn*.38})`); g.fillStyle = v; g.fillRect(0, 0, W, H); }
     if (flash > 0) flash = Math.max(0, flash - dt);
@@ -7673,7 +7745,9 @@ function lvlSun(area, done){
     const secs = expT.toFixed(1).replace(".", ",");
     setTimeout(() => done(st, "Лапуля дошла до дома Сальваторе. На солнце: " + secs + " с. Три звезды до 1,2 с."), 700);
   }
-  draw();
+  const drawPreview = () => { if (!alive && !ended) draw(); };
+  drawPreview();
+  addEventListener("resize", drawPreview);
   area.__sun = { shadedAt, cloudCover, SPEED, START, END, AMIN, AMAX, OMEGA, get a(){ return a; }, get t(){ return t; }, get alive(){ return alive; }, setTarget(v){ target = Math.max(AMIN, Math.min(AMAX, v)); }, get expT(){ return expT; } };
   intro(area, LEVELS[6], "У Лапули нет кольца дневного света, а ей нужно дойти до дома Сальваторе. Солнце ведёшь ты: где палец, туда оно и катится, только медленно. Тени длинные, когда солнце низко, и падают в сторону от него. Держи Лапулю в тени: склепы, деревья, надгробия.", () => {
     alive = true; hissL = hissLoop(); hint.animate([{opacity:1}, {opacity:0}], {duration:900, delay:3500, fill:"forwards"});
@@ -7681,7 +7755,7 @@ function lvlSun(area, done){
   });
   // В заставке сцена неподвижна. Следующий кадр запустит intro при входе в уровень.
 
-  return () => { alive = false; ended = true; cancelAnimationFrame(raf); hissL.stop(); removeEventListener("resize", C.fit); removeEventListener("keydown", kd); };
+  return () => { alive = false; ended = true; cancelAnimationFrame(raf); hissL.stop(); removeEventListener("resize", drawPreview); removeEventListener("resize", C.fit); removeEventListener("keydown", kd); };
 }
 
 /* ---------- 8: маскарад (слушай сердца) ---------- */
@@ -7703,7 +7777,7 @@ function lvlMask(area, done){
   const shuffle = arr => arr.map(v => [Math.random(), v]).sort((p, q) => p[0] - q[0]).map(p => p[1]);
   let round = -1, guests = [], mistakes = 0, sel = null, rTime = 50, hintShown = false, alive = false, ended = false, t = 0, last = 0, raf, busy = false;
   let lens = {on:false, x:0, y:0, tx:0, ty:0, k:0, pulse:0}, heard = null, trace = {id:null, beats:[]}, ghost = null;
-  const upd = () => stat(chip("✖️", mistakes + "/2") + chip("⏱️", Math.ceil(Math.max(0, rTime))));
+  const upd = () => stat("✖️", mistakes + "/2", "⏱️", Math.ceil(Math.max(0, rTime)));
   function build(R){
     const n = R.n, bpms = shuffle(R.bpm).slice(0, R.kind === "pair" ? n - 2 : n - 1);
     if (R.kind === "vamp") bpms.push(0); if (R.kind === "liar") bpms.push(130); if (R.kind === "pair") bpms.push(72, 72);
@@ -7947,6 +8021,7 @@ function lvlShot(area, done){
     {name:"месяц", speed:182, lights:1},
     {name:"кошка", speed:158, lights:2}
   ];
+  let guidePath, trailPath;
   let F, S0, shot = -1, phase = "idle", pt = 0, open = false, trail = [], lights = [], scores = [], last = 0, raf, ended = false, prevPos = [], openT = 0, flash = 0, cd = 0;
   const frameRect = () => ({x:16, y:12, w:C.W - 32, h:C.H - 12 - 108});
   function stencil(kind){
@@ -7983,8 +8058,15 @@ function lvlShot(area, done){
       for (let k=0;k<n;k++) out.push({x: a.p[0] + (b.p[0] - a.p[0])*k/n, y: a.p[1] + (b.p[1] - a.p[1])*k/n, on: a.on && b.on}); }
     return out;
   }
+  function setStencil(i){
+    S0 = stencil(i);
+    guidePath = new Path2D();
+    S0.loop.forEach(([x,y], index) => index ? guidePath.lineTo(x,y) : guidePath.moveTo(x,y));
+  }
   function setupShot(i){
-    shot = i; S0 = stencil(i); trail = []; prevPos = []; open = false; openT = 0;
+    shot = i; setStencil(i);
+    trailPath = new Path2D();
+    trail = []; prevPos = []; open = false; openT = 0;
     const f = frameRect(), rand = mulberry32(101 + i*17), P = S0.parts;
     const L = [f.x - 40, f.y + f.h*.3], Rr = [f.x + f.w + 40, f.y + f.h*.7];
     let paths;
@@ -8061,7 +8143,7 @@ function lvlShot(area, done){
   function drawGuide(){
     if (!S0) return;
     g.save(); g.setLineDash([3, 7]); g.strokeStyle = phase === "ready" ? "rgba(255,255,255,.42)" : "rgba(255,255,255,.2)"; g.lineWidth = 1.4;
-    g.beginPath(); S0.loop.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.stroke(); g.restore();
+    g.stroke(guidePath); g.restore();
     lights.forEach(l => {
       const look = phase === "ready" ? l.path.length : Math.round(sp()*1.0/2);
       g.fillStyle = phase === "ready" ? "rgba(255,230,180,.18)" : "rgba(255,230,180,.32)";
@@ -8071,8 +8153,7 @@ function lvlShot(area, done){
   function drawTrail(c=g){
     if (!trail.length) return;
     c.save(); c.globalCompositeOperation = "lighter"; c.lineCap = "round"; c.lineJoin = "round";
-    const pass = (lw, col) => { c.strokeStyle = col; c.lineWidth = lw; c.beginPath(); let prev = null;
-      trail.forEach(p => { if (p.brk || !prev) c.moveTo(p[0], p[1]); else c.lineTo(p[0], p[1]); prev = p; }); c.stroke(); };
+    const pass = (lw, col) => { c.strokeStyle = col; c.lineWidth = lw; c.stroke(trailPath); };
     pass(14, "rgba(255,150,60,.10)"); pass(6, "rgba(255,190,110,.35)"); pass(2.2, "rgba(255,248,230,.95)");
     c.restore();
   }
@@ -8115,7 +8196,13 @@ function lvlShot(area, done){
         l.tail.push([l.x, l.y]); if (l.tail.length > 18) l.tail.shift();
         if (open){ const pv = prevPos[i] || [l.x, l.y], d = Math.hypot(l.x - pv[0], l.y - pv[1]), n = Math.max(1, Math.ceil(d/3));
           let first = true;
-          for (let k=1;k<=n;k++){ const x = pv[0] + (l.x - pv[0])*k/n, y = pv[1] + (l.y - pv[1])*k/n; if (inFrame(x, y)){ const q = [x, y]; if (first && (!trail.length || trail[trail.length - 1].li !== i)) q.brk = true; q.li = i; trail.push(q); first = false; } }
+          for (let k=1;k<=n;k++){
+            const x = pv[0] + (l.x - pv[0])*k/n, y = pv[1] + (l.y - pv[1])*k/n;
+            if (!inFrame(x, y)) continue;
+            if (first && (!trail.length || trail[trail.length - 1].li !== i)) trailPath.moveTo(x, y);
+            else trailPath.lineTo(x, y);
+            const point = [x, y]; point.li = i; trail.push(point); first = false;
+          }
           prevPos[i] = [l.x, l.y]; }
       });
       if (lights.every(l => l.idx >= l.path.length)) finishShot();
@@ -8128,15 +8215,15 @@ function lvlShot(area, done){
   cv.addEventListener("pointerdown", press); addEventListener("pointerup", release); addEventListener("pointercancel", release);
   const kd = e => { if (e.code === "Space"){ e.preventDefault(); setOpen(true); } }, ku = e => { if (e.code === "Space") setOpen(false); };
   addEventListener("keydown", kd); addEventListener("keyup", ku);
-  const upd = () => stat(chip("📷", Math.max(1, shot + 1) + "/3"));
+  const upd = () => stat("📷", Math.max(1, shot + 1) + "/3");
   upd();
   area.__shot = { get on(){ return lightOn(); }, get phase(){ return phase; }, get shot(){ return shot; }, get scores(){ return scores; } };
-  S0 = stencil(0);
+  setStencil(0);
   raf = requestAnimationFrame(tt => { last = tt; frame(tt); });
   intro(area, LEVELS[8], "Ночная съёмка на длинной выдержке. По кадру летит огонёк. Пока держишь палец, затвор открыт и огонёк рисует. Нужно, чтобы след лёг на пунктир. Когда огонёк уходит с контура, отпускай. Три кадра, в последнем огоньков два.", () => {
     setupShot(0); upd();
   });
-  return () => { ended = true; cancelAnimationFrame(raf); removeEventListener("resize", C.fit); removeEventListener("pointerup", release); removeEventListener("pointercancel", release); removeEventListener("keydown", kd); removeEventListener("keyup", ku); };
+  return () => { ended = true; cancelAnimationFrame(raf); clearInterval(setOpen.iv); removeEventListener("resize", C.fit); removeEventListener("pointerup", release); removeEventListener("pointercancel", release); removeEventListener("keydown", kd); removeEventListener("keyup", ku); };
 }
 
 
@@ -8185,7 +8272,7 @@ function lvlLaser(area, done){
   const up = () => { finger = null; dot.on = false; };
   cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
   const hint = document.createElement("div"); hint.className = "ghint"; hint.textContent = "точка горит над пальцем. Алиса ловит убегающую"; area.appendChild(hint);
-  const upd = () => stat(chip("⏱️", Math.ceil(Math.max(0, DUR - t))));
+  const upd = () => stat("⏱️", Math.ceil(Math.max(0, DUR - t)));
   upd();
   const vis = () => dot.on && dot.off <= 0;
   const steer = (o, tx, ty, maxv, acc, dt) => { const dx = tx - o.x, dy = ty - o.y, d = Math.hypot(dx, dy) || 1; const dvx = dx/d*maxv - o.vx, dvy = dy/d*maxv - o.vy, dl = Math.hypot(dvx, dvy) || 1, k = Math.min(1, acc*dt/dl); o.vx += dvx*k; o.vy += dvy*k; };
@@ -8321,6 +8408,7 @@ function lvlLaser(area, done){
    Сближение: каждая донесённая нить сдвигает кошек ближе, дождь редеет, шкатулка из глухой становится чистой, кончик нити идёт за пальцем всё легче.
    Синхронность: снимок порван пополам. Половинки сводят пальцем или держат двумя пальцами сразу, и они защёлкиваются магнитом */
 function lvlStorm(area, done){
+  const nameFont = "400 20px " + getComputedStyle(document.documentElement).getPropertyValue("--script");
   const C = setupCanvas(area), {cv, g} = C;
   const NEED = 4, GEN = {alisa: "Алисы", lapula: "Лапули"};
   let VMAX = 1050, VDARK = 780;
@@ -8335,7 +8423,7 @@ function lvlStorm(area, done){
   const wind = Array.from({length: 12}, () => ({x: Math.random(), y: Math.random(), v: .5 + Math.random()*.7, l: 18 + Math.random()*34}));
   const bar = document.createElement("div"); bar.className = "phasebar"; bar.setAttribute("aria-hidden", "true"); bar.innerHTML = '<i class="on"></i><i></i><i></i>'; area.appendChild(bar);
   const phase = n => bar.querySelectorAll("i").forEach((x, i) => x.classList.toggle("on", i <= n));
-  const upd = () => stat(chip("🧶", succ + "/" + NEED) + chip("💔", snaps));
+  const upd = () => stat("🧶", succ + "/" + NEED, "💔", snaps);
   upd();
   const src = () => from ? R : L, dst = () => from ? L : R;
   const chest = c => [c.x, seatY - 46];
@@ -8442,7 +8530,7 @@ function lvlStorm(area, done){
     g.fillStyle = "#fff"; g.beginPath(); g.arc(ex - 8 + px, hy - 4, 1.4, 0, 7); g.arc(ex + 12 + px, hy - 4, 1.4, 0, 7); g.fill();
     g.fillStyle = c.c.nose; g.beginPath(); g.moveTo(ex - 3, hy + 7); g.lineTo(ex + 3, hy + 7); g.lineTo(ex, hy + 10); g.fill();
     g.restore();
-    g.font = "400 20px " + getComputedStyle(document.documentElement).getPropertyValue("--script"); g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.72)"; g.fillText(c.name, x, y + 46); g.textAlign = "left";
+    g.font = nameFont; g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.72)"; g.fillText(c.name, x, y + 46); g.textAlign = "left";
   }
   function drawHalf(h, side, joinedNow){
     g.save(); g.translate(h.x + h.w/2, h.y + h.h/2); g.rotate(h.rot*Math.PI/180);
@@ -8556,7 +8644,7 @@ function stopKnead(e){
   const c = k.cat, el = c.closest(".pet"), who = el ? el.dataset.cat : "alisa", started = c.classList.contains("knead");
   c.classList.remove("knead", "melt");
   const up = e && e.type === "pointerup";
-  const blink = () => { c.classList.remove("slowblink"); void c.offsetWidth; c.classList.add("slowblink"); setTimeout(() => c.classList.remove("slowblink"), 1600); };
+  const blink = () => { restartClass(c, "slowblink"); setTimeout(() => c.classList.remove("slowblink"), 1600); };
   if (k.napped){ el.classList.remove("sleeping"); c.classList.remove("sleep"); if (up) setTimeout(() => { blink(); setBubble(pick(WAKE[who]), who); }, 300); return; }
   if (!up) return;
   if (k.melted){ blink(); const [x, y] = centerOf(c); FX.burst(x, y - 30, {emojis: ["🤍"], n: 3, speed: [40, 90], grav: -40, size: [14, 20], life: [1.2, 1.6]});
@@ -8592,7 +8680,7 @@ function strokeRig(el){
       const ax = Math.abs(dx)/step, ay = Math.abs(dy)/step, along = ax*ax - ay*ay;
       sT = along >= 0 ? lam*along : 1/(1 - lam*along) - 1;
       vln += dx*2.8; vtx += dx*5.6; if (!raf){ last = now; raf = requestAnimationFrame(frame); } },
-    glow(x, y){ if (x == null){ glow.classList.remove("on"); return; } const r = el.getBoundingClientRect(); glow.style.transform = `translate(${(x - r.left).toFixed(1)}px,${(y - r.top).toFixed(1)}px)`; glow.classList.add("on"); }
+    glow(x, y){ if (x == null){ glow.classList.remove("on"); return; } const r = petRect(el); glow.style.transform = `translate(${(x - r.left).toFixed(1)}px,${(y - r.top).toFixed(1)}px)`; glow.classList.add("on"); }
   };
 }
 function bindDuo(root){
@@ -8618,7 +8706,7 @@ function bindDuo(root){
       if (!st || e.pointerId !== st.id) return;
       const dx = e.clientX - st.x, dy = e.clientY - st.y, step = Math.hypot(dx, dy); if (step < 1.5) return;
       st.x = e.clientX; st.y = e.clientY; st.moved += step; if (st.moved < 14) return;         /* до 14 px это ещё тап */
-      const r = el.querySelector(".cat").getBoundingClientRect();
+      const r = petRect(el.querySelector(".cat"));
       if (e.clientX < r.left - 12 || e.clientX > r.right + 12 || e.clientY < r.top - 8 || e.clientY > r.bottom + 12){ rig.glow(null); return; }   /* палец ушёл с кошки */
       rig.push(dx, dy); rig.glow(e.clientX, e.clientY);
       st.d = Math.min(STROKE_PX*1.5, st.d + step);
@@ -8700,6 +8788,7 @@ addEventListener("keydown", e => {
   else if ($("#game").classList.contains("on")) exitLevel();
 });
 renderAll();
+/*FRAME_METER*/
 </script>
 </body>
 </html>

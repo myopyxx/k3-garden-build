@@ -137,6 +137,7 @@ function startMatch(mode){
   dropInputs(); IN.fades = []; IN.used = {}; cam.reset = true;
   document.querySelectorAll(".screen,.ovl").forEach(s => s.classList.remove("on")); $("#stage").classList.add("playing");
   hudT = 0;
+  if (!frameId){ last = performance.now(); frameId = requestAnimationFrame(frame); }
 }
 function endMatch(r, place){
   if (G.over) return; G.over = true;
@@ -162,7 +163,7 @@ $("#toMenu").addEventListener("click", () => { snd.tap(); showMenu(); });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) return; dropInputs(); if (G && !G.over) togglePause(true); });
 
 /* =================== ЦИКЛ =================== */
-let last = performance.now(), hudT = 0;
+let last = performance.now(), hudT = 0, frameId = 0;
 function frame(now){
   const dt = Math.min(1/30, (now - last)/1000); last = now; const t = now/1000;
   if (G && !G.paused){
@@ -177,9 +178,8 @@ function frame(now){
     stepFx(dt);
   }
   if (G) render(t);
-  requestAnimationFrame(frame);
+  frameId = requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
 
 /* =================== МЕНЮ =================== */
 const CAT_INFO = {
@@ -202,6 +202,8 @@ function portrait(cnv, kind){
   drawCat(c, fake, 48, 58, 34, 0);
 }
 function showMenu(){
+  cancelAnimationFrame(frameId); frameId = 0;
+  if (mapCv){ mapCv.width = mapCv.height = 0; mapCv = null; }
   G = null; $("#stage").classList.remove("playing", "lowhp"); document.querySelectorAll(".ovl").forEach(o => o.classList.remove("on")); $("#menu").classList.add("on");
   $("#cups").textContent = "🏆 " + S.cups; $("#sndBtn").innerHTML = S.sfx ? SND_ON : SND_OFF; $("#hapBtn").innerHTML = S.hap ? HAP_ON : HAP_OFF;
   const cats = $("#cats"); cats.innerHTML = "";

@@ -6,7 +6,7 @@ here = pathlib.Path(__file__).resolve().parent
 src = (here / "diana.src.html").read_text(encoding="utf-8")
 photos = (here / "photos.js").read_text(encoding="utf-8")
 assert src.count("/*PHOTO_DATA*/") == 1, "в исходнике должна быть ровно одна метка /*PHOTO_DATA*/"
-out = src.replace("/*PHOTO_DATA*/", photos)
+out = src.replace("/*PHOTO_DATA*/", photos).replace("/*FRAME_METER*/", (here.parent / "shared/frame-meter.js").read_text(encoding="utf-8"))
 # проверка синтаксиса скрипта до записи: сломанный файл на сайт не попадёт
 js = out[out.index("<script>") + 8: out.rindex("</script>")]
 with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as f: f.write(js)

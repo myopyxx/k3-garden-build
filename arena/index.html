@@ -170,7 +170,8 @@ const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const angTo = (a, b) => Math.atan2(b.y - a.y, b.x - a.x);
 const rand = (a, b) => a + Math.random()*(b - a);
 const pick = a => a[Math.floor(Math.random()*a.length)];
-const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+const reduced = () => motionPreference.matches;
 const AUTO = /[?&]auto=1/.test(location.search);           /* тест: игроком управляет бот */
 
 const KEY = "night-arena-v1";
@@ -334,13 +335,16 @@ const MAPS = {
 };
 /* сетка карты для одного матча: коробки можно ломать, поэтому копия */
 function loadMap(id){
-  const rows = MAPS[id], H = rows.length, W = rows[0].length, g = [], boxHp = {}, spots = {1: [], 2: [], S: [], P: [], G: []};
+  const rows = MAPS[id], H = rows.length, W = rows[0].length, g = [], boxes = [], boxHp = {}, spots = {1: [], 2: [], S: [], P: [], G: []};
   for (let y = 0; y < H; y++){ g.push([]);
     for (let x = 0; x < W; x++){ let c = rows[y][x];
       if (c === "1" || c === "2" || c === "S" || c === "P" || c === "G"){ spots[c].push({x: (x + .5)*T, y: (y + .5)*T}); c = "."; }
-      if (c === "x") boxHp[x + "," + y] = 3200;
+      if (c === "x"){
+        boxHp[x + "," + y] = 3200;
+        boxes.push({cx:x, cy:y, x:(x + .5)*T, y:(y + .5)*T});
+      }
       g[y].push(c); } }
-  return {id, W, H, g, boxHp, spots, pw: W*T, ph: H*T};
+  return {id, W, H, g, boxes, boxHp, spots, pw: W*T, ph: H*T};
 }
 
 /* =================== БОЙЦЫ =================== */
@@ -462,7 +466,7 @@ function hurtBox(cx, cy, dmg, by){
   const m = G.map, k = cx + "," + cy; if (!(k in m.boxHp)) return;
   m.boxHp[k] -= dmg; G.fx.push({k: "chip", x: (cx + .5)*T, y: (cy + .5)*T, t: 0, T: .3});
   if (by === G.me) snd.box();
-  if (m.boxHp[k] <= 0){ delete m.boxHp[k]; m.g[cy][cx] = "."; G.mapDirty = true; puff((cx + .5)*T, (cy + .5)*T, "#b98a5c", 14);
+  if (m.boxHp[k] <= 0){ delete m.boxHp[k]; m.g[cy][cx] = "."; puff((cx + .5)*T, (cy + .5)*T, "#b98a5c", 14);
     G.picks.push({k: "power", x: (cx + .5)*T, y: (cy + .5)*T, t: 0}); }
 }
 /* суперудары */
@@ -571,7 +575,7 @@ function aiAct(f, dt){
 function autoTarget(f){
   const foes = enemiesOf(f).filter(o => dist(f, o) < f.C.range*T*1.15 + o.r);
   const t = nearest(f, f.C.atk === "lob" ? foes : foes.filter(o => los(f, o))) || nearest(f, foes); if (t) return t;
-  if (G.mode === "surv"){ let best = null, bd = f.C.range*T*1.1; for (const k in G.map.boxHp){ const [cx, cy] = k.split(",").map(Number), b = {x: (cx + .5)*T, y: (cy + .5)*T}, dd = dist(f, b); if (dd < bd){ bd = dd; best = b; } } return best; }
+  if (G.mode === "surv"){ let best = null, bd = f.C.range*T*1.1; for (const b of G.map.boxes){ if (G.map.g[b.cy][b.cx] !== "x") continue; const dd = dist(f, b); if (dd < bd){ bd = dd; best = b; } } return best; }
   return null;
 }
 
@@ -640,6 +644,12 @@ function stepFx(dt){
   G.shake = Math.max(0, G.shake - dt*1.6);
 }
 
+let previousScore;
+function showScore(markup){
+  if (markup === previousScore) return;
+  $("#scMain").innerHTML = markup;
+  previousScore = markup;
+}
 /* 1 нокаут, 2 нокаута, 5 нокаутов */
 function plural(n, a, b, c){ n = Math.abs(n) % 100; const k = n % 10; return n > 10 && n < 20 ? c : k === 1 ? a : k >= 2 && k <= 4 ? b : c; }
 /* =================== РЕЖИМЫ =================== */
@@ -681,7 +691,7 @@ const MODES = {
     },
     hud(){
       const a = teamGems(1), b = teamGems(2);
-      $("#scMain").innerHTML = `<span class="us">🩸 ${a}</span><span class="tm">${fmtT(G.left)}</span><span class="them">${b} 🩸</span>`;
+      showScore(`<span class="us">🩸 ${a}</span><span class="tm">${fmtT(G.left)}</span><span class="them">${b} 🩸</span>`);
       const n = $("#scNote"); if (G.holder){ n.textContent = (G.holder === 1 ? "победа через " : "поражение через ") + Math.max(0, Math.ceil(G.hold)); n.classList.add("on"); } else n.classList.remove("on");
     },
     result(r){
@@ -723,7 +733,7 @@ const MODES = {
     },
     hud(){
       const alive = G.fighters.filter(f => !f.dead).length, s = G.safeR || {k: 0};
-      $("#scMain").innerHTML = `<span>🐾 осталось ${alive}</span><span class="tm">⚡ ${G.me.power}</span>`;
+      showScore(`<span>🐾 осталось ${alive}</span><span class="tm">⚡ ${G.me.power}</span>`);
       const n = $("#scNote"); if (s.k > 0 && s.k < 1){ n.textContent = "туман сжимается"; n.classList.add("on"); } else if (G.el < G.fogStart && G.el > G.fogStart - 10){ n.textContent = "туман через " + Math.ceil(G.fogStart - G.el); n.classList.add("on"); } else n.classList.remove("on");
     },
     result(r, place){
@@ -779,7 +789,7 @@ const MODES = {
     },
     hud(){
       const foes = G.fighters.filter(f => f.team === 2 && !f.dead).length, boss = G.fighters.find(f => f.kind === "boss" && !f.dead);
-      $("#scMain").innerHTML = `<span>волна ${Math.max(1, G.wave)}/6</span><span class="tm">❤️ ${G.lives}</span><span class="them">👤 ${foes}</span>`;
+      showScore(`<span>волна ${Math.max(1, G.wave)}/6</span><span class="tm">❤️ ${G.lives}</span><span class="them">👤 ${foes}</span>`);
       const n = $("#scNote"); if (boss){ n.textContent = "Старый охотник " + Math.ceil(boss.hp/boss.maxHp*100) + "%"; n.classList.add("on"); } else n.classList.remove("on");
     },
     result(r){
@@ -824,9 +834,9 @@ function paintMap(){
     c.fillStyle = "rgba(255,255,255,.025)"; for (let i = 0; i < 3; i++) c.fillRect(px + rnd()*T, py + rnd()*T, 2 + rnd()*3, 2);
     if (ch === "w"){ c.fillStyle = "#1a2a4a"; c.fillRect(px, py, T, T); c.fillStyle = "rgba(140,190,255,.18)"; c.fillRect(px + 6, py + 12, T*.5, 2); c.fillRect(px + T*.3, py + T*.6, T*.45, 2); }
   }
-  /* тень под стенами и коробками */
+  /* Тени неподвижных стен входят в фон. Тени разрушаемых коробок рисуются поверх. */
   c.fillStyle = "rgba(0,0,0,.28)";
-  for (let y = 0; y < m.H; y++) for (let x = 0; x < m.W; x++) if (m.g[y][x] === "#" || m.g[y][x] === "x") c.fillRect(x*T + 4, y*T + T - 4, T, 10);
+  for (let y = 0; y < m.H; y++) for (let x = 0; x < m.W; x++) if (m.g[y][x] === "#") c.fillRect(x*T + 4, y*T + T - 4, T, 10);
   if (G.map.spots.G.length){ const f = G.map.spots.G[0]; c.fillStyle = "#3d2a4a"; c.beginPath(); c.arc(f.x, f.y, T*.62, 0, 6.283); c.fill(); c.strokeStyle = "#5c4470"; c.lineWidth = 4; c.stroke(); }
   c.strokeStyle = "rgba(243,210,122,.25)"; c.lineWidth = 3; c.strokeRect(1.5, 1.5, m.pw - 3, m.ph - 3);
   G.mapDirty = false;
@@ -985,10 +995,16 @@ function render(t){
   const ox = VW/2 - cam.x*SC + shx, oy = VH/2 - cam.y*SC + shy;
   c.setTransform(DPR, 0, 0, DPR, 0, 0);
   /* снаружи арены: тёмная ночь со звёздами */
-  c.fillStyle = "rgba(243,227,176,.35)"; for (let i = 0; i < 40; i++){ const sx = ((i*97.3 + cam.x*.2*SC) % VW + VW) % VW, sy = ((i*53.1 + cam.y*.2*SC) % VH + VH) % VH; c.fillRect(sx, sy, 1.5, 1.5); }
+  c.fillStyle = "rgba(243,227,176,.35)";
+  if (ox > -1 || oy > -1 || ox + m.pw*SC < VW + 1 || oy + m.ph*SC < VH + 1) for (let i = 0; i < 40; i++){ const sx = ((i*97.3 + cam.x*.2*SC) % VW + VW) % VW, sy = ((i*53.1 + cam.y*.2*SC) % VH + VH) % VH; c.fillRect(sx, sy, 1.5, 1.5); }
   { const k = SC*DPR, wx0 = clamp(-ox/SC, 0, m.pw), wy0 = clamp(-oy/SC, 0, m.ph), wx1 = clamp((VW - ox)/SC, 0, m.pw), wy1 = clamp((VH - oy)/SC, 0, m.ph);
     if (wx1 > wx0 && wy1 > wy0) c.drawImage(mapCv, wx0*k, wy0*k, (wx1 - wx0)*k, (wy1 - wy0)*k, ox + wx0*SC, oy + wy0*SC, (wx1 - wx0)*SC, (wy1 - wy0)*SC); }
   c.setTransform(DPR*SC, 0, 0, DPR*SC, ox*DPR, oy*DPR);
+  c.fillStyle = "rgba(0,0,0,.28)";
+  for (const box of m.boxes){
+    if (m.g[box.cy][box.cx] === "x" && inView(box.x, box.y))
+      c.fillRect(box.cx*T + 4, box.cy*T + T - 4, T, 10);
+  }
   /* подсказки на полу: фонтан, предупреждения о появлении, цели навесных снарядов */
   if (m.spots.G.length){ const f = m.spots.G[0], p = .5 + .5*Math.sin(t*3); c.fillStyle = `rgba(255,60,90,${.25 + p*.25})`; c.beginPath(); c.arc(f.x, f.y, T*.42, 0, 6.283); c.fill(); }
   for (const e of G.fx) if (e.k === "warn"){ const k = e.t/e.T; c.strokeStyle = `rgba(255,77,109,${.4 + .5*Math.sin(t*14)})`; c.lineWidth = 3; c.beginPath(); c.arc(e.x, e.y, T*.6*(1.2 - k*.4), 0, 6.283); c.stroke(); }
@@ -999,12 +1015,20 @@ function render(t){
     if (p.k === "gem"){ c.fillStyle = "rgba(255,60,90,.25)"; c.beginPath(); c.arc(p.x, p.y + 8, 10, 0, 6.283); c.fill(); drawDrop(c, p.x, p.y - 4 + b, 11); }
     else { c.fillStyle = "rgba(190,140,255,.3)"; c.beginPath(); c.arc(p.x, p.y, 15 + b, 0, 6.283); c.fill(); c.fillStyle = "#b98aff"; rr(c, p.x - 9, p.y - 12 + b, 18, 20, 6); c.fill(); c.fillStyle = "#fff"; c.font = "700 13px Unbounded, sans-serif"; c.textAlign = "center"; c.fillText("⚡", p.x, p.y + 4 + b); } }
   /* стены, коробки и бойцы по глубине */
-  const list = [];
   const cx0 = Math.max(0, Math.floor(vx0/T)), cx1 = Math.min(m.W - 1, Math.ceil(vx1/T)), cy0 = Math.max(0, Math.floor(vy0/T)), cy1 = Math.min(m.H - 1, Math.ceil(vy1/T));
-  for (let y = cy0; y <= cy1; y++) for (let x = cx0; x <= cx1; x++){ const ch = m.g[y][x]; if (ch === "#" || ch === "x") list.push({y: (y + 1)*T - 1, k: 0, x, cy: y, ch}); }
-  for (const f of G.fighters) if (!f.dead && inView(f.x, f.y)) list.push({y: f.y + f.r*.6, k: 1, f});
-  list.sort((a, b) => a.y - b.y);
-  for (const it of list){ if (it.k === 0) drawBlock(c, it.x, it.cy, it.ch); else drawFighter(c, it.f, t); }
+  const depth = f => f.y + f.r*.6;
+  const visible = G.fighters.filter(f => !f.dead && inView(f.x, f.y)).sort((a, b) => depth(a) - depth(b));
+  let next = 0;
+  // Строки карты уже идут по глубине. При равной глубине боец рисуется поверх стены.
+  for (let y = cy0; y <= cy1; y++){
+    const rowDepth = (y + 1)*T - 1;
+    while (next < visible.length && depth(visible[next]) < rowDepth) drawFighter(c, visible[next++], t);
+    for (let x = cx0; x <= cx1; x++){
+      const tile = m.g[y][x];
+      if (tile === "#" || tile === "x") drawBlock(c, x, y, tile);
+    }
+  }
+  while (next < visible.length) drawFighter(c, visible[next++], t);
   /* кусты поверх: бойцы в них спрятаны */
   for (let y = cy0; y <= cy1; y++) for (let x = cx0; x <= cx1; x++) if (m.g[y][x] === "b"){ const near = Math.abs((x + .5)*T - me.x) < T*1.3 && Math.abs((y + .5)*T - me.y) < T*1.3, ru = G.t - (G.rustle[x + "," + y] ?? -9);
     drawBush(c, x, y, t, near, ru < .45 && !reduced() ? 1 - ru/.45 : 0); }
@@ -1206,6 +1230,7 @@ function startMatch(mode){
   dropInputs(); IN.fades = []; IN.used = {}; cam.reset = true;
   document.querySelectorAll(".screen,.ovl").forEach(s => s.classList.remove("on")); $("#stage").classList.add("playing");
   hudT = 0;
+  if (!frameId){ last = performance.now(); frameId = requestAnimationFrame(frame); }
 }
 function endMatch(r, place){
   if (G.over) return; G.over = true;
@@ -1231,7 +1256,7 @@ $("#toMenu").addEventListener("click", () => { snd.tap(); showMenu(); });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) return; dropInputs(); if (G && !G.over) togglePause(true); });
 
 /* =================== ЦИКЛ =================== */
-let last = performance.now(), hudT = 0;
+let last = performance.now(), hudT = 0, frameId = 0;
 function frame(now){
   const dt = Math.min(1/30, (now - last)/1000); last = now; const t = now/1000;
   if (G && !G.paused){
@@ -1246,9 +1271,8 @@ function frame(now){
     stepFx(dt);
   }
   if (G) render(t);
-  requestAnimationFrame(frame);
+  frameId = requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
 
 /* =================== МЕНЮ =================== */
 const CAT_INFO = {
@@ -1271,6 +1295,8 @@ function portrait(cnv, kind){
   drawCat(c, fake, 48, 58, 34, 0);
 }
 function showMenu(){
+  cancelAnimationFrame(frameId); frameId = 0;
+  if (mapCv){ mapCv.width = mapCv.height = 0; mapCv = null; }
   G = null; $("#stage").classList.remove("playing", "lowhp"); document.querySelectorAll(".ovl").forEach(o => o.classList.remove("on")); $("#menu").classList.add("on");
   $("#cups").textContent = "🏆 " + S.cups; $("#sndBtn").innerHTML = S.sfx ? SND_ON : SND_OFF; $("#hapBtn").innerHTML = S.hap ? HAP_ON : HAP_OFF;
   const cats = $("#cats"); cats.innerHTML = "";
@@ -1289,6 +1315,30 @@ document.addEventListener("pointerdown", e => { const b = e.target.closest(".cat
 ["pointerup", "pointercancel", "pointerleave"].forEach(ev => document.addEventListener(ev, () => document.querySelectorAll(".press").forEach(b => b.classList.remove("press")), {passive: true}));
 showMenu();
 const qm = location.search.match(/[?&]mode=(\w+)/); if (qm && MODES[qm[1]]) startMatch(qm[1]);
+
+// Только по ссылке ?fps=1. Частота вызовов requestAnimationFrame за последнюю секунду.
+if (new URLSearchParams(location.search).get("fps") === "1"){
+  const badge = document.createElement("span");
+  badge.style.cssText = "position:fixed;top:max(2px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:9999;pointer-events:none;padding:2px 6px;border-radius:6px;background:#21192eee;color:white;font:11px/1.3 system-ui;font-variant-numeric:tabular-nums";
+  document.body.appendChild(badge);
+  let start, frames = 0, frameId;
+  function sample(now){
+    if (start === undefined) start = now;
+    else frames++;
+    if (now - start >= 1000){
+      badge.textContent = Math.round(frames*1000/(now - start)) + " FPS";
+      frames = 0; start = now;
+    }
+    frameId = requestAnimationFrame(sample);
+  }
+  function reset(){
+    cancelAnimationFrame(frameId);
+    start = undefined; frames = 0; badge.textContent = "";
+    if (!document.hidden) frameId = requestAnimationFrame(sample);
+  }
+  document.addEventListener("visibilitychange", reset);
+  reset();
+}
 
 </script>
 </body>

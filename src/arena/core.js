@@ -8,7 +8,8 @@ const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 const angTo = (a, b) => Math.atan2(b.y - a.y, b.x - a.x);
 const rand = (a, b) => a + Math.random()*(b - a);
 const pick = a => a[Math.floor(Math.random()*a.length)];
-const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+const reduced = () => motionPreference.matches;
 const AUTO = /[?&]auto=1/.test(location.search);           /* тест: игроком управляет бот */
 
 const KEY = "night-arena-v1";

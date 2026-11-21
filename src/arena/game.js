@@ -117,7 +117,7 @@ function hurtBox(cx, cy, dmg, by){
   const m = G.map, k = cx + "," + cy; if (!(k in m.boxHp)) return;
   m.boxHp[k] -= dmg; G.fx.push({k: "chip", x: (cx + .5)*T, y: (cy + .5)*T, t: 0, T: .3});
   if (by === G.me) snd.box();
-  if (m.boxHp[k] <= 0){ delete m.boxHp[k]; m.g[cy][cx] = "."; G.mapDirty = true; puff((cx + .5)*T, (cy + .5)*T, "#b98a5c", 14);
+  if (m.boxHp[k] <= 0){ delete m.boxHp[k]; m.g[cy][cx] = "."; puff((cx + .5)*T, (cy + .5)*T, "#b98a5c", 14);
     G.picks.push({k: "power", x: (cx + .5)*T, y: (cy + .5)*T, t: 0}); }
 }
 /* суперудары */
@@ -226,7 +226,7 @@ function aiAct(f, dt){
 function autoTarget(f){
   const foes = enemiesOf(f).filter(o => dist(f, o) < f.C.range*T*1.15 + o.r);
   const t = nearest(f, f.C.atk === "lob" ? foes : foes.filter(o => los(f, o))) || nearest(f, foes); if (t) return t;
-  if (G.mode === "surv"){ let best = null, bd = f.C.range*T*1.1; for (const k in G.map.boxHp){ const [cx, cy] = k.split(",").map(Number), b = {x: (cx + .5)*T, y: (cy + .5)*T}, dd = dist(f, b); if (dd < bd){ bd = dd; best = b; } } return best; }
+  if (G.mode === "surv"){ let best = null, bd = f.C.range*T*1.1; for (const b of G.map.boxes){ if (G.map.g[b.cy][b.cx] !== "x") continue; const dd = dist(f, b); if (dd < bd){ bd = dd; best = b; } } return best; }
   return null;
 }
 

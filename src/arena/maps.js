@@ -56,11 +56,14 @@ const MAPS = {
 };
 /* сетка карты для одного матча: коробки можно ломать, поэтому копия */
 function loadMap(id){
-  const rows = MAPS[id], H = rows.length, W = rows[0].length, g = [], boxHp = {}, spots = {1: [], 2: [], S: [], P: [], G: []};
+  const rows = MAPS[id], H = rows.length, W = rows[0].length, g = [], boxes = [], boxHp = {}, spots = {1: [], 2: [], S: [], P: [], G: []};
   for (let y = 0; y < H; y++){ g.push([]);
     for (let x = 0; x < W; x++){ let c = rows[y][x];
       if (c === "1" || c === "2" || c === "S" || c === "P" || c === "G"){ spots[c].push({x: (x + .5)*T, y: (y + .5)*T}); c = "."; }
-      if (c === "x") boxHp[x + "," + y] = 3200;
+      if (c === "x"){
+        boxHp[x + "," + y] = 3200;
+        boxes.push({cx:x, cy:y, x:(x + .5)*T, y:(y + .5)*T});
+      }
       g[y].push(c); } }
-  return {id, W, H, g, boxHp, spots, pw: W*T, ph: H*T};
+  return {id, W, H, g, boxes, boxHp, spots, pw: W*T, ph: H*T};
 }

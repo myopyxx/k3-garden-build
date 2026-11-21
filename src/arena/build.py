@@ -5,6 +5,7 @@ import pathlib, subprocess, sys, tempfile
 here = pathlib.Path(__file__).resolve().parent
 PARTS = ["core.js", "maps.js", "game.js", "modes.js", "render.js", "main.js"]   # порядок важен
 js = "\n".join((here / f).read_text(encoding="utf-8") for f in PARTS)
+js += "\n" + (here.parent / "shared/frame-meter.js").read_text(encoding="utf-8")
 with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as f: f.write(js)
 r = subprocess.run(["node", "--check", f.name], capture_output=True, text=True)
 pathlib.Path(f.name).unlink()
