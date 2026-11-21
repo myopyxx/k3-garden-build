@@ -24,7 +24,10 @@ async function check(browser, { width, height, top, bottom }) {
   await page.clock.setFixedTime(new Date("2026-11-21T18:00:00Z"));
   await page.goto("http://localhost:8899/");
   // A returning player has already seen today's greeting.
-  await page.evaluate(() => { S.lastDay = new Date().toDateString(); S.lastSeen = Date.now(); });
+  await page.evaluate(() => {
+    S.lastDay = new Date().toDateString(); S.lastSeen = Date.now();
+    sessionStorage.setItem(ENC_KEY, String(Date.now()));
+  });
   await page.locator("#btnStart").tap();
   await page.waitForFunction(() => getComputedStyle($("#homeControls")).opacity === "0.62");
 
@@ -46,9 +49,12 @@ async function check(browser, { width, height, top, bottom }) {
 
   await page.evaluate(() => {
     S.qd = { d: dayKey(), id: "pet", n: 0, at: 0 };
-    bubbleAt = 0;
   });
-  await page.waitForFunction(() => askNow());
+  await page.waitForFunction(() => {
+    if (app.classList.contains("asking") && bubState.txt === ASK.find(q => q.id === "pet").q) return true;
+    bubbleAt = 0;
+    return askNow();
+  });
   const answer = page.getByRole("button", { name: "за ушком", exact: true });
   await answer.waitFor();
   await page.waitForFunction(() => $("#bubble").getBoundingClientRect().top >= $(".hud").getBoundingClientRect().bottom);
