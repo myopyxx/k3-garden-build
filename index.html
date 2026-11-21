@@ -503,6 +503,7 @@ canvas.c{display:block;width:100%;height:100%}
 /* HUD одной капсулой */
 .hudcap{gap:0;padding:0 15px;height:40px;border-radius:20px}
 .hudcap .hc{display:inline-flex;align-items:center;gap:6px}
+#chipStars{min-height:44px;min-width:44px;justify-content:center}
 .hudcap .hc.bump{animation:bump .6s var(--spring-pop)}
 .hudcap .hsep{width:1px;height:18px;margin:0 12px;background:rgba(255,255,255,.22)}
 
@@ -1006,8 +1007,7 @@ svg.sti{width:1em;height:1em;display:block}
 .bubble .qchip:active{background:rgba(255,255,255,.22)}
 .bubble .qchip.on{background:linear-gradient(180deg,#c43a55,#8f1f38);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
 .home .bubble.hush .qchip{pointer-events:none}
-/* на коротких экранах вопрос с кнопками выше обычного пузыря: счётчик капель на это время уходит */
-@media (max-height:720px){.bubble .qchip{min-height:36px}.bubble .qchips{margin:5px 0 3px}.app.asking .hud{opacity:0;transform:translateY(-6px);pointer-events:none}}
+@media (max-height:720px){.bubble .qchips{margin:5px 0 3px}}
 .bubble .dots{display:inline-flex;gap:5px;padding:9px 4px 7px}
 .bubble .dots i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.75);animation:dot 1s ease-in-out infinite}
 .bubble .dots i:nth-child(2){animation-delay:.15s}.bubble .dots i:nth-child(3){animation-delay:.3s}
@@ -1979,24 +1979,47 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 .action-row .ico{width:18px;height:18px;color:#ffe1a2}
 .action-row .row-title{display:block;font:650 13px/1.25 var(--ui)}
 .action-row .row-detail{display:block;margin-top:2px;font:500 12px/1.3 var(--ui);color:#f5e8ff}
-.action-row .row-meta{font:650 11px/1.3 var(--ui);color:#ffe1a2;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
-#dailyRequest .row-reward{display:flex;align-items:center;justify-content:flex-end;gap:2px;margin-top:2px}
-#dailyRequest .row-reward .ico{width:11px;height:11px}
 .action-row:active:not(:disabled){filter:brightness(1.12)}
 .action-row:disabled{opacity:.6;cursor:default}
 .app.lowfx .action-row{backdrop-filter:none;background:linear-gradient(180deg,rgba(98,72,126,.9),rgba(56,39,80,.92))}
-#dailyRequest{
-  width:min(100%,248px);margin-top:10px;padding:6px 10px;gap:8px;border-radius:14px;
+
+/* Крыша на y=12 из 130, ширина хребта 108%: над нижней кромкой SVG остаётся 29% ширины экрана.
+   Док заканчивается над крышей, просьба и дом делят полосу под ним. */
+#v-home{padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom) + 29% - 39px)}
+#v-home .home{justify-content:flex-end;padding-bottom:0}
+.stage.home-on .ridge.near{bottom:calc(var(--tab-h) + env(safe-area-inset-bottom) - 5px)}
+#homeControls{pointer-events:none}
+#homeControls :is(#purr,.dk,#dailyRequest){pointer-events:auto}
+#bslot{height:0}
+.home .bubble{max-width:min(96%,330px)}
+@media (max-height:740px){
+  /* На коротком экране шкала умещается в одну строку, над котиками остаётся небо. */
+  #v-home{padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom) + 29% - 51px)}
+  .stage.home-on .ridge.near{bottom:calc(var(--tab-h) + env(safe-area-inset-bottom) - 11px)}
+  #v-home .meter{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;width:min(100%,270px);padding:6px 12px}
+  #purr .lbl{display:contents}
+  #purr .pc{grid-column:3;grid-row:1}
+  #purr .bar{grid-column:2;grid-row:1}
+  #v-home .dock{margin-top:14px}
+  #duo .pet{max-width:clamp(104px,calc((100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 415px)*.55),168px)}
+  #v-home .bubble{font-size:23px;padding:6px 12px 5px}
+  #v-home .qchip{min-height:44px}
 }
-#dailyRequest > .ico{width:14px;height:14px}
-#dailyRequest .row-title,#dailyRequest .row-detail{font-size:11px}
-.request-result{
-  display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 8px;
-  margin:8px 0 0;padding:2px 8px;color:var(--ink);
-  font:500 12px/1.4 var(--ui);text-shadow:0 1px 4px #160d25;
+#dailyRequest,.request-result{
+  flex:none;align-self:center;display:flex;align-items:center;justify-content:center;
+  margin:4px max(0px,calc(190px - 34%)) 0 0;min-height:44px;
+  padding:0;gap:6px;color:var(--ink);font:600 12px/1.3 var(--ui);white-space:nowrap;
 }
-.request-result[hidden]{display:none}
-.request-result b{font-weight:650;white-space:nowrap}
+#dailyRequest .request-pill{
+  display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:99px;
+  background:linear-gradient(180deg,#534065,#362742);
+  box-shadow:inset 0 0 0 1px rgba(245,200,76,.3);
+}
+#dailyRequest .ico{width:13px;height:13px;color:#ffe1a2}
+#dailyRequest .row-progress{color:#ffe1a2;font-variant-numeric:tabular-nums}
+#dailyRequest[hidden],.request-result[hidden]{display:none}
+.request-result{font-weight:500;text-shadow:0 1px 4px #160d25}
+.request-result b{font-weight:650}
 .diary-content{display:grid;gap:24px}
 .diary-content > .volv{margin-bottom:0}
 .diary-content > .diary{margin:0}
@@ -2136,10 +2159,8 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
             <button class="dk play" id="btnPlay"><svg class="ear l" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><svg class="ear r" viewBox="0 0 26 18" aria-hidden="true"><use href="#dk-ear"/></svg><span class="de" aria-hidden="true">🌙</span>Играть<svg class="pawb" viewBox="0 0 16 16" aria-hidden="true"><use href="#dk-paw"/></svg></button>
             <button class="dk side lg" id="btnShop"><span class="de" aria-hidden="true">🛍️</span><span>Лавка</span><i class="edge" aria-hidden="true"></i><i class="rim" aria-hidden="true"></i></button>
           </div>
-          <button type="button" class="action-row lg" id="dailyRequest" hidden>
-            <svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg>
-            <span><span class="row-title">Просьба дня</span><span class="row-detail"></span></span>
-            <span class="row-meta" aria-hidden="true"><span class="row-progress"></span><span class="row-reward">+8 <svg class="ico"><use href="#i-dropm"/></svg></span></span>
+          <button type="button" id="dailyRequest" hidden>
+            <span class="request-pill"><svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg>Просьба дня <span class="row-progress"></span></span>
           </button>
           <p class="request-result" id="dailyRequestDone" role="status" hidden>
             <span>Просьба выполнена</span>
@@ -2194,7 +2215,7 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
       <div class="chip hudcap" aria-label="Капли и звёзды"><i class="rim" aria-hidden="true"></i>
         <span class="hc" id="chipDrops"><span class="he" aria-hidden="true">🩸</span><span class="num" id="hDrops">0</span></span>
         <i class="hsep"></i>
-        <span class="hc" id="chipStars"><span class="he" aria-hidden="true">⭐</span><span class="num" id="hStars">0</span></span>
+        <button type="button" class="hc" id="chipStars" aria-label="Звёзды. Открыть уровни"><span class="he" aria-hidden="true">⭐</span><span class="num" id="hStars">0</span></button>
       </div>
       <div class="ctitle" id="ctitle" aria-hidden="true"></div>
       <div class="hgroup lg"><i class="rim" aria-hidden="true"></i>
@@ -3000,7 +3021,9 @@ function hud(animate){
   if (animate && shownDrops !== null && to !== shownDrops){ rollNum(el, to); bumpChip(); }
   else { el.dataset.v = String(to); el.textContent = to; }
   shownDrops = to;
-  if (animate) rollNum($("#hStars"), totalStars()); else { $("#hStars").dataset.v = String(totalStars()); $("#hStars").textContent = totalStars(); }
+  const stars = totalStars();
+  $("#chipStars").setAttribute("aria-label", "Звёзды: " + stars + ". Открыть уровни");
+  if (animate) rollNum($("#hStars"), stars); else { $("#hStars").dataset.v = String(stars); $("#hStars").textContent = stars; }
 }
 
 /* ---------- достижения ---------- */
@@ -3111,7 +3134,10 @@ function placeBubble(){
   const ax = headX("alisa"), lx = headX("lapula"); if (ax === null || lx === null) return;
   const target = (side === "alisa" ? ax : side === "lapula" ? lx : (ax + lx)/2) - sr.left;
   let left = Math.max(2, Math.min(W - w - 2, target - w/2));
-  const mr = $("#moon").getBoundingClientRect(), top = sr.bottom - 6 - b.offsetHeight;
+  const hudBottom = $(".hud").getBoundingClientRect().bottom;
+  const top = Math.max(hudBottom + 4, sr.bottom - 8 - b.offsetHeight);
+  b.style.bottom = (sr.bottom - top - b.offsetHeight) + "px";
+  const mr = $("#moon").getBoundingClientRect();
   if (mr.width && mr.bottom > top - 6 && mr.top < sr.bottom){ const lim = mr.left - sr.left - 10; if (left + w > lim) left = Math.max(2, lim - w); }
   const tx = Math.max(26, Math.min(w - 26, target - left)), d = Math.max(-9, Math.min(9, target - left - tx));
   b.style.left = left.toFixed(1) + "px"; b.style.setProperty("--tx", tx.toFixed(1) + "px"); b.style.setProperty("--sk", (Math.atan(d/10)*180/Math.PI).toFixed(1) + "deg");
@@ -3119,6 +3145,8 @@ function placeBubble(){
 }
 let bubbleAt = 0;
 function setBubble(txt, side, extra){
+  if (!extra && app.classList.contains("asking")) return;
+  if (extra) app.classList.add("asking");
   bubState = {txt, side: side || "both"}; bubbleAt = Date.now();
   const b = $("#bubble"); clearTimeout(bubT); clearTimeout(bubHide);
   const show = () => {
@@ -3126,7 +3154,6 @@ function setBubble(txt, side, extra){
     if (txt === "…") t.innerHTML = '<span class="dots" aria-label="думает"><i></i><i></i><i></i></span>';
     else txt.split(" ").forEach((w, i) => { const sp = document.createElement("span"); sp.className = "w"; sp.style.animationDelay = (90 + i*38) + "ms"; sp.textContent = w; t.append(sp, " "); });
     if (extra) extra(t);
-    app.classList.toggle("asking", !!extra);
     placeBubble();
     b.classList.remove("hush", "pop"); void b.offsetWidth; b.classList.add("pop");
     speakFx(bubState.side);
@@ -3262,6 +3289,7 @@ app.addEventListener("pointerdown", e => {
   idle.last = performance.now(); idle.lines = 0; idle.moth = 0; idle.duo = 0; idle.asked = 0;
   if (idle.lapNap && !idle.sleeping){ const p = e.target.closest && e.target.closest("#duo .pet"); unNap(!!p && p.dataset.cat === "lapula"); }
   if (!homeLive()) return;
+  if (!e.target.closest("#bubble")) app.classList.remove("asking");
   lookAt(e.clientX, e.clientY);
   if (idle.sleeping && S.event !== "quarrel"){ const p = e.target.closest && e.target.closest("#duo .pet"); wakeCats(p ? p.dataset.cat : (Math.random() < .5 ? "alisa" : "lapula")); }
 }, {passive:true, capture:true});
@@ -3691,6 +3719,7 @@ function closeSheet(){
   sh.style.transform = ""; $("#scrim").style.opacity = "";
   $("#scrim").classList.remove("on"); sh.classList.remove("on"); app.classList.remove("sheet-on", "medium"); liftDuo(false); snd.sheet(false);
   openSh = null; camTo(null, "");
+  sh.querySelector(".request-brief")?.remove();
   if (sheetClose){ const f = sheetClose; sheetClose = null; f(); }
 }
 $("#sheetDone").onclick = closeSheet;
@@ -4775,7 +4804,7 @@ function egg(id){ S.egg = S.egg || {}; if (!S.egg[id]){ S.egg[id] = 1; note("egg
     if (slow){ const t0 = performance.now(), D = 2400, L0 = 340;
       const follow = now => { if (liveStar !== s || !s.isConnected) return; const k = Math.min(1, (now - t0)/D); lookAt(x0 + Math.cos(ang)*L0*k, y0 + Math.sin(ang)*L0*k); if (k < 1) requestAnimationFrame(follow); };
       requestAnimationFrame(follow);
-      if (!starSeen && !S.egg.wish){ starSeen = true; setTimeout(() => { if (liveStar === s) setBubble("звезда! лови", "lapula"); }, 500); } }
+      if (!starSeen && !S.egg.wish){ starSeen = true; setTimeout(() => { if (liveStar === s && !app.classList.contains("asking")) setBubble("звезда! лови", "lapula"); }, 500); } }
     const len = slow ? 340 : 260 + Math.random()*120, x1 = x0 + Math.cos(ang)*len, y1 = y0 + Math.sin(ang)*len, deg = ang*180/Math.PI;
     const a = s.animate([{transform:`translate(${x0 - A.left - 130}px,${y0 - A.top}px) rotate(${deg}deg) scaleX(.2)`, opacity:0}, {opacity:1, offset:.15}, {transform:`translate(${x1 - A.left - 130}px,${y1 - A.top}px) rotate(${deg}deg) scaleX(1)`, opacity:0}], {duration: slow ? 2400 : 1300, easing: slow ? "linear" : "cubic-bezier(.3,.1,.5,1)"});
     a.onfinish = () => { s.remove(); if (liveStar === s) liveStar = null; };
@@ -4788,9 +4817,20 @@ function egg(id){ S.egg = S.egg || {}; if (!S.egg[id]){ S.egg[id] = 1; note("egg
     if (ensureRunning()) [1046.5, 1318.5, 1568, 2093].forEach((f, i) => fmBell({f, t:ctx.currentTime + i*.07, dur:.5, peak:.08, send:.35}));
     haptic(16); egg("wish"); setBubble("загадала? я загадала рыбку", "lapula");
   }
-  (function randomStars(){ setTimeout(() => { if (!document.hidden && $("#v-home").classList.contains("on") && !$("#game").classList.contains("on") && !openSh && !reduced()){
-      const A = app.getBoundingClientRect(); shootStar(A.left + A.width*(.06 + Math.random()*.16), A.top + 64 + Math.random()*10, .03 + Math.random()*.05, true); }
-    randomStars(); }, 30000 + Math.random()*45000); })();
+  function randomStar(){
+    if (homeLive() && !document.hidden && !reduced()){
+      const skyTop = $(".hud").getBoundingClientRect().bottom;
+      const bubble = $("#bubble");
+      // Если облачко заняло полосу полёта, дождаться свободного неба.
+      if (!bubble.classList.contains("hush") && bubble.getBoundingClientRect().top < skyTop + 28){
+        setTimeout(randomStar, 2500); return;
+      }
+      const A = app.getBoundingClientRect();
+      shootStar(A.left + A.width*(.06 + Math.random()*.16), skyTop + 6 + Math.random()*6, .015 + Math.random()*.02, true);
+    }
+    setTimeout(randomStar, 30000 + Math.random()*45000);
+  }
+  setTimeout(randomStar, 30000 + Math.random()*45000);
   let winT = 0;
   function houseTap(){
     const all = [...document.querySelectorAll("#wins .win")];
@@ -4815,8 +4855,8 @@ function egg(id){ S.egg = S.egg || {}; if (!S.egg[id]){ S.egg[id] = 1; note("egg
     if (ensureRunning()) fmBell({f: PENTA[5 + Math.floor(Math.random()*5)], dur:.4, peak:.07, send:.4}); haptic(6);
   }
   home.addEventListener("pointerdown", e => {
-    if (liveStar && inRect(e, liveStar.getBoundingClientRect(), 34) && !e.target.closest(".btn,.hbtn,.round")) return wishCatch(liveStar);
     if (!isEmpty(e.target)) return;
+    if (liveStar && inRect(e, liveStar.getBoundingClientRect(), 34)) return wishCatch(liveStar);
     if (inRect(e, moon.getBoundingClientRect(), 16)) return moonTap();
     const gs = document.querySelector("#guests .gst.on"); if (gs && inRect(e, gs.getBoundingClientRect(), 20)) return guestTap(gs);
     const hs = document.querySelector(".ridge.near .house"); if (hs && inRect(e, hs.getBoundingClientRect(), 12)) return houseTap();
@@ -4952,14 +4992,12 @@ function paintDailyRequest(announce = false){
   const lap = catOf("lapula");
   if (lap) lap.classList.toggle("request-ear", !task.done && task.kind === "pet" && task.who === "lapula" && task.zone === 0 && S.event !== "quarrel");
   if (!task.done){
-    const detail = button.querySelector(".row-detail");
     const progressText = button.querySelector(".row-progress");
     const progress = task.count + "/" + task.target;
-    if (detail.textContent !== task.text) detail.textContent = task.text;
     if (progressText.textContent !== progress) progressText.textContent = progress;
     button.setAttribute("aria-label", "Просьба дня. " + task.text + ". " + progress + ". Награда: 8 капель");
   }
-  if (announce && homeLive() && !task.done && !task.shown){
+  if (announce && homeLive() && !task.done && !task.shown && !app.classList.contains("asking")){
     task.shown = true; save(); setBubble(task.text, task.who || "alisa");
   }
 }
@@ -4989,10 +5027,19 @@ function dailyAction(kind, detail = {}){
 $("#dailyRequest").onclick = () => {
   const task = dailyRequest();
   if (task.done) return;
+  app.classList.remove("asking");
   setBubble(task.text, task.who || "alisa");
   if (task.kind === "listen") $("#miniPlayer").click();
-  if (task.kind === "wear") openWardrobe();
+  if (task.kind === "wear"){
+    openWardrobe();
+    if (S.splitWear) $("#wdSub").textContent = task.text;
+  }
   if (task.kind === "level"){ showView("v-map"); openEpisode(LEVELS[task.level - 1]); }
+  if (openSh){
+    const brief = para(task.text + " · +8 🩸");
+    brief.classList.add("request-brief");
+    openSh.querySelector(".shead").after(brief);
+  }
 };
 addEventListener("visibilitychange", () => { if (!document.hidden) paintDailyRequest(true); });
 setInterval(() => { if (homeLive() && !document.hidden) paintDailyRequest(true); }, 30000);
@@ -6021,6 +6068,7 @@ function askNow(){
 }
 function answerQ(Q, v, chip){
   if (S.answers[Q.id]) return;
+  app.classList.remove("asking");
   S.answers[Q.id] = {v, d: dayKey(), t: Date.now()};
   const e = dayNote(); e.ans = e.ans || []; e.ans.push(Q.id + ":" + v); save();
   snd.tap(); haptic(8); chip.classList.add("on");
@@ -8547,6 +8595,7 @@ $("#btnSettings").onclick = openSettings;
 $("#btnWardrobe").onclick = openWardrobe;
 $("#btnShop").onclick = openShop;
 /* «Играть» ведёт к текущему эпизоду, а не туда, где карту оставили в прошлый раз */
+$("#chipStars").onclick = () => showView("v-map");
 $("#btnPlay").onclick = () => { showView("v-map"); setTimeout(() => { const n = $("#map .node.current"); if (n) n.scrollIntoView({block: "center", behavior: reduced() ? "auto" : "smooth"}); }, 80); };
 initMini();
 (function splashGaze(){
