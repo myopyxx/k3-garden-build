@@ -2037,6 +2037,54 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 @media(prefers-reduced-motion:reduce){#homeControls,.app.gaze #homeControls{transition:none;transform:none}#duo .cat.request-ear .head{rotate:0deg}#duo .cat.request-thanks .head,.app.memory-concert #duo .cat .head,.app.memory-concert #duo .cat .paw.pr{animation:none}}
 #duo .cat .hl-ear{rotate:var(--ear-follow,0deg);transform-box:fill-box;transform-origin:50% 100%;transition:rotate .24s ease-out}
 @media (prefers-reduced-motion:reduce){#duo .cat .hl-ear{rotate:0deg}}
+/* Ночная арена: карточка на карте и кармашек со снимком в альбоме */
+.arena-stop{margin:14px 0 24px}
+.arena-gate{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:flex-end;gap:12px;width:100%;min-height:174px;
+  padding:18px;border:1px solid #cda57779;border-radius:24px;text-align:left;color:#fff5e9;background:#2c1832;
+  box-shadow:0 12px 28px #10081769;scroll-margin-block:80px 24px;transition:transform .28s var(--spring-soft)}
+.arena-gate::before,.arena-gate::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none}
+.arena-gate::before{background:url("/*ARENA_GATE*/") right 25% / cover}
+.arena-gate::after{background:linear-gradient(0deg,#201224 3%,#201224d9 22%,#20122426 68%),linear-gradient(90deg,#1b1024b3,transparent 78%)}
+.arena-gate.locked::before{filter:saturate(.63) brightness(.83)}
+.arena-gate:active{transform:scale(.98)}
+.arena-gate:focus-visible,.arena-album-link:focus-visible,.arena-film:focus-visible{outline:2px solid #ffe1a4;outline-offset:3px}
+.arena-gate-copy{min-width:0;flex:1;display:grid;gap:4px}
+.arena-gate-title{font:400 clamp(31px,10vw,45px)/1.15 var(--script);text-shadow:0 2px 10px #170d22}
+.arena-gate-state{font:500 12px/1.45 var(--ui);color:#f8dcc4}
+.arena-gate-mark{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;color:#ffdda4;background:#28182bdd;border:1px solid #e9c29175}
+.arena-gate-mark .ico{width:19px;height:19px}
+.arena-ember{position:absolute;top:var(--y);left:var(--x);width:3px;height:3px;border-radius:50%;
+  background:#fff0bc;box-shadow:0 0 7px 2px #ffc57590;opacity:0;pointer-events:none}
+#v-map.on .arena-gate:not(.locked) .arena-ember{animation:arenaEmber 3.6s ease-out var(--delay,0s) 1 both}
+@keyframes arenaEmber{0%,100%{opacity:0;transform:translate(0,3px)}35%{opacity:.85}80%{opacity:.55;transform:translate(8px,-19px)}}
+.arena-album-link{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:44px;margin-top:8px;padding:7px 12px;border:1px solid #ddb88755;
+  border-radius:15px;background:#362239;color:#fce0b6;font:500 12px/1.4 var(--ui)}
+.arena-album-link .ico{width:17px;height:17px}
+.arena-album-link[hidden]{display:none}
+#arenaMemory{margin:14px 0 22px}
+.arena-film{position:relative;width:100%;display:grid;grid-template-columns:66px minmax(0,1fr);gap:16px;align-items:center;padding:12px 17px;text-align:left;
+  overflow:hidden;isolation:isolate;border:1px solid #d3a48b65;border-radius:20px;background:linear-gradient(130deg,#4c2c43,#291c37 72%);color:#fff5e9;
+  box-shadow:0 8px 22px #140b2066;transition:transform .25s var(--spring-soft)}
+.arena-film:active,.arena-album-link:active{transform:scale(.98)}
+.arena-film-copy{display:grid;gap:4px}
+.arena-film-copy strong{font:600 14px/1.4 var(--ui)}
+.arena-film-copy small{font:400 12px/1.4 var(--ui);color:#f4d5bd}
+.arena-film-print{display:block;width:62px;aspect-ratio:1.06;padding:4px 4px 10px;border-radius:3px;
+  background:#fff1dc;transform:rotate(-6deg);box-shadow:1px 5px 11px #160d23a0}
+.arena-film-print::before,.arena-film-print img{display:block;width:100%;height:100%;object-fit:cover;border-radius:1px}
+.arena-film-print::before{content:"";background:radial-gradient(ellipse at 65% 30%,#936374,#482a44 72%)}
+.arena-film.revealed .arena-film-print::before{display:none}
+.arena-film.developing .arena-film-print{animation:arenaPrintIn .58s var(--spring-soft) both}
+.arena-film.developing::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 23%,#ffe5b844 49%,transparent 70%);animation:arenaPrintLight .65s ease-out both}
+@keyframes arenaPrintIn{0%{opacity:.52;transform:rotate(-13deg) scale(.88)}65%{transform:rotate(-2deg) scale(1.04)}100%{opacity:1;transform:rotate(-6deg)}}
+@keyframes arenaPrintLight{from{transform:translateX(-75%);opacity:0}25%{opacity:1}to{transform:translateX(75%);opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .arena-gate,.arena-film{transition:none}
+  .arena-gate:active,.arena-film:active,.arena-album-link:active{transform:none}
+  #v-map.on .arena-gate:not(.locked) .arena-ember,.arena-film.developing .arena-film-print,.arena-film.developing::after{animation:none}
+  .arena-film.developing::after{display:none}
+}
 </style>
 </head>
 <body>
@@ -2194,13 +2242,29 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
         <div class="title">Уровни</div>
         <div class="sub">каждый следующий открывается после предыдущего</div>
         <div class="wcard" id="wordCard"></div>
+        <div class="arena-stop">
+          <button type="button" class="arena-gate" id="arenaGate">
+            <span class="arena-ember" style="--x:60%;--y:35%" aria-hidden="true"></span>
+            <span class="arena-ember" style="--x:82%;--y:27%;--delay:.28s" aria-hidden="true"></span>
+            <span class="arena-ember" style="--x:94%;--y:49%;--delay:.6s" aria-hidden="true"></span>
+            <span class="arena-gate-copy"><span class="arena-gate-title">Ночная арена</span><span class="arena-gate-state" id="arenaGateState"></span></span>
+            <span class="arena-gate-mark" aria-hidden="true"><svg class="ico"><use href="#i-play"/></svg></span>
+          </button>
+          <button type="button" class="arena-album-link" id="arenaAlbumLink" hidden><svg class="ico" aria-hidden="true"><use href="#i-photo"/></svg>Новый снимок в альбоме</button>
+        </div>
         <div class="trail" id="map"></div>
       </section>
 
       <section class="view" id="v-album" aria-label="Альбом" data-title="Альбом">
         <div class="title">Альбом</div>
-        <div class="sub">снимки проявляются от звёзд</div>
+        <div class="sub">снимки и воспоминания</div>
         <div class="group" id="diaryG"></div>
+        <div id="arenaMemory" hidden>
+          <button type="button" class="arena-film" id="arenaFilm">
+            <span class="arena-film-print" aria-hidden="true"></span>
+            <span class="arena-film-copy"><strong>После последнего боя</strong><small></small></span>
+          </button>
+        </div>
         <div class="garland" id="polas"></div>
         <div class="snaps" id="snaps" hidden><div class="glabel">снимки из гардероба</div><div class="strip"></div></div>
       </section>
@@ -4242,6 +4306,77 @@ const LEVELS = [
   {n:11,e:"⛈️",tag:"Ивент · ссора",   t:"Гроза",           s:"веди тёплую нить от одной к другой. Медленно",        run:lvlStorm}
 ];
 const unlocked = n => n === 1 || (S.stars[n-1] || 0) > 0;
+const ARENA_HASH = "#night-arena";
+const ARENA_MEMORY_PHOTO = {src: "/*ARENA_MEMORY*/", caption: "После последнего боя"};
+const arenaUnlocked = () => unlocked(7);
+
+function importArenaMemory(){
+  if (!arenaUnlocked() || S.arenaMemory) return;
+  let record;
+  try { record = JSON.parse(localStorage.getItem("night-arena-v1")); } catch(e){ return; }
+  if (!(record?.rec?.waves?.wins > 0)) return;
+  S.arenaMemory = true;
+  dayNote().arenaBoss = true;
+  save();
+}
+function renderArenaStop(){
+  importArenaMemory();
+  const gate = $("#arenaGate"), open = arenaUnlocked();
+  gate.classList.toggle("locked", !open);
+  gate.querySelector("use").setAttribute("href", open ? "#i-play" : "#i-lock");
+  $("#arenaGateState").textContent = open ? "Алиса и Лапуля против охотников" : "Откроется после эпизода «Поляна»";
+  $("#arenaAlbumLink").hidden = !S.arenaMemory || !!S.arenaMemorySeen;
+}
+function restoreArenaStop(){
+  if (location.hash !== ARENA_HASH) return;
+  showView("v-map");
+  const gate = $("#arenaGate");
+  gate.scrollIntoView({block: "center"});
+  gate.focus({preventScroll: true});
+}
+function renderArenaMemory(){
+  importArenaMemory();
+  const pocket = $("#arenaMemory"), film = $("#arenaFilm");
+  pocket.hidden = !S.arenaMemory;
+  if (!S.arenaMemory) return;
+  film.classList.toggle("revealed", !!S.arenaMemorySeen);
+  film.querySelector("small").textContent = S.arenaMemorySeen ? "Посмотреть снимок" : "Проявить снимок";
+  if (S.arenaMemorySeen && !film.querySelector("img")){
+    const image = new Image();
+    image.src = ARENA_MEMORY_PHOTO.src; image.alt = "";
+    film.querySelector(".arena-film-print").appendChild(image);
+  }
+}
+
+$("#arenaGate").onclick = () => {
+  if (!arenaUnlocked()){
+    openSheet("Ночная арена", body => body.appendChild(para("Пройди «Поляну», шестой эпизод, хотя бы на одну звезду. За поляной Алиса и Лапуля найдут дорогу к арене.")), null, {medium:true});
+    return;
+  }
+  const url = new URL(location.protocol === "file:" ? "./arena/index.html" : "./arena/", location.href);
+  url.searchParams.set("from", "levels");
+  if (new URLSearchParams(location.search).get("fps") === "1") url.searchParams.set("fps", "1");
+  save();
+  history.replaceState(history.state, "", ARENA_HASH);
+  location.assign(url.href);
+};
+$("#arenaAlbumLink").onclick = () => {
+  snd.tap(); haptic(6); showView("v-album");
+  const film = $("#arenaFilm");
+  film.scrollIntoView({block: "center"});
+  film.focus({preventScroll: true});
+};
+$("#arenaFilm").onclick = () => {
+  if (!S.arenaMemory) return;
+  if (S.arenaMemorySeen){ openViewer(ARENA_MEMORY_PHOTO); return; }
+  S.arenaMemorySeen = true;
+  save();
+  renderArenaMemory();
+  $("#arenaFilm").classList.add("developing");
+  shutterSnd(true); haptic([12, 40, 18]);
+};
+addEventListener("pageshow", e => { if (e.persisted) restoreArenaStop(); });
+
 const POSTER = {
   1:["#2b2156","#5a2f62","#a65a6e","rgba(243,227,176,.55)"], 2:["#0f2a3a","#1e3f5c","#5d4a7a","rgba(150,210,255,.5)"],
   3:["#0b0a10","#231a20","#3a2a24","rgba(255,220,140,.42)"], 4:["#2a0a14","#4a1424","#7a2a34","rgba(255,180,140,.4)"],
@@ -4254,11 +4389,11 @@ const SIL = '<svg class="sil" viewBox="0 0 440 60" preserveAspectRatio="none" ar
 const posterBg = n => { const P = POSTER[n]; return `linear-gradient(150deg,${P[0]} 0%,${P[1]} 55%,${P[2]} 100%)`; };
 function secEl(small, big, evt){ const d = document.createElement("div"); d.className = "sec" + (evt ? " ev" : ""); d.textContent = small; const b = document.createElement("b"); b.textContent = big; d.appendChild(b); return d; }
 function renderMap(){
-  renderWordCard();
+  renderWordCard(); renderArenaStop();
   const m = $("#map"); m.innerHTML = '<svg class="path" aria-hidden="true"></svg>';
   const cur = LEVELS.find(L => unlocked(L.n) && !(S.stars[L.n] > 0));
   const maxOpen = LEVELS.filter(L => unlocked(L.n)).reduce((a, L) => Math.max(a, L.n), 1);
-  const fresh = maxOpen > (S.seenOpen || 1) ? maxOpen : 0;
+  const fresh = location.hash !== ARENA_HASH && maxOpen > (S.seenOpen || 1) ? maxOpen : 0;
   if (fresh){ S.seenOpen = maxOpen; save(); }
   LEVELS.forEach((L, i) => {
     if (L.n === 1) m.appendChild(secEl("эпизоды 1–9", "Сезон первый"));
@@ -4403,7 +4538,7 @@ function scratchDevelop(f, ph, backs, onDone){
   f.onkeydown = e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); finish(); } };
 }
 function renderAlbum(){
-  renderDiaryCard(); renderSnaps();
+  renderArenaMemory(); renderDiaryCard(); renderSnaps();
   const box = $("#polas"); box.innerHTML = ""; const have = totalStars();
   const W = Math.round((box.clientWidth || 358)*1.08), Y0 = 6, SAG = 30;
   const wireY = t => (1-t)*(1-t)*Y0 + 2*(1-t)*t*(Y0 + SAG*2) + t*t*Y0;
@@ -4704,6 +4839,9 @@ document.querySelectorAll(".view").forEach(v => v.addEventListener("scroll", () 
 /* куда смотрит камера: вкладка, а поверх неё открытый лист гардероба или лавки */
 function camTo(view, sheet){ if (view) camTo.view = view; if (sheet !== undefined) camTo.sheet = sheet; $("#world").dataset.cam = camTo.sheet || camTo.view || "v-home"; }
 function showView(id){
+  if (id !== "v-map" && showView.last && location.hash === ARENA_HASH){
+    history.replaceState(history.state, "", location.pathname + location.search);
+  }
   if (id !== "v-home") stopConcert();
   if (id === "v-home") paintDailyRequest();
   if (id === "v-wardrobe" && !S.splitWear) id = "v-home";
@@ -5192,6 +5330,7 @@ function diaryLines(e, first){
   if (e.jl && e.jl.length) P("jl", e.jl.includes("lapula") ? "Гладили меня, а Лапуля делала вид, что ей всё равно." : "Гладили Лапулю, а я сидела рядом. Просто сидела.");
   if (e.earRequest) P("earRequest", "Лапуля сама подставила ушко. Потом положила голову на лапы.");
   if (e.concert) P("concert", "Устроили концерт для двоих. Лапуля отбивала такт лапой. Я вступила чуть позже.");
+  if (e.arenaBoss) P("arenaBoss", "Старый охотник ушёл и оставил бубенчик. Мы с Лапулей посидели на стене, пока не погас последний фонарь. Снимок спрятала в альбом.");
   if (e.request) P("request", "Ты выполнила нашу просьбу. Я записала: «" + e.request + "».");
   if (e.epi) P("epi", "Смотрели эпилог про нас на крыше. Луна там огромная.");
   if (!L.length) P("empty", "Ты заходила ненадолго. Мы были дома.");
@@ -8788,6 +8927,11 @@ addEventListener("keydown", e => {
   else if ($("#game").classList.contains("on")) exitLevel();
 });
 renderAll();
+if (location.hash === ARENA_HASH){
+  $("#splash").remove();
+  addEventListener("click", () => { if (S.music) Music.start(0); }, {once:true});
+  restoreArenaStop();
+}
 /*FRAME_METER*/
 </script>
 </body>

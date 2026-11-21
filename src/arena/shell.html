@@ -57,14 +57,29 @@ button{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent;touch-
   padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 20px)}
 .screen.on{display:flex}
 #menu{background:radial-gradient(circle at 78% 10%,rgba(243,227,176,.22) 0 3%,rgba(243,227,176,.06) 9%,transparent 22%),linear-gradient(180deg,#1b1330,#2a1636 48%,#3a1630)}
+#menu{padding-inline:max(16px,env(safe-area-inset-left)) max(16px,env(safe-area-inset-right))}
+#menu .top,#menu .arena-cover,#menu .cats,#menu .modes,#menu .lbl,#menu .foot{width:min(100%,540px);margin-inline:auto}
 .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:var(--ink);text-decoration:none;font:600 12px/1 var(--ui)}
 .cups{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:rgba(243,210,122,.14);box-shadow:inset 0 0 0 1px rgba(243,210,122,.4);font:600 14px/1 var(--ui);color:var(--gold);font-variant-numeric:tabular-nums}
 .tgl{display:flex;gap:8px}
 .snd{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);display:grid;place-items:center}
 .snd svg{width:18px;height:18px}
-h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--script);text-shadow:0 0 24px rgba(216,86,111,.55)}
-.tag{text-align:center;color:var(--muted);font-size:13px;margin-top:6px}
+.arena-cover{position:relative;isolation:isolate;overflow:hidden;flex:none;display:flex;flex-direction:column;justify-content:flex-end;
+  min-height:clamp(170px,48vw,232px);margin:14px 0 0;padding:17px 18px 16px;border-radius:25px;border:1px solid #cda5777a;
+  background:#302138 url("/*ARENA_GATE*/") right 25% / cover;box-shadow:0 12px 28px #13091780}
+.arena-cover::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(0deg,#1c1127 1%,#1c1127de 22%,#1c112726 73%),linear-gradient(90deg,#1b102480,transparent 79%)}
+h1{margin:0;font:400 clamp(39px,11vw,61px)/1.08 var(--script);text-shadow:0 2px 16px #180a1e}
+.arena-cover .tag{margin:3px 0 0;color:#fce0c6;font-size:12px;line-height:1.45}
+.arena-cover i{position:absolute;left:var(--x);top:var(--y);width:4px;height:4px;border-radius:50%;background:#fff0b2;box-shadow:0 0 8px 2px #ffc36b85;opacity:0;pointer-events:none}
+#menu.on .arena-cover i{animation:gateSparks 2.9s ease-out var(--delay,0s) 1 both}
+#menu.on .arena-cover>div{animation:gateTitleIn .5s ease-out both}
+@keyframes gateSparks{0%,100%{opacity:0;transform:translate(0,4px)}34%{opacity:.85}80%{opacity:.48;transform:translate(9px,-22px)}}
+@keyframes gateTitleIn{from{opacity:.3;transform:translateY(7px)}}
+.back:active,.menu-return:active{transform:scale(.97)}
+:is(.back,.snd,.catc,.mode,.menu-return,.btn):focus-visible{outline:2px solid #ffe1a4;outline-offset:3px}
+@media (max-width:360px){.top{gap:6px}.tgl{gap:5px}.back,.cups{padding-inline:10px}}
 .lbl{margin:22px 4px 10px;font:600 11px/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .cats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .catc{position:relative;border:0;border-radius:22px;padding:12px 10px 14px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);text-align:center;transition:transform .5s var(--spring-pop),background .2s,box-shadow .2s}
@@ -74,22 +89,28 @@ h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--scri
 .catc small{display:block;color:var(--muted);font-size:11.5px;line-height:1.35;margin-top:4px;min-height:42px}
 .catc .st{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 10px;margin-top:8px;font:600 11px/1 var(--ui);color:var(--ink);opacity:.85}
 .catc.on{background:rgba(216,86,111,.18);box-shadow:inset 0 0 0 2px var(--rose),0 10px 26px rgba(143,31,56,.35)}
+@media (max-height:680px){
+  .arena-cover{min-height:144px;padding-block:12px}
+  .catc{padding:8px 9px 11px}.catc canvas{width:70px;height:70px}
+  .lbl{margin-top:16px}
+}
 .catc.press,.mode.press,.btn.press{transform:scale(.95);transition-duration:.08s}
 .modes{display:flex;flex-direction:column;gap:10px}
 .mode{display:flex;align-items:center;gap:14px;border:0;border-radius:22px;padding:14px 16px;text-align:left;background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.04));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);transition:transform .5s var(--spring-pop)}
 .mode .ic{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:28px;line-height:1}
-.mode:nth-child(1) .ic{background:linear-gradient(180deg,#c43a55,#7a1024)}
-.mode:nth-child(2) .ic{background:linear-gradient(180deg,#6a4fb0,#33236a)}
-.mode:nth-child(3) .ic{background:linear-gradient(180deg,#b0763a,#5f3713)}
+.mode[data-mode="gems"] .ic{background:linear-gradient(180deg,#c43a55,#7a1024)}
+.mode[data-mode="surv"] .ic{background:linear-gradient(180deg,#6a4fb0,#33236a)}
+.mode[data-mode="waves"] .ic{background:linear-gradient(180deg,#b0763a,#5f3713)}
+.mode.featured{background:linear-gradient(135deg,#51323f,#33243a);box-shadow:inset 0 0 0 1px #eac39166}
 .mode b{display:block;font:600 15px/1.2 var(--ui)}
 .mode small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:3px}
 .mode .rec{display:block;margin-top:5px;font:600 11px/1 var(--ui);color:var(--gold)}
 .foot{margin-top:auto;padding-top:20px;text-align:center;color:rgba(255,244,236,.45);font-size:11px}
 
 /* оверлеи */
-.ovl{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,6,16,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.ovl{position:absolute;inset:0;z-index:20;display:none;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));overflow:auto;touch-action:pan-y;background:rgba(10,6,16,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 .ovl.on{display:flex}
-.card{width:min(360px,100%);border-radius:28px;padding:22px 20px 18px;text-align:center;background:linear-gradient(180deg,#2c1a3a,#1d1228);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 60px rgba(0,0,0,.5);animation:cardIn .7s var(--spring-soft)}
+.card{width:min(360px,100%);margin:auto;border-radius:28px;padding:22px 20px 18px;text-align:center;background:linear-gradient(180deg,#2c1a3a,#1d1228);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 24px 60px rgba(0,0,0,.5);animation:cardIn .7s var(--spring-soft)}
 @keyframes cardIn{from{transform:translateY(30px) scale(.94);opacity:0}}
 .card h2{margin:0;font:400 46px/1.05 var(--script)}
 .card p{margin:10px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
@@ -102,10 +123,21 @@ h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--scri
 .btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
 .btn{min-height:52px;border:0;border-radius:999px;font:600 15px/1 var(--ui);color:#fff;background:linear-gradient(180deg,#d8566f,#8f1f38);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 20px rgba(143,31,56,.4);transition:transform .5s var(--spring-pop)}
 .btn.ghost{background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.menu-return{display:grid;place-items:center;min-height:44px;color:#f5d6b4;text-decoration:none;font:600 12px/1.4 var(--ui)}
+#resMemory{display:flex;gap:10px;align-items:center;text-align:left;margin:12px 0 0;padding:10px 12px;border:1px solid #dcaf746a;border-radius:14px;background:#4f3340;color:#ffe1b4;font:500 12px/1.4 var(--ui);animation:arenaKeepsake .58s ease-out both}
+#resMemory i{width:26px;height:27px;flex:none;border:3px solid #ffe4be;border-bottom-width:6px;border-radius:2px;
+  background:radial-gradient(circle at 65% 31%,#ffe8a6 0 12%,transparent 14%),linear-gradient(35deg,#55334d 53%,transparent 55%),#966a82;
+  box-shadow:0 3px 7px #27152c9c;transform:rotate(-8deg)}
+#resMemory[hidden],.menu-return[hidden]{display:none}
+@keyframes arenaKeepsake{from{opacity:.25;transform:translateY(5px)}}
 .how{display:flex;flex-direction:column;gap:12px;margin-top:14px;text-align:left}
 .how div{display:flex;gap:12px;align-items:center;font-size:13px;line-height:1.4;color:var(--ink)}
 .how i{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media (prefers-reduced-motion:reduce){
+  #menu.on .arena-cover i,#menu.on .arena-cover>div,#resMemory{animation:none}
+  .back:active,.menu-return:active{transform:none}
+}
 </style>
 </head>
 <body>
@@ -122,12 +154,14 @@ h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--scri
 
   <section class="screen on" id="menu">
     <div class="top">
-      <a class="back" href="../">← Дневники</a>
+      <a class="back" id="arenaBack" href="../">← Дневники</a>
       <span class="cups" id="cups">🏆 0</span>
       <span class="tgl"><button class="snd" id="hapBtn" aria-label="Вибрация"></button><button class="snd" id="sndBtn" aria-label="Звук"></button></span>
     </div>
-    <h1>Ночная арена</h1>
-    <div class="tag">Алиса и Лапуля против охотников</div>
+    <header class="arena-cover">
+      <i style="--x:55%;--y:38%" aria-hidden="true"></i><i style="--x:81%;--y:21%;--delay:.24s" aria-hidden="true"></i><i style="--x:92%;--y:55%;--delay:.48s" aria-hidden="true"></i>
+      <div><h1>Ночная арена</h1><p class="tag">Алиса и Лапуля против охотников</p></div>
+    </header>
     <div class="lbl">Кем играть</div>
     <div class="cats" id="cats"></div>
     <div class="lbl">Режим</div>
@@ -151,12 +185,17 @@ h1{margin:18px 0 0;text-align:center;font:400 clamp(52px,16vw,72px)/1 var(--scri
     <div class="btns"><button class="btn" id="resume">Продолжить</button><button class="btn ghost" id="quit">Сдаться и выйти</button></div>
   </div></div>
 
-  <div class="ovl" id="resOv"><div class="card">
+  <div class="ovl" id="resOv"><div class="card" role="dialog" aria-modal="true" aria-labelledby="resT" aria-describedby="resP">
     <h2 id="resT"></h2>
     <p id="resP"></p>
     <div class="big" id="resCups"></div>
     <div class="stats" id="resStats"></div>
-    <div class="btns"><button class="btn" id="again">Ещё раз</button><button class="btn ghost" id="toMenu">В меню</button></div>
+    <p id="resMemory" hidden><i aria-hidden="true"></i><span>В альбоме ждёт снимок «После последнего боя».</span></p>
+    <div class="btns">
+      <button class="btn" id="again">Реванш</button>
+      <button class="btn ghost" id="toMenu">Выбор режима</button>
+      <a class="menu-return" id="resReturn" href="../#night-arena" hidden>К уровням</a>
+    </div>
   </div></div>
 </div>
 <script>

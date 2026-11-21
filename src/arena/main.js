@@ -141,17 +141,20 @@ function startMatch(mode){
 }
 function endMatch(r, place){
   if (G.over) return; G.over = true;
+  const firstBossWin = G.mode === "waves" && r === "win" && !S.rec.waves.wins;
   const res = MODES[G.mode].result(r, place), good = r === "win" || (r === "place" && place <= 2);
   S.cups = Math.max(0, S.cups + res.cups); save();
   setTimeout(() => { good ? snd.win() : snd.lose(); haptic(good ? [12, 40, 18] : 20); }, 300);
   setTimeout(() => {
     $("#resT").textContent = res.title; $("#resP").textContent = res.text;
+    $("#resMemory").hidden = !firstBossWin || !fromLevels;
     const c = $("#resCups"), fmt = v => "🏆 " + (v === 0 ? "" : res.cups >= 0 ? "+" : "−") + Math.abs(v); c.className = "big " + (res.cups >= 0 ? "up" : "down");
     if (reduced() || !res.cups) c.textContent = fmt(res.cups); else { const t0 = performance.now() + 250, D = 650; c.textContent = fmt(0);
       const tick = () => { const k = clamp((performance.now() - t0)/D, 0, 1), e = 1 - Math.pow(1 - k, 3); c.textContent = fmt(Math.round(res.cups*e)); if (k < 1 && $("#resOv").classList.contains("on")) requestAnimationFrame(tick); else c.textContent = fmt(res.cups); };
       requestAnimationFrame(tick); }
     $("#resStats").innerHTML = res.stats.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join("");
     $("#resOv").classList.add("on"); $("#stage").classList.remove("lowhp");
+    $("#again").focus({preventScroll: true});
   }, 1300);
 }
 function togglePause(on){ if (!G || G.over) return; G.paused = on; if (on) dropInputs(); $("#pauseOv").classList.toggle("on", on); }
@@ -159,7 +162,12 @@ $("#pauseBtn").addEventListener("click", () => { snd.tap(); togglePause(true); }
 $("#resume").addEventListener("click", () => { snd.tap(); togglePause(false); });
 $("#quit").addEventListener("click", () => { snd.tap(); $("#pauseOv").classList.remove("on"); G.paused = false; endMatch(G.mode === "surv" ? "place" : "lose", G.fighters.filter(f => !f.dead).length); });
 $("#again").addEventListener("click", () => { snd.tap(); startMatch(G.mode); });
-$("#toMenu").addEventListener("click", () => { snd.tap(); showMenu(); });
+$("#toMenu").addEventListener("click", () => {
+  const mode = G.mode;
+  snd.tap(); showMenu();
+  $("#menu").scrollTop = 0;
+  $("#modes").querySelector(`[data-mode="${mode}"]`).focus();
+});
 document.addEventListener("visibilitychange", () => { if (!document.hidden) return; dropInputs(); if (G && !G.over) togglePause(true); });
 
 /* =================== ЦИКЛ =================== */
@@ -183,14 +191,39 @@ function frame(now){
 
 /* =================== МЕНЮ =================== */
 const CAT_INFO = {
-  alisa: {t: "Алиса", s: "Стреляет издалека тремя каплями веером. Супер: укус в прыжке, лечит её саму.", st: ["❤️ 3200", "🎯 дальняя"]},
-  lapula: {t: "Лапуля", s: "Бьёт когтями вблизи и держит удар. Супер: прыжок через стены и оглушение.", st: ["❤️ 4900", "🐾 ближняя"]}
+  alisa: {t: "Алиса", s: "Три капли веером. Супер: укус в прыжке восстанавливает здоровье.", st: ["❤️ 3200", "🎯 дальняя"]},
+  lapula: {t: "Лапуля", s: "Когти вблизи. Супер: прыжок через стену с оглушением.", st: ["❤️ 4900", "🐾 ближняя"]}
 };
 const MODE_INFO = [
   ["gems", "🩸", "Капли 3×3", "Алиса, Лапуля и Уголёк против трёх охотников. Из фонтана сыплются капли: собери 10 и продержись 15 секунд.", () => { const r = S.rec.gems; return r.w + r.l + r.d ? `побед ${r.w} · поражений ${r.l}` : ""; }],
   ["surv", "🌫️", "Последняя на арене", "Шесть бойцов, каждый сам за себя. Ломай коробки ради силы, туман сжимает арену.", () => S.rec.surv.best ? `лучшее место: ${S.rec.surv.best} · побед ${S.rec.surv.wins}` : ""],
   ["waves", "🦇", "Волны и босс", "Вдвоём против шести волн летучих мышей и охотников. В конце Старый охотник.", () => S.rec.waves.best ? `рекорд: ${S.rec.waves.best} из 6 волн` : ""]
 ];
+const arenaParams = new URLSearchParams(location.search);
+const fromLevels = arenaParams.get("from") === "levels";
+const diariesUrl = new URL(location.protocol === "file:" ? "../index.html" : "../", location.href);
+if (fromLevels){
+  diariesUrl.hash = "night-arena";
+  if (arenaParams.get("fps") === "1") diariesUrl.searchParams.set("fps", "1");
+  const referrer = document.referrer && new URL(document.referrer);
+  const diariesIndex = new URL("index.html", diariesUrl);
+  if (history.length > 1 && referrer?.origin === diariesUrl.origin &&
+    (referrer.pathname === diariesUrl.pathname || referrer.pathname === diariesIndex.pathname)){
+    history.replaceState({...history.state, arenaBackToMap: true}, "");
+  }
+  for (const link of [$("#arenaBack"), $("#resReturn")]){
+    link.href = diariesUrl.href;
+    link.textContent = "К уровням";
+    link.hidden = false;
+    link.addEventListener("click", e => {
+      if (!history.state?.arenaBackToMap || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      history.back();
+    });
+  }
+} else {
+  $("#arenaBack").href = diariesUrl.href;
+}
 const SND_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="#fff"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
 const HAP_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4.5 9v6M19.5 9v6"/></svg>';
 const HAP_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="4" width="8" height="16" rx="2"/><path d="M4 4l16 16"/></svg>';
@@ -211,8 +244,12 @@ function showMenu(){
     b.innerHTML = `<canvas></canvas><b>${I.t}</b><small>${I.s}</small><div class="st">${I.st.map(s => `<span>${s}</span>`).join("")}</div>`;
     portrait(b.querySelector("canvas"), k); b.onclick = () => { S.cat = k; save(); snd.tap(); haptic(6); showMenu(); }; cats.appendChild(b); }
   const ms = $("#modes"); ms.innerHTML = "";
-  for (const [id, ic, t, s, rec] of MODE_INFO){ const b = document.createElement("button"); b.className = "mode"; const r = rec();
-    b.innerHTML = `<span class="ic">${ic}</span><span><b>${t}</b><small>${s}</small>${r ? `<span class="rec">${r}</span>` : ""}</span>`;
+  const recommendWaves = fromLevels && !S.rec.waves.wins;
+  const modes = fromLevels ? [MODE_INFO[2], ...MODE_INFO.slice(0, 2)] : MODE_INFO;
+  for (const [id, ic, t, s, rec] of modes){ const b = document.createElement("button"); b.className = "mode"; b.dataset.mode = id;
+    const featured = recommendWaves && id === "waves", r = rec() || (featured ? "С этого режима можно начать" : "");
+    b.classList.toggle("featured", featured);
+    b.innerHTML = `<span class="ic" aria-hidden="true">${ic}</span><span><b>${t}</b><small>${s}</small>${r ? `<span class="rec">${r}</span>` : ""}</span>`;
     b.onclick = () => { snd.tap(); haptic(8); if (!S.how && !AUTO){ $("#howOv").classList.add("on"); $("#howGo").onclick = () => { S.how = true; save(); startMatch(id); }; } else startMatch(id); }; ms.appendChild(b); }
 }
 $("#sndBtn").addEventListener("click", () => { S.sfx = !S.sfx; save(); $("#sndBtn").innerHTML = S.sfx ? SND_ON : SND_OFF; $("#sndBtn").setAttribute("aria-pressed", S.sfx); snd.tap(); });
