@@ -7552,7 +7552,7 @@ function lvlSun(area, done){
     for (const poly of o.polys){ g.beginPath(); poly.forEach(([px,py], i) => i ? g.lineTo(X(px), Y(py)) : g.moveTo(X(px), Y(py))); g.stroke(); }
   }
 
-  function draw(){
+  function draw(dt = 0){
     geo();
     const W = C.W, H = C.H, x = catX();
     const camX = Math.min(END + 120 - W*.62, x - W*.34);
@@ -7632,16 +7632,16 @@ function lvlSun(area, done){
     if (!exposed){ g.fillStyle = "rgba(20,12,40,.18)"; g.beginPath(); g.ellipse(cx, G - 24, 44, 30, 0, 0, 7); g.fill(); }
     g.restore();
     // дым
-    for (let i = smoke.length - 1; i >= 0; i--){ const p = smoke[i]; p.l -= 1/60; if (p.l <= 0){ smoke.splice(i, 1); continue; }
-      p.x += p.vx/60; p.y += p.vy/60; g.fillStyle = `rgba(210,200,210,${p.l*.35})`; g.beginPath(); g.arc(p.x - camX, p.y, 5 + (1 - p.l)*12, 0, 7); g.fill(); }
-    if (exposed && alive && Math.random() < .5) smoke.push({x: x + 10 + Math.random()*16, y: G - 40 - Math.random()*10, vx: (Math.random() - .5)*20, vy: -40 - Math.random()*30, l: 1});
+    for (let i = smoke.length - 1; i >= 0; i--){ const p = smoke[i]; p.l -= dt; if (p.l <= 0){ smoke.splice(i, 1); continue; }
+      p.x += p.vx*dt; p.y += p.vy*dt; g.fillStyle = `rgba(210,200,210,${p.l*.35})`; g.beginPath(); g.arc(p.x - camX, p.y, 5 + (1 - p.l)*12, 0, 7); g.fill(); }
+    if (exposed && alive && Math.random() < 1 - 2**(-60*dt)) smoke.push({x: x + 10 + Math.random()*16, y: G - 40 - Math.random()*10, vx: (Math.random() - .5)*20, vy: -40 - Math.random()*30, l: 1});
     // передний план: трава
     g.fillStyle = "#060408";
     for (let i = Math.floor(camX*1.3/22) - 1; i < camX*1.3/22 + W/22 + 2; i++){ const gx = i*22 - camX*1.3, hh = 14 + treeH(i*3)*.32;
       g.beginPath(); g.moveTo(gx - 9, H); g.quadraticCurveTo(gx - 4, H - hh*.6, gx + (i % 2 ? 6 : -6), H - hh); g.quadraticCurveTo(gx + 2, H - hh*.5, gx + 9, H); g.fill(); }
     // ожог: виньетка
     if (burn > .02){ const v = g.createRadialGradient(W/2, H/2, Math.min(W,H)*.35, W/2, H/2, Math.max(W,H)*.75); v.addColorStop(0, "rgba(255,80,40,0)"); v.addColorStop(1, `rgba(255,80,40,${burn*.38})`); g.fillStyle = v; g.fillRect(0, 0, W, H); }
-    if (flash > 0) flash = Math.max(0, flash - 1/60);
+    if (flash > 0) flash = Math.max(0, flash - dt);
   }
   let updT = 0;
   function frame(now){ try { frameBody(now); } catch(err){ console.warn(err); if (!ended) raf = requestAnimationFrame(frame); } }
@@ -7662,7 +7662,7 @@ function lvlSun(area, done){
       if (burn >= 1) return end(false);
       if (x >= END) return end(true);
     }
-    draw();
+    draw(dt);
     raf = requestAnimationFrame(frame);
   }
   function end(ok){
