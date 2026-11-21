@@ -46,7 +46,7 @@ const {open} = require('./helper.js');
   for (let i = 0; i < 22; i++){ await p.mouse.click(A.x, A.top + A.h*.6); await p.waitForTimeout(270); }
   const jl = await p.evaluate(() => ({calls: window.__jr, note: (dayNote().jl || []).join()}));
   const fx = jl.calls[1] || {};
-  ok('ревность: Лапуля реагирует один раз (смотрит, зевает или подвигается)', jl.calls.filter(x => x === 'lapula').length === 1 && jl.note.includes('lapula') && (parseFloat(fx.sc) < -5 || fx.yawn || fx.away), JSON.stringify(jl));
+  ok('ревность: Лапуля реагирует один раз (смотрит, зевает или подвигается)', jl.calls.filter(x => x === 'lapula').length === 1 && jl.note.includes('lapula') && (parseFloat(fx.sc) > 5 || fx.yawn || fx.away), JSON.stringify(jl));
   await shot('jealous');
 
   // 3. наклон телефона: слои смещаются, при экономии кадров стоят

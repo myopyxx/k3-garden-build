@@ -545,19 +545,19 @@ body.day .moon .shade{opacity:0}
 .app.quarrel .stage:not(.home-on) .qseam{opacity:.14}
 .app.quarrel .moon .qtint{opacity:1}
 .cat .turn{transform-origin:50% 100%;transition:transform 1s var(--spring-soft)}
-.app.quarrel .pet[data-cat=alisa] .turn{transform:translateX(-10px) rotate(-6deg)}
-.app.quarrel .pet[data-cat=lapula] .turn{transform:translateX(10px) rotate(6deg)}
+.app.quarrel .pet[data-cat=alisa] .turn{transform:translateX(10px) rotate(6deg)}
+.app.quarrel .pet[data-cat=lapula] .turn{transform:translateX(-10px) rotate(-6deg)}
 .cat .pup{transform-box:fill-box;transform-origin:center;transition:transform .6s var(--spring-soft)}
-.app.quarrel .pet[data-cat=alisa] .pup{transform:translateX(-5px)}
-.app.quarrel .pet[data-cat=lapula] .pup{transform:translateX(5px)}
+.app.quarrel .pet[data-cat=alisa] .pup{transform:translateX(5px)}
+.app.quarrel .pet[data-cat=lapula] .pup{transform:translateX(-5px)}
 .cat .lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);transition:transform .6s var(--spring-soft)}
 .app.quarrel .cat .lid{transform:scaleY(1)}
 .app.quarrel .tab-ind{background:linear-gradient(90deg,rgba(120,160,255,.34),rgba(255,170,90,.34))}
 .bubble{transition:margin .6s var(--spring-soft)}
 .bubble.al{align-self:flex-start;margin-left:4%}
 .bubble.ar{align-self:flex-end;margin-right:4%}
-.app.makeup .pet[data-cat=alisa] .turn{transform:translateX(16px) rotate(5deg)}
-.app.makeup .pet[data-cat=lapula] .turn{transform:translateX(-16px) rotate(-5deg)}
+.app.makeup .pet[data-cat=alisa] .turn{transform:translateX(-16px) rotate(-5deg)}
+.app.makeup .pet[data-cat=lapula] .turn{transform:translateX(16px) rotate(5deg)}
 
 /* главная: док и мини-плеер */
 .home{padding-bottom:84px}
@@ -945,6 +945,7 @@ svg.sti{width:1em;height:1em;display:block}
 #duo .cat .turn{translate:calc(var(--gn,0)*1.6px) calc(var(--gm,0)*.8px);rotate:calc(var(--gn,0)*1.3deg);transition:transform 1s var(--spring-soft),translate .5s var(--spring-soft) .06s,rotate .5s var(--spring-soft) .06s}
 @media (prefers-reduced-motion:reduce){#duo .cat .turn{translate:none;rotate:none}}
 .cat.sleep .eye{transform:scaleY(.08);transition:transform 1.1s ease}
+.cat.sleep .eye > g,.cat.blink .eye > g{opacity:0}
 .cat.sleep .breathe{animation-duration:4.8s}
 .cat.slowblink .eye{animation:slowBlink 1.5s ease-in-out}
 @keyframes slowBlink{0%,100%{transform:none}38%,62%{transform:scaleY(.08)}}
@@ -1152,9 +1153,8 @@ svg.sti{width:1em;height:1em;display:block}
 .heartsfx i{position:absolute;bottom:-30px;width:18px;height:18px;opacity:0;animation:heartUp 4.4s ease-in forwards}
 .heartsfx i::before{content:"";position:absolute;inset:0;background:rgba(255,140,170,.75);clip-path:path("M9 16.5 C3 12 0 9 0 5.5 C0 2.5 2.3 0 5 0 C6.8 0 8.2 1 9 2.5 C9.8 1 11.2 0 13 0 C15.7 0 18 2.5 18 5.5 C18 9 15 12 9 16.5Z");transform:scale(var(--s));transform-origin:50% 50%;filter:drop-shadow(0 0 6px rgba(255,140,170,.6))}
 @keyframes heartUp{0%{opacity:0;transform:translateY(0)}15%{opacity:1}100%{opacity:0;transform:translate(14px,-78vh)}}
-.app.lovefx #duo .pet[data-cat=alisa] .turn{transform:translateX(10px) rotate(4deg)}
-.app.lovefx #duo .pet[data-cat=lapula] .turn{transform:translateX(-10px) rotate(-4deg)}
-.app.lovetail #duo .pet[data-cat=lapula] .cat svg{transform:scaleX(-1)}
+.app.lovefx #duo .pet[data-cat=alisa] .turn{transform:translateX(-10px) rotate(-4deg)}
+.app.lovefx #duo .pet[data-cat=lapula] .turn{transform:translateX(10px) rotate(4deg)}
 .app.lovetail #duo .cat .tail{opacity:0;transition:opacity .25s}
 #duo .cat svg{transition:transform .35s ease}
 .tailheart{position:absolute;left:0;top:0;z-index:3;pointer-events:none;overflow:visible}
@@ -1362,15 +1362,15 @@ body.day .moon .phase{opacity:0}
 .cat.hunt .pup{transform:translate(var(--gx,0px),var(--gy,0px)) scale(1.45,1.06)}
 .cat.tailplay .tail{animation:tailPlay .62s ease-in-out infinite alternate}
 @keyframes tailPlay{from{transform:rotate(-16deg)}to{transform:rotate(20deg)}}
-.app.duet #duo .pet[data-cat=alisa] .turn{transform:translateX(8px) rotate(3.5deg)}
-.app.duet #duo .pet[data-cat=lapula] .turn{transform:translateX(-8px) rotate(-3.5deg)}
+.app.duet #duo .pet[data-cat=alisa] .turn{transform:translateX(-8px) rotate(-3.5deg)}
+.app.duet #duo .pet[data-cat=lapula] .turn{transform:translateX(8px) rotate(3.5deg)}
 /* серия: на второй и третьей ступени полоска уходит из вишнёвого в золото */
 .meter[data-streak="2"] .bar b::after{opacity:max(var(--heat,0),.55)}
 .meter[data-streak="3"] .bar b::after{opacity:1}
 .meter[data-streak="3"] .bar b{box-shadow:0 0 18px rgba(245,200,76,.8),0 0 30px rgba(245,200,76,.4),inset 0 1px 0 rgba(255,255,255,.5)}
 .meter[data-streak="2"] #purrN,.meter[data-streak="3"] #purrN{color:#ffe2a0}
-.app.cuddle #duo .pet[data-cat=alisa] .turn{transform:translateX(14px) rotate(5deg)}
-.app.cuddle #duo .pet[data-cat=lapula] .turn{transform:translateX(-14px) rotate(-5deg)}
+.app.cuddle #duo .pet[data-cat=alisa] .turn{transform:translateX(-14px) rotate(-5deg)}
+.app.cuddle #duo .pet[data-cat=lapula] .turn{transform:translateX(14px) rotate(5deg)}
 @media (prefers-reduced-motion:reduce){.cat.washing .wpaw,.cat.washing .tongue,.cat.tailplay .tail{animation:none!important}}
 .cat.pout .eye{transform:scaleY(.5);transition:transform .18s ease}
 .cat.pout .el{transform:rotate(-16deg);transform-origin:80% 90%;transition:transform .2s}
@@ -1808,6 +1808,7 @@ body.day .rays i{background:repeating-conic-gradient(from 0deg,rgba(255,224,160,
 /* контурный свет на шерсти: цвет и сила зависят от погоды, луны и времени суток, переходят за 3 с */
 @property --rimo{syntax:"<number>";inherits:true;initial-value:.3}
 @property --rimc{syntax:"<color>";inherits:true;initial-value:#fff}
+#duo .breathe,.wstage .breathe{filter:drop-shadow(-1px 0 1px color-mix(in srgb,var(--rimc) calc(var(--rimo)*100%),transparent))}
 #duo .cat,.wstage .cat{transition:--rimo 3s ease,--rimc 3s ease}
 body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 .app.fullmoon #duo .cat,.app.fullmoon .wstage .cat{--rimc:#f6e6b2;--rimo:.5}
@@ -1938,8 +1939,8 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 .vg-plaid svg{width:100%;height:100%;display:block}
 @keyframes vgUp{from{transform:translateY(30%) scaleY(.3);opacity:0}to{transform:none;opacity:1}}
 .vg-fly{left:0;top:0;width:10px;height:10px;border-radius:50%;background:#fff6b0;box-shadow:0 0 10px 4px rgba(255,236,140,.75),0 0 30px 10px rgba(255,220,120,.25);will-change:transform}
-.vg-scope{right:-4%;bottom:26%;width:38%;transform-origin:20% 90%;animation:vgUp .8s var(--spring-soft) both}
-.vg-note{left:34%;bottom:6%;width:15%;rotate:-9deg;animation:vgNote 3.6s ease-in-out both}
+.vg-scope{left:-4%;scale:-1 1;bottom:26%;width:38%;transform-origin:20% 90%;animation:vgUp .8s var(--spring-soft) both}
+.vg-note{right:34%;bottom:6%;width:15%;rotate:-9deg;animation:vgNote 3.6s ease-in-out both}
 @keyframes vgNote{0%{transform:translate(-40%,8%) scale(.7);opacity:0}15%{transform:none;opacity:1}70%{transform:none;opacity:1}100%{transform:translate(-55%,14%) scale(.4);opacity:0}}
 .vg-wind{left:-10%;right:-10%;top:24%;height:40%;background:repeating-linear-gradient(176deg,transparent 0 18px,rgba(230,236,255,.18) 19px 20px,transparent 21px 44px);
   -webkit-mask:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);mask:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);animation:vgWind 1.1s linear infinite}
@@ -1947,8 +1948,8 @@ body.day #duo .cat,body.day .wstage .cat{--rimc:#ffd8a6;--rimo:.42}
 .app.vg-nod #duo .cat .head{animation:vgNod var(--beat,.75s) ease-in-out infinite alternate}
 .app.vg-nod #duo .pet[data-cat=lapula] .cat .head{animation-delay:calc(var(--beat,.75s)*-1)}
 @keyframes vgNod{from{transform:rotate(-5deg)}to{transform:rotate(5deg) translateY(2px)}}
-.app.vg-lean #duo .pet[data-cat=lapula]{--scoot:-14px}
-.app.vg-lean #duo .pet[data-cat=alisa]{--scoot:6px}
+.app.vg-lean #duo .pet[data-cat=lapula]{--scoot:14px}
+.app.vg-lean #duo .pet[data-cat=alisa]{--scoot:-6px}
 @media (prefers-reduced-motion:reduce){.vg{animation:none!important}.app.vg-nod #duo .cat .head{animation:none}}
 
 /* уровень 11: подсказка о трёх фазах */
@@ -2990,66 +2991,61 @@ document.addEventListener("pointercancel", unpress, {passive:true});
   ["pointerup", "pointercancel"].forEach(t => document.addEventListener(t, off, {passive: true})); }
 
 /* =================== КОТИКИ =================== */
+const CAT_PARTS = /*CAT_PARTS*/{};
+function catPart(name){
+  const [x, y, width, height, href] = CAT_PARTS[name];
+  return `<image x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="none" href="${href}"/>`;
+}
+let catSvgId = 0;
 function catSVG(c, opts={}){
   const fangs = opts.fangs !== false, k = c === CONFIG.alisa ? "a" : "l";
-  const eye = cx => `<g class="eye"><circle cx="${cx}" cy="102" r="12.5" fill="${c.eyes}"/><circle cx="${cx}" cy="102" r="12.5" fill="url(#iris-${k})"/><circle cx="${cx}" cy="102" r="12.5" fill="url(#eye-${k})"/><circle cx="${cx}" cy="102" r="12" fill="none" stroke="#150c12" stroke-opacity=".4" stroke-width="1.3"/><ellipse class="pup" cx="${cx}" cy="102" rx="4" ry="9.5" fill="#141014"/><circle cx="${cx+4.5}" cy="97" r="5.2" fill="#fff" opacity=".16"/><circle cx="${cx+4.5}" cy="97" r="3.2" fill="#fff"/><circle cx="${cx+8.3}" cy="101.6" r="1.05" fill="#fff" opacity=".9"/><circle cx="${cx-4}" cy="107" r="1.4" fill="#fff" opacity=".6"/><path class="lid" d="M${cx-13.5} 102 a13.5 13.5 0 0 1 27 0 Z" fill="${c.fur}"/></g>`;
+  const id = ++catSvgId;
+  const eye = cx => `<g transform="translate(${cx} 102) rotate(${cx < 100 ? 8 : -8}) scale(.86 ${k === "l" ? .70 : .85})">
+    <g class="eye"><g clip-path="url(#socket-${id})">
+      <circle r="13" fill="${c.eyes}"/><circle r="13" fill="url(#iris-${id})"/>
+      <ellipse class="pup" rx="3.7" ry="9.6" fill="#211926"/>
+      <circle cx="-3" cy="-4" r="1.9" fill="#fff1d7"/><circle cx="3" cy="4" r=".8" fill="#ffe1a0"/>
+      <path class="lid" d="M-14 -13 H14 V0 Q0 3 -14 0Z" fill="${c.fur}"/>
+    </g><path d="M-13 0 Q-3 -16 9 -8 Q12 -5 13 -1" fill="none" stroke="#392c34" stroke-width="1.4"/></g>
+  </g>`;
   return `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="rim-${k}" cx=".74" cy=".16" r=".78"><stop offset="0" style="stop-color:var(--rimc,#fff);stop-opacity:var(--rimo,.3)"/><stop offset=".45" style="stop-color:var(--rimc,#fff);stop-opacity:calc(var(--rimo,.3)*.24)"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    <radialGradient id="shd-${k}" cx=".28" cy=".92" r=".85"><stop offset="0" stop-color="#0a0612" stop-opacity=".34"/><stop offset="1" stop-color="#0a0612" stop-opacity="0"/></radialGradient>
-    <radialGradient id="eg-${k}" r=".5"><stop offset=".3" stop-color="${c.eyes}" stop-opacity=".7"/><stop offset="1" stop-color="${c.eyes}" stop-opacity="0"/></radialGradient>
-    <radialGradient id="eye-${k}" cx=".5" cy=".62" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    <radialGradient id="iris-${k}" r=".5"><stop offset=".3" stop-color="#000" stop-opacity="0"/><stop offset=".76" stop-color="#2a1608" stop-opacity=".14"/><stop offset="1" stop-color="#2a1608" stop-opacity=".6"/></radialGradient>
-    <radialGradient id="vel-${k}" cx=".46" cy=".36" r=".7"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#1a1226" stop-opacity="0"/><stop offset="1" stop-color="#1a1226" stop-opacity=".4"/></radialGradient>
-    <radialGradient id="fluff-${k}" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="eg-${id}" r=".5"><stop offset=".3" stop-color="${c.eyes}" stop-opacity=".7"/><stop offset="1" stop-color="${c.eyes}" stop-opacity="0"/></radialGradient>
+    <clipPath id="socket-${id}"><path d="M-13 0 Q-4 -14 8 -8 Q12 -6 13 -1 Q8 11 -2 10 Q-10 8 -13 0Z"/></clipPath>
+    <radialGradient id="iris-${id}" r=".5"><stop offset=".3" stop-color="#000" stop-opacity="0"/><stop offset=".76" stop-color="#2a1608" stop-opacity=".14"/><stop offset="1" stop-color="#2a1608" stop-opacity=".6"/></radialGradient>
   </defs>
   <path class="acc acc-cape" d="M42 142 Q100 120 158 142 L178 234 Q100 216 22 234 Z" fill="#5c0f1d"/>
   <path class="acc acc-cape" d="M54 134 Q100 114 146 134 L152 148 Q100 130 48 148 Z" fill="#8e1c2e"/>
-  <g class="tailw"><path class="tail" d="M150 198 C200 198 206 148 176 126" fill="none" stroke="${c.shade}" stroke-width="18" stroke-linecap="round"/></g>
-  <ellipse cx="100" cy="174" rx="60" ry="54" fill="${c.fur}"/>
-  <ellipse cx="100" cy="186" rx="32" ry="34" fill="${c.shade}" opacity=".35"/>
-  <ellipse cx="100" cy="174" rx="60" ry="54" fill="url(#shd-${k})"/>
-  <ellipse cx="100" cy="174" rx="60" ry="54" fill="url(#rim-${k})"/>
-  <ellipse cx="100" cy="174" rx="60" ry="54" fill="url(#vel-${k})"/>
-  <ellipse cx="100" cy="158" rx="31" ry="25" fill="url(#fluff-${k})"/>
-  <path d="M147 141 A60 54 0 0 1 159 169" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/>
-  <g class="paw pl"><ellipse cx="76" cy="222" rx="19" ry="10" fill="${c.fur}"/></g>
-  <g class="paw pr"><ellipse cx="124" cy="222" rx="19" ry="10" fill="${c.fur}"/><g class="acc acc-ring"><circle cx="124" cy="216" r="6" fill="none" stroke="#f5c84c" stroke-width="3"/><rect x="121" y="206" width="6" height="6" fill="#4ea0ff" transform="rotate(45 124 209)"/></g></g>
-  <g class="head"><g class="hl hl-ear"><g class="ear el"><path d="M54 80 Q52 48 74 58 Z" fill="${c.fur}"/><path d="M60 72 Q60 56 72 61 Z" fill="#b99aa6"/><path d="M54.500 76 Q53 50 73 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g>
-  <g class="ear er"><path d="M146 80 Q148 48 126 58 Z" fill="${c.fur}"/><path d="M140 72 Q140 56 128 61 Z" fill="#b99aa6"/><path d="M145.500 76 Q147 50 127 57.500" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/></g></g>
-  <ellipse cx="100" cy="104" rx="56" ry="48" fill="${c.fur}"/>
-  <ellipse cx="74" cy="122" rx="20" ry="15" fill="${c.fur}"/>
-  <ellipse cx="126" cy="122" rx="20" ry="15" fill="${c.fur}"/>
-  <ellipse cx="100" cy="84" rx="34" ry="20" fill="#fff" opacity=".06"/>
-  <ellipse cx="100" cy="104" rx="56" ry="48" fill="url(#shd-${k})"/>
-  <ellipse cx="100" cy="104" rx="56" ry="48" fill="url(#rim-${k})"/>
-  <ellipse cx="100" cy="104" rx="56" ry="48" fill="url(#vel-${k})"/>
-  <path d="M66 66 A56 48 0 0 1 134 66" fill="none" stroke="rgba(243,227,176,.35)" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M122 60 Q150 68 157 100" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="2" stroke-linecap="round"/>
-  <g class="hl hl-top"><path d="M86 68 Q100 62 114 68" stroke="${c.shade}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
-  <path d="M90 76 Q100 72 110 76" stroke="${c.shade}" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".5"/>
+  <g transform="${k === "a" ? "translate(200 0) scale(-1 1)" : "translate(0 0)"}"><g class="tailw"><g class="tail">${catPart("tail")}</g></g></g>
+  ${catPart("body")}
+  <g class="paw pl">${catPart("pawL")}</g>
+  <g class="paw pr">${catPart("pawR")}<g transform="translate(-12 3)"><g class="acc acc-ring"><circle cx="124" cy="216" r="6" fill="none" stroke="#f5c84c" stroke-width="3"/><rect x="121" y="206" width="6" height="6" fill="#4ea0ff" transform="rotate(45 124 209)"/></g></g></g>
+  <g class="head">
+  <g class="hl hl-ear"><g class="ear el">${catPart(k + "EarL")}</g><g class="ear er">${catPart(k + "EarR")}</g></g>
+  ${catPart(k + "Face")}
+  <g class="hl hl-top">
   <g class="acc acc-wreath"><circle cx="66" cy="62" r="7" fill="#d7263d"/><circle cx="66" cy="62" r="3.5" fill="#a3132a"/><circle cx="80" cy="54" r="6" fill="#e2445a"/><circle cx="80" cy="54" r="3" fill="#a3132a"/><path d="M58 70 q6 -4 12 0 M86 58 q5 -5 10 -1" stroke="#4f8a43" stroke-width="3" fill="none" stroke-linecap="round"/></g>
   <g class="acc acc-tiara"><path d="M78 62 L84 46 L92 56 L100 40 L108 56 L116 46 L122 62 Z" fill="#f5c84c"/><circle cx="100" cy="48" r="3.5" fill="#e3304a"/></g>
   <g class="acc acc-bow"><path d="M130 52 L116 42 L116 62 Z M130 52 L144 42 L144 62 Z" fill="#ff8aa0"/><circle cx="130" cy="52" r="4" fill="#ff5d7a"/></g></g>
-  <g class="hl hl-eyes"><g class="eglow"><circle cx="80" cy="102" r="23" fill="url(#eg-${k})"/><circle cx="120" cy="102" r="23" fill="url(#eg-${k})"/></g>
+  <g class="hl hl-eyes"><g class="eglow"><circle cx="80" cy="102" r="23" fill="url(#eg-${id})"/><circle cx="120" cy="102" r="23" fill="url(#eg-${id})"/></g>
   ${eye(80)}
   ${eye(120)}</g>
-  <g class="hl hl-muz"><path d="M94 118 L106 118 L100 125 Z" fill="${c.nose}"/>
+  <g class="hl hl-muz">
   <ellipse class="yawn" cx="100" cy="132" rx="7.5" ry="9" fill="#4a1c2a"/>
-  <path d="M100 125 Q94 134 86 130 M100 125 Q106 134 114 130" fill="none" stroke="${c.nose}" stroke-width="2" stroke-linecap="round"/>
-  ${fangs ? '<path d="M92 129 L96 129 L94 137 Z M104 129 L108 129 L106 137 Z" fill="#fff"/>' : ""}
-  <g stroke="#ecebef" stroke-width="1.6" stroke-linecap="round" opacity=".75"><path d="M64 122 L36 116 M64 127 L36 130 M136 122 L164 116 M136 127 L164 130"/></g></g>
+  <path d="M100 125 Q94 134 86 130 M100 125 Q106 134 114 130" fill="none" stroke="${c.nose}" stroke-width=".9" opacity=".6" stroke-linecap="round"/>
+  ${fangs ? '<path d="M92 129 Q94 130 95.5 129 L94 134 Z M104.5 129 Q106 130 108 129 L106 134 Z" fill="#fff"/>' : ""}
+  <g fill="none" stroke="#e8d9d0" stroke-width=".52" stroke-linecap="round" opacity=".76"><path d="M85 124 Q62 118 34 119 M85 126 Q56 125 30 135 M85 128 Q59 131 42 143 M115 124 Q138 118 166 119 M115 126 Q144 125 170 135 M115 128 Q141 131 158 143"/></g></g>
   <g class="hl hl-eyes"><g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><g class="sglint"><path d="M67 110 L74 92 M120 110 L127 92" fill="none" stroke="#fff6cf" stroke-width="3.2" stroke-linecap="round"/></g><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
   <g class="acc acc-mask"><path fill-rule="evenodd" d="M56 98 Q60 82 80 86 Q92 88 100 96 Q108 88 120 86 Q140 82 144 98 Q142 114 122 116 Q108 116 100 108 Q92 116 78 116 Q58 114 56 98 Z M70 101 Q74 93 82 93 Q90 94 91 101 Q88 108 80 108 Q72 108 70 101 Z M109 101 Q110 94 118 93 Q126 93 130 101 Q128 108 120 108 Q112 108 109 101 Z" fill="#17101a" stroke="#d9b45a" stroke-width="1.8"/><path d="M144 96 Q158 74 150 58 M146 92 Q160 80 162 66" fill="none" stroke="#b01e33" stroke-width="3" stroke-linecap="round"/></g></g>
   <g class="hl hl-muz"><path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/></g></g>
-  <g class="wpaw"><ellipse cx="0" cy="0" rx="17" ry="11.5" fill="${c.fur}"/><ellipse cx="0" cy="4" rx="13" ry="6" fill="${c.shade}" opacity=".22"/><path d="M-7 -10 q2 5 0 10 M1 -11 q2 5 0 11 M9 -9 q2 4 0 9" stroke="${c.shade}" stroke-width="1.6" fill="none" opacity=".4" stroke-linecap="round"/></g>
+  <g class="wpaw"><g transform="translate(-111 -223)">${catPart("pawR")}</g></g>
 </svg>`;
 }
 const catBox = (k, cls="") => `<div class="cat ${k === "l" ? "lap " : ""}${cls}" data-k="${k}"><div class="turn"><div class="breathe">${k === "a" ? catSVG(CONFIG.alisa) : catSVG(CONFIG.lapula, {fangs:false})}</div></div></div>`;
 function duoHTML(){
   const sp = [[12,20],[80,14],[86,58],[8,64],[50,6],[30,88]].map(([x,y],i)=>`<i style="left:${x}%;top:${y}%;animation-delay:${i*.27}s"></i>`).join("");
-  return `<div class="pet" data-cat="alisa" role="button" tabindex="0" aria-label="Погладить Алису">${catBox("a")}<div class="nm">${CONFIG.alisa.name}</div></div>
-          <div class="pet" data-cat="lapula" role="button" tabindex="0" aria-label="Погладить Лапулю"><div class="sparkle">${sp}</div>${catBox("l")}<div class="nm">${CONFIG.lapula.name}</div></div>`;
+  return `<div class="pet" data-cat="lapula" role="button" tabindex="0" aria-label="Погладить Лапулю"><div class="sparkle">${sp}</div>${catBox("l")}<div class="nm">${CONFIG.lapula.name}</div></div>
+          <div class="pet" data-cat="alisa" role="button" tabindex="0" aria-label="Погладить Алису">${catBox("a")}<div class="nm">${CONFIG.alisa.name}</div></div>`;
 }
 function blinkLoop(cat){ setTimeout(() => { if (!cat.isConnected) return; cat.classList.add("blink"); setTimeout(() => cat.classList.remove("blink"), 130); blinkLoop(cat); }, 1800 + Math.random()*4200); }
 
@@ -3312,7 +3308,7 @@ function speakFx(side){
   document.querySelectorAll("#duo .pet").forEach(p => {
     const who = p.dataset.cat, speaking = side === "both" || side === who;
     if (speaking){ if (!p.classList.contains("sleeping")) p.animate([{transform:"none"}, {transform:"translateY(-5px)", offset:.32}, {transform:"translateY(1px)", offset:.7}, {transform:"none"}], {duration:440, easing:"ease-out"}); }
-    else glance(p.querySelector(".cat"), who === "alisa" ? 1 : -1, 1700);
+    else glance(p.querySelector(".cat"), who === "alisa" ? -1 : 1, 1700);
   });
 }
 /* взгляд: зрачки следят за пальцем */
@@ -3451,7 +3447,7 @@ setInterval(() => {
   else if (t > 7 && t < 22 && !idle.asked && askDue()) { idle.asked = 1; if (!askNow()) idle.asked = 0; }
   else if (t > 8 && t < 24 && !idle.duo && Date.now() - duoAt > 40000 && Math.random() < .06) { idle.duo = 1; duoPlay(); }
   else if (t > 11 && t < 24 && !idle.moth && Date.now() - preyAt > 120000 && Math.random() < .07) { idle.moth = 1; prey("moth"); }
-  else if (Math.random() < .07 && !reduced()){ const a = catOf("alisa"), l = catOf("lapula"); if (Math.random() < .5) glance(a, 1, 1300); else glance(l, -1, 1300); }
+  else if (Math.random() < .07 && !reduced()){ const a = catOf("alisa"), l = catOf("lapula"); if (Math.random() < .5) glance(a, -1, 1300); else glance(l, 1, 1300); }
   else if (Math.random() < .05 && !reduced()){ const c = Math.random() < .5 ? catOf("alisa") : catOf("lapula"), k = Math.random() < .5 ? "flickL" : "flickR"; c.classList.add(k); setTimeout(() => c.classList.remove(k), 460); }
 }, 1000);
 addEventListener("resize", () => requestAnimationFrame(placeBubble));
@@ -3583,7 +3579,7 @@ function pet(el, e, soft){
   if (dailyAction("pet", {who, zone})) said = true;
   if (MILES[S.pets]){ celebrate(S.pets, who); said = true; }
   if (!reduced() && !soft){
-    const sd = who === "alisa" ? -1 : 1, other = document.querySelector(`#duo .pet:not([data-cat="${who}"])`);
+    const sd = who === "alisa" ? 1 : -1, other = document.querySelector(`#duo .pet:not([data-cat="${who}"])`);
     /* шкала прогибается тем краем, над которым гладят */
     petMotion($("#purr"), [{transform:"none"}, {transform:`translateY(${stroke ? 1.4 : 2.5}px) rotate(${sd*(stroke ? .45 : .7)}deg)`, offset:.2}, {transform:`translateY(-1px) rotate(${-sd*.2}deg)`, offset:.55}, {transform:"none"}], {duration:stroke ? 420 : 640, easing:"ease-out"});
     if (!stroke) petMotion(el, [{transform:"none"}, {transform:"translateY(2.5px)", offset:.2}, {transform:"translateY(-1px)", offset:.55}, {transform:"none"}], {duration:640, easing:"ease-out"});
@@ -3648,7 +3644,7 @@ function petZone(cat, who, zone, rx, ry, stroke){
     cat.classList.remove("happy");
     if (now - (cat._ruf || 0) < 2500) return false; cat._ruf = now;
     tmp("ruffle", 520); snd.mew(who); haptic([4, 20, 4]);
-    cat._away = now + 800; setGaze(cat, (who === "alisa" ? -1 : 1)*3.4, -.6);
+    cat._away = now + 800; setGaze(cat, (who === "alisa" ? 1 : -1)*3.4, -.6);
     setTimeout(() => { if ((cat._away || 0) <= performance.now() + 5) setGaze(cat, 0, 0); }, 820);
     if (sinceLine >= 3 && Math.random() < .35){ setBubble(pick(AGAINST[who]), who); return true; }
   }
@@ -3657,7 +3653,7 @@ function petZone(cat, who, zone, rx, ry, stroke){
 /* вторая кошка замечает, что гладят не её: смотрит, зевает напоказ или подвигается ближе */
 function jealous(other){
   const c = catOf(other), p = document.querySelector(`#duo .pet[data-cat="${other}"]`); if (!c || !p || c.classList.contains("sleep") || busyAct) return;
-  const dir = other === "alisa" ? 1 : -1, kind = pick(["look", "yawn", "scoot"]);
+  const dir = other === "alisa" ? -1 : 1, kind = pick(["look", "yawn", "scoot"]);
   if (kind === "look"){ setGaze(c, dir*3.6, .3); c._away = performance.now() + 2600; setTimeout(() => setGaze(c, 0, 0), 2600);
     if (Math.random() < .5) setTimeout(() => setBubble(other === "lapula" ? "а меня?" : "я тоже тут сижу", other), 400); }
   else if (kind === "yawn"){ glance(c, dir, 1200); yawn(other, 500); setTimeout(() => setBubble(other === "lapula" ? "скучно. очень" : "зеваю демонстративно", other), 1900); }
@@ -3734,12 +3730,12 @@ function loveFx(){
   setTimeout(() => {
     app.classList.add("lovetail");
     const duo = $("#duo"), D = duo.getBoundingClientRect(), A = catOf("alisa").getBoundingClientRect(), L = catOf("lapula").getBoundingClientRect();
-    const ax = A.left - D.left + A.width*.75, ay = A.top - D.top + A.height*.825, lx = L.left - D.left + L.width*.25, cx = (ax + lx)/2, w = Math.max(30, (lx - ax)/2 + 6);
+    const ax = A.left - D.left + A.width*.25, ay = A.top - D.top + A.height*.825, lx = L.left - D.left + L.width*.75, cx = (ax + lx)/2, w = Math.max(30, (ax - lx)/2 + 6);
     const half = (sx, dir) => `M${sx.toFixed(1)} ${ay.toFixed(1)} Q${((sx + cx)/2).toFixed(1)} ${(ay + 16).toFixed(1)} ${cx.toFixed(1)} ${(ay + 4).toFixed(1)} C${(cx - dir*w*.8).toFixed(1)} ${(ay - 16).toFixed(1)} ${(cx - dir*w*1.15).toFixed(1)} ${(ay - 42).toFixed(1)} ${(cx - dir*w*.9).toFixed(1)} ${(ay - 60).toFixed(1)} C${(cx - dir*w*.62).toFixed(1)} ${(ay - 78).toFixed(1)} ${(cx - dir*w*.12).toFixed(1)} ${(ay - 74).toFixed(1)} ${cx.toFixed(1)} ${(ay - 52).toFixed(1)}`;
     const sw = (A.width/200*16).toFixed(1);
     duo.insertAdjacentHTML("beforeend", `<svg class="tailheart" aria-hidden="true" width="${D.width}" height="${D.height}" viewBox="0 0 ${D.width.toFixed(1)} ${D.height.toFixed(1)}">
-      <path class="glow" d="${half(ax, 1)}" /><path class="glow" d="${half(lx, -1)}" />
-      <path class="t" d="${half(ax, 1)}" stroke="${CONFIG.alisa.shade}" stroke-width="${sw}"/><path class="t" d="${half(lx, -1)}" stroke="${CONFIG.lapula.shade}" stroke-width="${sw}"/></svg>`);
+      <path class="glow" d="${half(ax, -1)}" /><path class="glow" d="${half(lx, 1)}" />
+      <path class="t" d="${half(ax, -1)}" stroke="${CONFIG.alisa.shade}" stroke-width="${sw}"/><path class="t" d="${half(lx, 1)}" stroke="${CONFIG.lapula.shade}" stroke-width="${sw}"/></svg>`);
     duo.querySelectorAll(".tailheart path").forEach(pth => { const len = pth.getTotalLength(); pth.style.strokeDasharray = len; pth.style.strokeDashoffset = len; pth.animate([{strokeDashoffset: len}, {strokeDashoffset: 0}], {duration:1000, easing:"cubic-bezier(.3,.7,.2,1)", fill:"forwards"}); });
     if (ensureRunning()) [523.25, 659.25, 783.99, 1046.5].forEach((fq, i) => fmBell({f:fq, t:ctx.currentTime + i*.12, dur:.6, peak:.07, send:.3}));
     haptic([10, 30, 10]);
@@ -4171,7 +4167,7 @@ function bindSeg(seg, onChange){
 function renderWardrobe(){
   const st = $("#wStage");
   if (!st.dataset.built){
-    st.innerHTML = `<div class="wcat" data-w="a">${catBox("a")}<div class="nm">${CONFIG.alisa.name}</div></div><div class="wcat" data-w="l">${catBox("l")}<div class="nm">${CONFIG.lapula.name}</div></div>`;
+    st.innerHTML = `<div class="wcat" data-w="l">${catBox("l")}<div class="nm">${CONFIG.lapula.name}</div></div><div class="wcat" data-w="a">${catBox("a")}<div class="nm">${CONFIG.alisa.name}</div></div>`;
     st.querySelectorAll(".cat").forEach(blinkLoop);
     st.querySelectorAll(".wcat").forEach(w => w.onclick = () => { wSel = w.dataset.w; snd.tap(); haptic(6); paintW(); });
     st.insertAdjacentHTML("beforeend", '<button class="btn ghost camb" id="wCam" aria-label="Снимок для альбома"><svg class="ico"><use href="#i-camera"/></svg></button>');
@@ -5512,7 +5508,7 @@ function maybeGift(){
   const pr = pet.getBoundingClientRect(), dr = duo.getBoundingClientRect();
   const b = document.createElement("button"); b.id = "gift"; b.className = "gift"; b.setAttribute("aria-label", "Подарок от " + (G.who === "alisa" ? "Алисы" : "Лапули"));
   b.innerHTML = '<span class="e" aria-hidden="true"></span>'; setIco(b.querySelector(".e"), G.e, G.ic);
-  const x = pr.left - dr.left + pr.width*(G.who === "alisa" ? .13 : .87);
+  const x = pr.left - dr.left + pr.width*(G.who === "alisa" ? .87 : .13);
   b.style.left = ((x - 22)/dr.width*100).toFixed(2) + "%"; b.style.bottom = (dr.bottom - pr.bottom - 4).toFixed(1) + "px";
   duo.appendChild(b);
   if (!reduced()) b.animate([{transform: "translateY(-60px) scale(.5)", opacity: 0}, {transform: "translateY(4px) scale(1.08,.9)", opacity: 1, offset: .6}, {transform: "none", opacity: 1}], {duration: 760, easing: "cubic-bezier(.3,.7,.3,1)"});
@@ -5566,7 +5562,7 @@ async function makeSnap(){
   const [ia, il] = await Promise.all([loadImg(snapCatSVG("a")), loadImg(snapCatSVG("l"))]);
   const cw = PH*.5, ch = cw*1.2, by = P + PH - ch - 6;
   g.fillStyle = "rgba(0,0,0,.3)"; [.27, .73].forEach(k => { g.beginPath(); g.ellipse(P + PH*k, P + PH - 14, cw*.32, cw*.05, 0, 0, 6.2832); g.fill(); });
-  g.drawImage(ia, P + PH*.27 - cw/2, by, cw, ch); g.drawImage(il, P + PH*.73 - cw/2, by, cw, ch);
+  g.drawImage(il, P + PH*.27 - cw/2, by, cw, ch); g.drawImage(ia, P + PH*.73 - cw/2, by, cw, ch);
   const fl = g.createRadialGradient(W/2, P + PH*.58, 30, W/2, P + PH*.58, PH*.75); fl.addColorStop(0, "rgba(255,255,255,.08)"); fl.addColorStop(1, "rgba(0,0,0,.25)");
   g.fillStyle = fl; g.fillRect(P, P, PH, PH);
   g.restore();
@@ -6100,7 +6096,7 @@ const YARN_SVG = '<svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="11.
 const BUSY = {
   wash: {
     start(who){ const c = catOf(who); c.classList.add("washing"); const other = who === "alisa" ? "lapula" : "alisa";
-      setTimeout(() => glance(catOf(other), who === "alisa" ? -1 : 1, 2600), 900);
+      setTimeout(() => glance(catOf(other), who === "alisa" ? 1 : -1, 2600), 900);
       busyAct.iv = setInterval(() => snd.lick(), 2600); setTimeout(() => busyAct && busyAct.kind === "wash" && snd.lick(), 1000); },
     stop(who){ const c = catOf(who), wp = c.querySelector(".wpaw"), m = getComputedStyle(wp).transform;
       c.classList.add("washend"); c.classList.remove("washing");
@@ -6120,10 +6116,10 @@ const BUSY = {
   yarn: {
     start(){
       const duo = $("#duo"), D = duo.getBoundingClientRect(), A = catOf("alisa").getBoundingClientRect(), L = catOf("lapula").getBoundingClientRect();
-      const r = Math.max(10, A.width*.074), y = A.bottom - D.top - r*1.1, xA = A.left - D.left + A.width*.8, xL = L.left - D.left + L.width*.2;
+      const r = Math.max(10, A.width*.074), y = A.bottom - D.top - r*1.1, xA = A.left - D.left + A.width*.2, xL = L.left - D.left + L.width*.8;
       const el = document.createElement("div"); el.className = "yarn"; el.style.width = el.style.height = (r*2).toFixed(1) + "px"; el.innerHTML = YARN_SVG; duo.appendChild(el);
       const sv = el.firstChild, st = {x: xL, from: xL, to: xA, t0: performance.now(), leg: 0, live: true};
-      const bat = side => { const p = document.querySelector(`#duo .pet[data-cat="${side}"] .${side === "alisa" ? "pr" : "pl"}`), s = side === "alisa" ? 1 : -1;
+      const bat = side => { const p = document.querySelector(`#duo .pet[data-cat="${side}"] .${side === "alisa" ? "pl" : "pr"}`), s = side === "alisa" ? -1 : 1;
         if (p) p.animate([{transform: "none"}, {transform: `translate(${s*9}px,-13px) rotate(${s*12}deg)`, offset: .4}, {transform: "none"}], {duration: 380, easing: "ease-out"}); snd.pat(); haptic(4); };
       bat("lapula");
       const step = now => { if (!st.live) return;
@@ -6175,10 +6171,10 @@ Object.assign(BUSY, {
       requestAnimationFrame(step); },
     stop(){ vgOut(".vg-fly"); },
     line: () => pick([["светлячок. мы его не тронули", "alisa"], ["он улетел. я разрешила", "lapula"]]) },
-  scope: { start(){ $("#duo").insertAdjacentHTML("beforeend", `<div class="vg vg-scope">${SCOPE_SVG}</div>`); const l = catOf("lapula"); setGaze(l, 3.4, -2.6); l._away = performance.now() + 6000; l.classList.add("earflat"); glance(catOf("alisa"), 1, 5200); },
+  scope: { start(){ $("#duo").insertAdjacentHTML("beforeend", `<div class="vg vg-scope">${SCOPE_SVG}</div>`); const l = catOf("lapula"); setGaze(l, -3.4, -2.6); l._away = performance.now() + 6000; l.classList.add("earflat"); glance(catOf("alisa"), -1, 5200); },
     stop(){ vgOut(".vg-scope"); const l = catOf("lapula"); l.classList.remove("earflat"); l._away = 0; },
     line: () => pick([["Лапуля нашла среди звёзд рыбу", "alisa"], ["там созвездие Рыбы. я проверила", "lapula"]]) },
-  note: { start(){ $("#duo").insertAdjacentHTML("beforeend", `<div class="vg vg-note">${NOTE_SVG}</div>`); const a = catOf("alisa"); a.classList.add("paws"); setGaze(a, 1.6, 2.4); a._away = performance.now() + 4000; glance(catOf("lapula"), -1, 5200); },
+  note: { start(){ $("#duo").insertAdjacentHTML("beforeend", `<div class="vg vg-note">${NOTE_SVG}</div>`); const a = catOf("alisa"); a.classList.add("paws"); setGaze(a, -1.6, 2.4); a._away = performance.now() + 4000; glance(catOf("lapula"), 1, 5200); },
     stop(){ vgOut(".vg-note"); const a = catOf("alisa"); a.classList.remove("paws"); a._away = 0; },
     line: () => pick([["никакой записки не было", "alisa"], ["там было про тебя. я не читала", "lapula"]]) },
   tail: { start(){ $("#duo").insertAdjacentHTML("beforeend", '<div class="vg vg-wind"></div>'); app.classList.add("vg-lean"); catOf("alisa").classList.add("earflat"); snd.wind(); setGaze(catOf("lapula"), -3.2, .2); },
@@ -6246,18 +6242,18 @@ let duoAt = 0;
 function noseMid(){ const p = ["alisa", "lapula"].map(w => { const r = catOf(w).getBoundingClientRect(); return [r.left + r.width/2, r.top + r.height*.5]; }); return [(p[0][0] + p[1][0])/2, (p[0][1] + p[1][1])/2]; }
 const DUO_PLAY = {
   blink(){ const a = catOf("alisa"), l = catOf("lapula"), sb = c => { restartClass(c, "slowblink"); setTimeout(() => c.classList.remove("slowblink"), 1600); };
-    glance(a, 1, 3200); setTimeout(() => glance(l, -1, 2600), 500);
+    glance(a, -1, 3200); setTimeout(() => glance(l, 1, 2600), 500);
     setTimeout(() => sb(a), 900); setTimeout(() => sb(l), 2000);
     setTimeout(() => { const [x, y] = noseMid(); FX.burst(x, y, {emojis: ["🤍"], n: 2, speed: [30, 70], grav: -40, size: [14, 20], life: [1.2, 1.6]});
       if (Math.random() < .5) setBubble("мы так моргаем, когда любим", "lapula"); }, 2900);
     return 3600; },
   tail(){ const a = catOf("alisa"), l = catOf("lapula"), lp = document.querySelector('#duo .pet[data-cat="lapula"]');
     a.classList.add("tailplay"); l.classList.add("hunt");
-    const tip = () => { const r = a.querySelector(".tail").getBoundingClientRect(); return [r.left + r.width*.8, r.top + r.height*.3]; };
+    const tip = () => { const r = a.querySelector(".tail").getBoundingClientRect(); return [r.left + r.width*.7, r.top + r.height*.12]; };
     let tr = setInterval(() => { const [x, y] = tip(), r = l.getBoundingClientRect(), dx = x - (r.left + r.width*.5), dy = y - (r.top + r.height*.43), d = Math.hypot(dx, dy) || 1; setGaze(l, dx/d*3.6, dy/d*2.8); }, 120);
     setTimeout(() => l.querySelector("svg").animate([{transform: "none"}, {transform: "translateX(-2.5px)"}, {transform: "translateX(2.5px)"}, {transform: "translateX(-2.5px)"}, {transform: "translateX(2.5px)"}, {transform: "none"}], {duration: 650, easing: "linear"}), 1500);
     setTimeout(() => { clearInterval(tr); a.classList.remove("tailplay"); snd.jump(); haptic(6);
-      lp.animate([{transform: "none"}, {transform: "translate(-24px,-18px)", offset: .4}, {transform: "translate(-12px,0)", offset: .75}, {transform: "none"}], {duration: 760, easing: "ease-out"});
+      lp.animate([{transform: "none"}, {transform: "translate(24px,-18px)", offset: .4}, {transform: "translate(12px,0)", offset: .75}, {transform: "none"}], {duration: 760, easing: "ease-out"});
       setTimeout(() => snd.land(.35), 420); }, 2300);
     setTimeout(() => { l.classList.remove("hunt"); setGaze(l, 0, 0); if (Math.random() < .5) setBubble("это мой хвост. он не игрушка", "alisa"); }, 3200);
     return 3800; },
