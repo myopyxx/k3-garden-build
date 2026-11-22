@@ -5717,7 +5717,16 @@ function maybeGift(){
 /* =================== ФОТОБУДКА =================== */
 const SNAP_KEY = "alisa-diaries-snaps", SNAP_MAX = 9;
 function loadSnaps(){ try { const a = JSON.parse(localStorage.getItem(SNAP_KEY) || "[]"); return Array.isArray(a) ? a.filter(x => x && typeof x.src === "string") : []; } catch(e){ return []; } }
-function storeSnaps(a){ while (a.length){ try { localStorage.setItem(SNAP_KEY, JSON.stringify(a)); return true; } catch(e){ a.pop(); } } try { localStorage.removeItem(SNAP_KEY); } catch(e){} return false; }
+function storeSnaps(a, trim = true){
+  if (!a.length){ try { localStorage.removeItem(SNAP_KEY); return true; } catch(e){ return false; } }
+  while (a.length){
+    try { localStorage.setItem(SNAP_KEY, JSON.stringify(a)); return true; } catch(e){
+      if (!trim || a.length === 1) return false;
+      a.pop();
+    }
+  }
+  return false;
+}
 function snapCatSVG(k){
   const c = k === "a" ? CONFIG.alisa : CONFIG.lapula, w = wearOf(k);
   const svg = new DOMParser().parseFromString(catSVG(c, {fangs: k === "a"}), "image/svg+xml").documentElement;
@@ -5768,7 +5777,11 @@ async function takeSnap(){
   let src = null; try { src = await makeSnap(); } catch(e){ src = null; }
   if (!src){ snapBusy = false; setBubble("плёнка кончилась. попробуй ещё", "lapula"); return; }
   const list = loadSnaps(); list.unshift({src, t: Date.now()}); if (list.length > SNAP_MAX) list.length = SNAP_MAX;
-  const ok = storeSnaps(list); note("snap"); save();
+  const intendedCount = list.length;
+  const ok = storeSnaps(list);
+  if (!ok){ snapBusy = false; setBubble("не удалось сохранить снимок. старые снимки на месте", "lapula"); return; }
+  const trimmed = list.length < intendedCount;
+  note("snap"); save();
   const th = new Image(); th.src = src; th.alt = ""; th.className = "snapfly"; app.appendChild(th);
   const tab = document.querySelector('.tab[data-v="v-album"]'), A = app.getBoundingClientRect();
   const [tx, ty] = tab ? centerOf(tab) : [A.left + A.width/2, A.bottom], cx = A.left + A.width/2, cy = A.top + A.height*.42;
@@ -5780,7 +5793,7 @@ async function takeSnap(){
     {transform: `translate(${cx - A.left}px,${cy - A.top}px) translate(-50%,-50%) scale(1) rotate(-2deg)`, opacity: 1, offset: .66},
     {transform: `translate(${tx - A.left}px,${ty - A.top}px) translate(-50%,-50%) scale(.08) rotate(8deg)`, opacity: .6}
   ], {duration: 2400, easing: "cubic-bezier(.45,0,.4,1)", fill: "forwards"}).onfinish = go;
-  setTimeout(() => { const L = [["я вышла лучше", "alisa"], ["я моргнула. это стиль", "lapula"], ["в альбом. срочно", "alisa"]]; const [t, w] = L[Math.floor(Math.random()*L.length)]; setBubble(ok ? t : "места мало. старые снимки ушли", w); }, 900);
+  setTimeout(() => { const L = [["я вышла лучше", "alisa"], ["я моргнула. это стиль", "lapula"], ["в альбом. срочно", "alisa"]]; const [t, w] = L[Math.floor(Math.random()*L.length)]; setBubble(trimmed ? "места мало. старые снимки ушли" : t, w); }, 900);
 }
 function dataBlob(src){ const [h, b64] = src.split(","), bin = atob(b64), a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], {type: (h.match(/:(.*?);/) || [0, "image/jpeg"])[1]}); }
 function shareSnap(s){
@@ -5799,7 +5812,9 @@ function openSnap(i){
   w.onclick = ev => { ev.stopPropagation(); const b = ev.target.closest("button"); if (!b) return;
     if (b.dataset.a === "share"){ snd.tap(); shareSnap(s); return; }
     if (!b.classList.contains("sure")){ b.classList.add("sure"); b.querySelector("span").textContent = "Удалить?"; haptic(10); return; }
-    list.splice(i, 1); storeSnaps(list); v.classList.remove("on"); snd.back(); renderAlbum(); };
+    const remaining = list.filter((_, index) => index !== i);
+    if (!storeSnaps(remaining, false)){ setBubble("не удалось удалить снимок. попробуй ещё", "lapula"); return; }
+    v.classList.remove("on"); snd.back(); renderAlbum(); };
   v.onclick = () => { v.classList.remove("on"); snd.sheet(false); };
 }
 function renderSnaps(){
