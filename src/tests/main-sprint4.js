@@ -1,5 +1,5 @@
 const ROOT = require('path').resolve(__dirname, '../..');   // корень репозитория
-// четвёртый спринт: голова в 2,5D и зрачки, родные эмодзи, созвездия наград, столик в альбоме, шкатулка с ручкой, сеты, уровни 4–9, подъём в эпилог
+// четвёртый спринт: голова в 2,5D и зрачки, рисунки вещей, созвездия наград, столик в альбоме, шкатулка с ручкой, сеты, уровни 4–9, подъём в эпилог
 const {open} = require('./helper.js');
 (async () => {
   const today = new Date(), dk = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -24,13 +24,13 @@ const {open} = require('./helper.js');
   ok('зрачки шире с заполнением шкалы', pd0.pd === 1 && pd1.pd > 1.2 && pd1.sx > 1.15, JSON.stringify([pd0, pd1]));
   await shot('home'); await p.evaluate(() => { S.purr = 0; renderPurr(); });
 
-  // 2. сеты и родные эмодзи в гардеробе
+  // 2. сеты и рисунки вещей в гардеробе
   await wear(['tiara', 'bow']);
   const s1 = await p.evaluate(() => ({prom: setOn('prom'), need: overNeed(), ms: overMs(), day: setOn('day'), p7: perksFor(7).map(x => x.t), p4: perksFor(4).length}));
   ok('«Королевы Выпускного»: 4 поглаживания, 3,2 с', s1.prom && s1.need === 4 && s1.ms === 3200 && !s1.day, JSON.stringify(s1));
   await p.click('#btnWardrobe'); await p.waitForTimeout(1100);
-  const wd = await p.evaluate(() => ({emoji: [...document.querySelectorAll('.witems .wit .e')].map(e => e.textContent + (e.querySelector('svg') ? '!svg' : '')).join(' '), sets: [...document.querySelectorAll('.oset')].map(x => (x.classList.contains('on') ? '+' : '-') + x.querySelector('b').textContent)}));
-  ok('в гардеробе родные эмодзи и 4 плашки сетов', !/svg/.test(wd.emoji) && wd.emoji.split(' ').length === 7 && wd.sets.length === 4 && wd.sets.filter(x => x[0] === '+').length === 1, wd.emoji + ' | ' + wd.sets.join(', '));
+  const wd = await p.evaluate(() => ({items: [...document.querySelectorAll('.witems .wit .e svg')].map(el => el.dataset.item), sets: [...document.querySelectorAll('.oset')].map(x => (x.classList.contains('on') ? '+' : '-') + x.querySelector('b').textContent)}));
+  ok('в гардеробе рисунки вещей и 4 плашки сетов', new Set(wd.items).size === 7 && wd.items.every(Boolean) && wd.sets.length === 4 && wd.sets.filter(x => x[0] === '+').length === 1, wd.items.join(', ') + ' | ' + wd.sets.join(', '));
   // надеваем кольцо и очки: собирается «Дневные Бродяги»
   for (const id of ['ring', 'shades']){ await p.evaluate(id => { const i = WEAR.findIndex(w => w.id === id); document.querySelectorAll('.witems .wit')[i].click(); }, id); await p.waitForTimeout(350); }
   const wd2 = await p.evaluate(() => ({on: [...document.querySelectorAll('.oset.on b')].map(x => x.textContent), cap: document.querySelector('.wcap').textContent}));

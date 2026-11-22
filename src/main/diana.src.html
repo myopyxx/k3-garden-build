@@ -1698,7 +1698,7 @@ html,body{background:#0f0a17}
 
 /* ===== v12: док, свои значки, камера по вкладкам, лунные лучи ===== */
 .icv{width:1em;height:1em;display:block;overflow:visible}
-.wit .e.ic{line-height:0}.wit .e .icv{width:40px;height:40px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
+.oset .e{display:inline-flex;align-items:center}.wit .e.ic{line-height:0}.wit .e .icv{width:40px;height:40px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
 .gslot .e .icv{width:36px;height:36px}
 .gift .e .icv{width:32px;height:32px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
 .wit:not(.on):not(.own) .e .icv{opacity:.92}
@@ -2991,6 +2991,7 @@ document.addEventListener("pointercancel", unpress, {passive:true});
 
 /* =================== КОТИКИ =================== */
 /*CAT_SKETCH*/
+/*WARDROBE_ART*/
 let catSvgId = 0;
 function catSVG(c, opts={}){
   const fangs = opts.fangs !== false, k = c === CONFIG.alisa ? "a" : "l";
@@ -3010,29 +3011,26 @@ function catSVG(c, opts={}){
     <clipPath id="socket-${id}"><path d="M-13 0 Q-4 -14 8 -8 Q12 -6 13 -1 Q8 11 -2 10 Q-10 8 -13 0Z"/></clipPath>
     <radialGradient id="iris-${id}" r=".5"><stop offset=".3" stop-color="#000" stop-opacity="0"/><stop offset=".76" stop-color="#2a1608" stop-opacity=".14"/><stop offset="1" stop-color="#2a1608" stop-opacity=".6"/></radialGradient>
   </defs>
-  <path class="acc acc-cape" d="M42 142 Q100 120 158 142 L178 234 Q100 216 22 234 Z" fill="#5c0f1d"/>
-  <path class="acc acc-cape" d="M54 134 Q100 114 146 134 L152 148 Q100 130 48 148 Z" fill="#8e1c2e"/>
+  ${wornAccessory("cape")}
   <g transform="${k === "a" ? "translate(200 0) scale(-1 1)" : "translate(0 0)"}"><g class="tailw"><g class="tail">${part("tail")}</g></g></g>
   ${part("body")}
+  <g class="acc acc-cape">${capeClasp}</g>
   <g class="paw pl">${part("pawL")}</g>
-  <g class="paw pr">${part("pawR")}<g transform="translate(-12 3)"><g class="acc acc-ring"><circle cx="124" cy="216" r="6" fill="none" stroke="#f5c84c" stroke-width="3"/><rect x="121" y="206" width="6" height="6" fill="#4ea0ff" transform="rotate(45 124 209)"/></g></g></g>
-  <g class="head"><g transform="translate(100 139) scale(${catHeadWidth(lap)} ${lap ? .89 : 1}) translate(-100 -139)">
+  <g class="paw pr">${part("pawR")}${wornAccessory("ring")}</g>
+  <g class="head"><g transform="translate(100 139) scale(${lap ? .99 : 1.03} 1) translate(-100 -139)">
   <g class="hl hl-ear"><g class="ear el">${part(lap ? "lapEarL" : "earL")}</g><g class="ear er">${part("earR")}</g></g>
   ${part("face")}
   <g class="hl hl-top">
-  <g class="acc acc-wreath"><circle cx="66" cy="62" r="7" fill="#d7263d"/><circle cx="66" cy="62" r="3.5" fill="#a3132a"/><circle cx="80" cy="54" r="6" fill="#e2445a"/><circle cx="80" cy="54" r="3" fill="#a3132a"/><path d="M58 70 q6 -4 12 0 M86 58 q5 -5 10 -1" stroke="#4f8a43" stroke-width="3" fill="none" stroke-linecap="round"/></g>
-  <g class="acc acc-tiara"><path d="M78 62 L84 46 L92 56 L100 40 L108 56 L116 46 L122 62 Z" fill="#f5c84c"/><circle cx="100" cy="48" r="3.5" fill="#e3304a"/></g>
-  <g class="acc acc-bow"><path d="M130 52 L116 42 L116 62 Z M130 52 L144 42 L144 62 Z" fill="#ff8aa0"/><circle cx="130" cy="52" r="4" fill="#ff5d7a"/></g></g>
+  ${wornAccessory("wreath")}${wornAccessory("tiara")}${wornAccessory("bow")}</g>
   <g class="hl hl-eyes"><g class="eglow"><circle cx="80" cy="102" r="23" fill="url(#eg-${id})"/><circle cx="120" cy="102" r="23" fill="url(#eg-${id})"/></g>
   ${eye(80)}
   ${eye(120)}</g>
   <g class="hl hl-muz">
   <ellipse class="yawn" cx="100" cy="132" rx="7.5" ry="9" fill="#4a1c2a"/>
   ${part("muzzle")}${fangs ? part("teeth") : ""}${part("whiskers")}</g>
-  <g class="hl hl-eyes"><g class="acc acc-shades"><path d="M60 96 Q62 88 80 89 Q96 90 97 100 Q96 114 80 114 Q64 114 61 104 Q58 98 52 92 Z M140 96 Q138 88 120 89 Q104 90 103 100 Q104 114 120 114 Q136 114 139 104 Q142 98 148 92 Z" fill="#1a1420" stroke="#d9b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M97 99 Q100 95 103 99" fill="none" stroke="#d9b45a" stroke-width="2.4"/><path d="M68 96 Q76 92 86 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/><g class="sglint"><path d="M67 110 L74 92 M120 110 L127 92" fill="none" stroke="#fff6cf" stroke-width="3.2" stroke-linecap="round"/></g><path d="M110 96 Q118 92 128 94" fill="none" stroke="#fff" stroke-width="2" opacity=".35" stroke-linecap="round"/></g>
-  <g class="acc acc-mask"><path fill-rule="evenodd" d="M56 98 Q60 82 80 86 Q92 88 100 96 Q108 88 120 86 Q140 82 144 98 Q142 114 122 116 Q108 116 100 108 Q92 116 78 116 Q58 114 56 98 Z M70 101 Q74 93 82 93 Q90 94 91 101 Q88 108 80 108 Q72 108 70 101 Z M109 101 Q110 94 118 93 Q126 93 130 101 Q128 108 120 108 Q112 108 109 101 Z" fill="#17101a" stroke="#d9b45a" stroke-width="1.8"/><path d="M144 96 Q158 74 150 58 M146 92 Q160 80 162 66" fill="none" stroke="#b01e33" stroke-width="3" stroke-linecap="round"/></g></g>
+  <g class="hl hl-eyes">${wornAccessory("shades")}${wornAccessory("mask")}</g>
   <g class="hl hl-muz"><path class="tongue" d="M97 128 Q99 139 106 134 Q105 129 103 127 Z" fill="#e8798f"/></g></g></g>
-  <g class="wpaw"><g transform="translate(-111 -223)">${part("pawR")}</g></g>
+  <g class="wpaw"><g transform="translate(-111 -223)">${part("pawR")}${wornAccessory("ring")}</g></g>
 </svg>`;
 }
 const catBox = (k, cls="") => `<div class="cat ${k === "l" ? "lap " : ""}${cls}" data-k="${k}"><div class="turn"><div class="breathe">${k === "a" ? catSVG(CONFIG.alisa) : catSVG(CONFIG.lapula, {fangs:false})}</div></div></div>`;
@@ -4153,7 +4151,7 @@ function wearGrid(box, mode){
     cap.textContent = w && w.p ? w.t + ": " + w.p + "." : "Надето вещей: " + wornCount() + ". Полная мурр-шкала: " + b + " " + plural(b, "капля", "капли", "капель") + ", со сверхмурчанием " + t + ". Чем больше надето, тем больше капель."; };
   const sets = document.createElement("div"); sets.className = "osets";
   const paintSets = () => { sets.innerHTML = ""; OUTFIT_SETS.forEach(st => { const on = setOn(st.id), d = document.createElement("button"); d.type = "button"; d.className = "oset" + (on ? " on" : "");
-    d.innerHTML = '<span class="e" aria-hidden="true"></span><b></b>'; d.querySelector(".e").textContent = setEmoji(st); d.querySelector("b").textContent = st.t;
+    d.innerHTML = '<span class="e" aria-hidden="true"></span><b></b>'; d.querySelector(".e").innerHTML = st.need.map(id => accessoryIcon(id)).join(""); d.querySelector("b").textContent = st.t;
     d.setAttribute("aria-label", "Сет «" + st.t + "»" + (on ? ", собран: " : ", не собран: ") + st.p);
     d.onclick = () => { snd.tap(); haptic(5); cap.textContent = "«" + st.t + "»" + (on ? ": " : " (наденьте обе вещи): ") + st.p + "."; }; sets.appendChild(d); }); };
   WEAR.forEach(w => {
@@ -4162,7 +4160,7 @@ function wearGrid(box, mode){
       const tg = mode === "shared" ? ["a","l"] : wTargets(), on = S.owned[w.id] && tg.every(k => wearOf(k)[w.id]);
       b.className = "wit" + (on ? " on" : "") + (!S.owned[w.id] && !w.price ? " lock" : "");
       b.innerHTML = '<span class="e"></span><span class="n"></span>' + (S.owned[w.id] ? '<i class="foil-glare" aria-hidden="true"></i>' : w.price ? `<span class="pr num"><svg class="icf cur"><use href="#i-drop"/></svg>${w.price}</span>` : '<span class="pr">награда</span>');
-      setIco(b.querySelector(".e"), w.e, "w-" + w.id); b.querySelector(".n").textContent = w.t;
+      b.querySelector(".e").innerHTML = accessoryIcon(w.id); b.querySelector(".n").textContent = w.t;
       b.setAttribute("aria-label", w.t + (S.owned[w.id] ? (on ? ", надето" : "") : w.price ? `, ${w.price} капель` : ", " + w.s) + (w.p ? ". " + w.p : ""));
       b.setAttribute("aria-pressed", on ? "true" : "false");
     };
@@ -8471,6 +8469,35 @@ function lvlLaser(area, done){
     if (nextLead) lead = nextLead;
     o.cd = .65; o.joy = .6; o.sq = 1; dot.off = .48; const other = cats[who === "a" ? "l" : "a"]; other.cd = Math.max(other.cd, .35);
   }
+  // Local +X points towards the dot. The ears overlap the nape, and the
+  // whisker pads and nose project past the eyes at the leading edge.
+  function laserHead(c, asleep){
+    const cheek = c === CONFIG.lapula ? 11.4 : 12.1;
+    g.save(); g.scale(1,cheek/12);
+    g.lineJoin = g.lineCap = "round";
+    g.fillStyle = c.fur; g.strokeStyle = sketchInk; g.lineWidth = 1.1;
+    g.beginPath();
+    g.moveTo(-10,-5); g.quadraticCurveTo(-10,-12,-4,-12);
+    g.quadraticCurveTo(6,-14,11,-7); g.quadraticCurveTo(16,-5,17,0);
+    g.quadraticCurveTo(16,6,11,7); g.quadraticCurveTo(3,15,-5,12);
+    g.quadraticCurveTo(-12,11,-10,5); g.closePath(); g.fill(); g.stroke();
+    for (const side of [-1,1]){
+      g.save(); g.scale(1,side);
+      g.fillStyle = c.fur; g.beginPath(); g.moveTo(-1,11);
+      g.quadraticCurveTo(-6,15,-12,15); g.quadraticCurveTo(-11,9,-6,5); g.fill(); g.stroke();
+      g.fillStyle = "#ac9495"; g.beginPath(); g.moveTo(-4,11); g.lineTo(-10,13); g.lineTo(-7,8); g.fill();
+      g.beginPath(); g.moveTo(6,8); g.quadraticCurveTo(9,8.8,11,5);
+      if (!asleep){
+        g.quadraticCurveTo(8,5,6,8); g.fillStyle=c.eyes; g.fill();
+      }
+      g.strokeStyle=sketchInk; g.lineWidth=.85; g.stroke();
+      g.strokeStyle="#d9c9bf"; g.lineWidth=.65; g.beginPath();
+      g.moveTo(13,4); g.lineTo(16,12); g.moveTo(12,5); g.lineTo(13,14); g.stroke();
+      g.restore();
+    }
+    g.fillStyle=sketchInk; g.beginPath(); g.moveTo(14,-2.4); g.lineTo(17.8,0); g.lineTo(14,2.4); g.closePath(); g.fill();
+    g.restore();
+  }
   function drawCatTop(o, name, sleeping){
     const sp = Math.hypot(o.vx, o.vy);
     if (sp > 20) o.ang = Math.atan2(o.vy, o.vx);
@@ -8479,8 +8506,7 @@ function lvlLaser(area, done){
     if (sleeping){
       g.fillStyle = o.c.fur; g.beginPath(); g.arc(0, 0, 21, 0, 7); g.fill();
       g.strokeStyle = o.c.shade; g.lineWidth = 7; g.lineCap = "round"; g.beginPath(); g.arc(0, 0, 19, .6, 2.8); g.stroke();
-      g.translate(-4,-12); g.rotate(-.35); g.scale(.32,.32);
-      paintSketchHead(g,o.c,o.c === CONFIG.lapula,0,.1);
+      g.translate(-6,-13); g.rotate(Math.PI*.85); laserHead(o.c,true);
       g.restore(); g.font = "400 21px " + scriptFont; g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.6)"; g.fillText(name, o.x, o.y + 44); return;
     }
     g.rotate(o.ang);
@@ -8489,8 +8515,7 @@ function lvlLaser(area, done){
     const wag = Math.sin(t*(sp > 60 ? 14 : 4))*.5;
     g.strokeStyle = o.c.shade; g.lineWidth = 7; g.lineCap = "round"; g.beginPath(); g.moveTo(-20, 0); g.quadraticCurveTo(-34, wag*14, -42, wag*22); g.stroke();
     g.save(); g.translate(-2,0); g.scale(.78,.82); paintCatPart(g,"runningBody",o.c); g.restore();
-    g.translate(18,0); g.rotate(Math.PI/2); g.scale(.28,.24);
-    paintSketchHead(g,o.c,o.c === CONFIG.lapula);
+    g.translate(19,0); laserHead(o.c,false);
     g.restore();
     g.font = "400 21px " + scriptFont; g.textAlign = "center"; g.fillStyle = "rgba(255,255,255,.75)"; g.fillText(name, o.x, o.y + 44);
   }

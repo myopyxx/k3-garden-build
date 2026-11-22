@@ -8,6 +8,7 @@ photos = (here / "photos.js").read_text(encoding="utf-8")
 assert src.count("/*PHOTO_DATA*/") == 1, "в исходнике должна быть ровно одна метка /*PHOTO_DATA*/"
 out = src.replace("/*PHOTO_DATA*/", photos).replace("/*FRAME_METER*/", (here.parent / "shared/frame-meter.js").read_text(encoding="utf-8"))
 out = out.replace("/*CAT_SKETCH*/", (here.parent / "shared/cat-sketch.js").read_text(encoding="utf-8"))
+out = out.replace("/*WARDROBE_ART*/", (here / "wardrobe-art.js").read_text(encoding="utf-8"))
 for name in ("gate", "memory"):
     art = (here.parent / "shared/arena-art" / (name + ".webp")).read_bytes()
     asset = "data:image/webp;base64," + base64.b64encode(art).decode("ascii")
